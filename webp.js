@@ -496,4 +496,4 @@ function WebPImageViewer(webpdecoder,imagearray,image) {
 
 window['WebPImageViewer']=WebPImageViewer;
 
-webp.init();
+$(webp.init);
