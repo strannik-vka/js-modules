@@ -12,7 +12,7 @@ window.webp = {
 	},
 	
 	lazyload_off: function(){
-		$('[class="lazyload"]')
+		$('img[src*=".webp"][class="lazyload"],img[data-src*=".webp"][class="lazyload"]')
 			.removeClass('lazyload')
 			.removeClass('ls-is-cached')
 			.removeClass('lazyloaded');
