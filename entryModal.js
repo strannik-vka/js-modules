@@ -1,14 +1,14 @@
-window.entry_modal = {
+window.entryModal = {
 
     data: {},
 
     set: function (model) {
-        entry_modal.data[model.name] = model;
-        entry_modal.url(model);
+        entryModal.data[model.name] = model;
+        entryModal.url(model);
         $(document).on('click', '[' + model.name + '-open]', function () {
             var entry_id = $(this).attr(model.name + '-open');
             model.data(entry_id, function (json) {
-                entry_modal.open(model, json);
+                entryModal.open(model, json);
             });
         });
         $(document).on('hidden.bs.modal', '[entry-modal]', function () {
@@ -22,7 +22,7 @@ window.entry_modal = {
                 entry_id = url.searchParams.get(model.name);
             model.data(entry_id, function (data) {
                 if (data || typeof data === 'object') {
-                    entry_modal.open(model, data);
+                    entryModal.open(model, data);
                 } else {
                     history.pushState(null, null, location.pathname);
                 }
@@ -36,6 +36,16 @@ window.entry_modal = {
         }
 
         var modal = $('[entry-modal="' + model.name + '"]');
+
+        $.each(data, function (key, val) {
+            modal.find('[' + model.name + '-' + key + ']').html(
+                (
+                    val && typeof val !== 'object'
+                        ? val
+                        : (model.empty ? model.empty : '')
+                )
+            );
+        });
 
         model.html(modal, data);
 
