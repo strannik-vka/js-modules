@@ -11,7 +11,7 @@ window.entryModal = {
                 entryModal.open(model, json);
             });
         });
-        $(document).on('hidden.bs.modal', '[entry-modal]', function () {
+        $(document).on('hide.bs.modal', '[entry-modal]', function () {
             history.pushState(null, null, location.pathname);
         });
     },
