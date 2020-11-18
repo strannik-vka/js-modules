@@ -3,8 +3,8 @@ window.webp = {
 	status: false,
 
     init: function () {
-		$(document).trigger('webp.'+ (support ? 'true' : 'false'));
         webp.support(function (support) {
+			$(document).trigger('webp.'+ (support ? 'true' : 'false'));
             if (!support) {
 				webp.lazyload_off();
 				webp.to_canvas();

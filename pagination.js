@@ -40,7 +40,7 @@ window.pagination = {
                     last_page: parseInt(parent.attr('page-last-page') ? parent.attr('page-last-page') : $('[' + name + '-last-page]').html()),
                     count: parseInt(parent.attr('page-count') ? parent.attr('page-count') : $('[' + name + '-count]').html()),
                     url: parent.attr('page-url') ? parent.attr('page-url') : location.href,
-                    replace: parent.attr('page-replace') ? parent.attr('page-replace') : true,
+                    replace: parent.attr('page-replace') ? (parent.attr('page-replace') == 'false' ? false : true) : true,
                     method: parent.attr('page-method') ? parent.attr('page-method') : 'append',
                     selector: {
                         list: parent.attr('page-list') ? parent.attr('page-list') : '[page-model="' + name + '"]',
@@ -86,6 +86,10 @@ window.pagination = {
                 model.last_page = json.last_page;
                 pagination.model.set(model);
             }
+
+            if (json.last_page == model.page) {
+                $('[page-last-hide="' + model.name + '"]').hide();
+            }
         }
 
         if (json && json.data && json.data.length) {
@@ -108,6 +112,14 @@ window.pagination = {
         if (model.replace) {
             $(model.selector.list).css('height', 'auto');
         }
+
+        $(model.selector.list).trigger('pagination.print');
+
+        if (typeof webp === 'object') {
+            if (webp.init) {
+                webp.init();
+            }
+        }
     },
 
     init: function () {
@@ -121,7 +133,7 @@ window.pagination = {
         var model = pagination.model.get($(this));
 
         if (model.page < model.last_page) {
-            if ($(this).scrollTop() < 200 && !pagination.load) {
+            if ($(window).height() + $(window).scrollTop() >= $(document).height() - 300 && !pagination.load) {
                 pagination.load = true;
                 model.page++;
                 pagination.load(model, function (json) {

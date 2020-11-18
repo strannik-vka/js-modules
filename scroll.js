@@ -12,12 +12,15 @@ window.scroll = {
                 $(this).attr('href')
                     ? $(this).attr('href')
                     : $(this).attr('data-target')
-            ), elem = scroll.elem(href);
+            ), elem = scroll.elem(href), this_elem = $(this);
 
             if (elem) {
                 e.preventDefault();
+                this_elem.trigger('scroll-start');
                 scroll.to(elem, function () {
                     location.hash = href;
+                    scroll.replace_attr(elem);
+                    this_elem.trigger('scroll-complete');
                 });
                 return false;
             }
@@ -31,6 +34,10 @@ window.scroll = {
 
     elem: function (str) {
         if (str) {
+            if (($('#' + str).length && $('#' + str).css('display') == 'none') || $('#' + str).hasClass('modal')) {
+                return false;
+            }
+
             return $('#' + str).length ? $('#' + str)
                 : (
                     $('a[name="' + str + '"]').length
@@ -39,6 +46,26 @@ window.scroll = {
                 );
         }
         return false;
+    },
+
+    replace_attr: function (elem) {
+        if (elem.attr('name')) {
+            elem
+                .attr('data-name', elem.attr('name'))
+                .removeAttr('name');
+        } else if(elem.attr('id')) {
+            elem
+                .attr('data-id', elem.attr('id'))
+                .removeAttr('id');
+        } else if(elem.attr('data-id')) {
+            elem
+                .attr('id', elem.attr('data-id'))
+                .removeAttr('data-id');
+        } else if(elem.attr('data-name')) {
+            elem
+                .attr('name', elem.attr('data-name'))
+                .removeAttr('data-name');
+        }
     },
 
     to: function (elem, callback) {
@@ -58,6 +85,7 @@ window.scroll = {
             $('html, body').stop().animate({
                 'scrollTop': scrollTop
             }, 400, 'swing', function () {
+                scroll.replace_attr(elem);
                 if (callback) callback();
                 elem.trigger('scroll-complete');
             });
