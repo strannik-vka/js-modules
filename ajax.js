@@ -18,8 +18,8 @@ window.ajax = function (obj, callback, form) {
                 .html(preloader);
         }
 
-        if(typeof obj.data === 'object'){
-            if(!obj.data._token && typeof csrf_token !== 'undefined'){
+        if (typeof obj.data === 'object') {
+            if (!obj.data._token && typeof csrf_token !== 'undefined') {
                 obj.data._token = csrf_token;
             }
         }
@@ -63,7 +63,9 @@ window.ajax = function (obj, callback, form) {
             response = response.responseJSON ? response.responseJSON : response;
 
             if (response && response.errors) {
-                validate.errors(response.errors, form);
+                if (typeof validate !== 'undefined') {
+                    validate.errors(response.errors, form);
+                }
                 success = false;
             }
         }
