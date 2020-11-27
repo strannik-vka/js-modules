@@ -171,7 +171,7 @@ window.pagination = {
 
         $(model.selector.current_page).html(model.page);
 
-        var preloader = '<div page-preloader="' + model.name + '">' + (model.preloader ? model.preloader : '<div class="text-center my-5 text-muted">Загрузка..</div>') + '</div>';
+        var preloader = '<div page-preloader="' + model.name + '">' + (model.preloader ? model.preloader : '<div class="text-center py-5 text-muted">Загрузка..</div>') + '</div>';
 
         if (model.replace) {
             $(model.selector.list).css('height', $(model.selector.list).css('height'));
