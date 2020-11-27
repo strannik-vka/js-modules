@@ -45,15 +45,18 @@ window.webp = {
 	canvas_attr: function (img, canvas) {
 		if (img[0].attributes.length) {
 			$.each(img[0].attributes, function(i, item){
-				if(['src', 'data-src'].indexOf(item.name) == -1){
-					if(item.value.indexOf('lazy') > -1){
-						item.value = item.value.replace('lazyload', '').replace('ls-is-cached', '').replace('lazyloaded', '');
-					}
-					canvas.setAttribute(item.name, item.value);
+				if(item.value.indexOf('lazy') > -1){
+					item.value = item.value.replace('lazyload', '').replace('ls-is-cached', '').replace('lazyloaded', '');
 				}
+				canvas.setAttribute(item.name, item.value);
 			});
 		}
 		return canvas;
+	},
+
+	end: function(){
+		webp.status = false;
+		$(document).trigger('webp.success');
 	},
 
 	restart: function(){
@@ -61,7 +64,7 @@ window.webp = {
 		if(img){
 			webp.go_canas(img);
 		} else {
-			webp.status = false;
+			webp.end();
 		}
 	},
 

@@ -1,15 +1,15 @@
-// Отображение имени выбранного файла
+// После выбора файла отображает имя [name-preview="name"]
 
 $(document).on('change', '[type="file"]', function () {
     var names = [];
 
-    $.each($(this)[0].files, function(i, file){
+    $.each($(this)[0].files, function (i, file) {
         names.push(file.name);
     });
 
-    $('[file-change-name="'+ $(this).attr('name') +'"]').html(names.join(', '));
+    $('[name-preview="' + $(this).attr('name') + '"]').html(names.join(', '));
 
-    if(names.length){
+    if (names.length) {
         $(this).parents('.input-group').addClass('active');
     } else {
         $(this).parents('.input-group').removeClass('active');
