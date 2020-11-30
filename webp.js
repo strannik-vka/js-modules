@@ -76,18 +76,22 @@ window.webp = {
 	},
 
 	go_canas: function(img){
-		if(img.length){
-			img.attr('webp', true);
+		if(typeof img !== 'undefined'){
+			if(img.length){
+				img.attr('webp', true);
 
-			webp.canvas((
-				img.attr('src') ? img.attr('src') : img.attr('data-src')
-			), function (canvas) {
-				if(canvas){
-					canvas = webp.canvas_attr(img, canvas);
-					img.before(canvas).hide();
-				}
+				webp.canvas((
+					img.attr('src') ? img.attr('src') : img.attr('data-src')
+				), function (canvas) {
+					if(canvas){
+						canvas = webp.canvas_attr(img, canvas);
+						img.before(canvas).hide();
+					}
+					setTimeout(webp.restart, 0);
+				});
+			} else {
 				setTimeout(webp.restart, 0);
-			});
+			}
 		} else {
 			setTimeout(webp.restart, 0);
 		}
