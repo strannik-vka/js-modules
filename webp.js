@@ -86,6 +86,7 @@ window.webp = {
 					if(canvas){
 						canvas = webp.canvas_attr(img, canvas);
 						img.before(canvas).hide();
+						img.remove();
 					}
 					setTimeout(webp.restart, 0);
 				});
