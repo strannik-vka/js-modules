@@ -79,6 +79,11 @@ $(document).on('ajax.update', function () {
         $('[ajax-elem]', html).each(function (index) {
             $('[ajax-elem]:eq(' + index + ')').before($(this).clone()).remove();
         });
+        
         $(document).trigger('ajax.update.success');
+
+        if (typeof webp !== 'undefined') {
+            webp.init();
+        }
     });
 });
