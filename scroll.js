@@ -76,6 +76,11 @@ window.scroll = {
 
             var scrollTop = elem.offset().top;
 
+            if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
+                var zoom = parseFloat($('html').css('zoom'));
+                scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
+            }
+
             $('[scroll-fixed]').each(function () {
                 if ($(this).css('display') != 'none') {
                     scrollTop -= parseFloat($(this).css('height'));
