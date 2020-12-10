@@ -156,7 +156,7 @@ window.webp = {
             ? new ActiveXObject("Microsoft.XMLHTTP")
             : new XMLHttpRequest();
 
-        http.open('get', url, true);
+        http.open('get', url);
 
         if (http.overrideMimeType) {
             http.overrideMimeType('text/plain; charset=x-user-defined');
