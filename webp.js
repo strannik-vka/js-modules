@@ -3,13 +3,45 @@ window.webp = {
 	status: false,
 
     init: function () {
-        webp.support(function (support) {
-			$(document).trigger('webp.'+ (support ? 'true' : 'false'));
-            if (!support) {
-				webp.lazyload_off();
-				webp.to_canvas();
-            }
-        });
+		if(!webp.status){
+			webp.status = true;
+			webp.support(function (support) {
+				$(document).trigger('webp.'+ (support ? 'true' : 'false'));
+				if (!support) {
+					webp.start();
+				}
+			});
+		}
+	},
+
+	startStatus: false,
+	start: function(){
+		if(!webp.startStatus){
+			webp.startStatus = true;
+			webp.lazyload_off();
+			webp.to_canvas();
+		}
+	},
+
+	detectStatus: false,
+	detect: function(){
+		if(!webp.detectStatus){
+			webp.detectStatus = true;
+			document.addEventListener('DOMSubtreeModified', webp.start);
+		}
+	},
+
+	to_canvas: function () {
+		var img = webp.img();
+		if(img){
+			webp.go_canas(img, function(){
+				setTimeout(webp.to_canvas, 0);
+			});
+		} else {
+			webp.startStatus = false;
+			webp.detect();
+			$(document).trigger('webp.success');
+		}
 	},
 	
 	lazyload_off: function(){
@@ -54,28 +86,7 @@ window.webp = {
 		return canvas;
 	},
 
-	end: function(){
-		webp.status = false;
-		$(document).trigger('webp.success');
-	},
-
-	restart: function(){
-		var img = webp.img();
-		if(img){
-			webp.go_canas(img);
-		} else {
-			webp.end();
-		}
-	},
-
-    to_canvas: function () {
-		if(!webp.status){
-			webp.status = true;
-			webp.restart();
-		}
-	},
-
-	go_canas: function(img){
+	go_canas: function(img, callback){
 		if(typeof img !== 'undefined'){
 			if(img.length){
 				img.attr('webp', true);
@@ -88,13 +99,13 @@ window.webp = {
 						img.before(canvas).hide();
 						img.remove();
 					}
-					setTimeout(webp.restart, 0);
+					callback();
 				});
 			} else {
-				setTimeout(webp.restart, 0);
+				callback();
 			}
 		} else {
-			setTimeout(webp.restart, 0);
+			callback();
 		}
 	},
 	
