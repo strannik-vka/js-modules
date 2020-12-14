@@ -10,14 +10,13 @@ window.pagination = {
             }
 
             if (typeof pagination.model[model.name] === 'undefined') {
-                $(document).on('click', '[filter-event="' + model.name + '"]', function () {
-                    var name = pagination.model.name($(this)),
-                        model = pagination.model.get(name);
-                    model.page = 1;
-                    pagination.load(model, function (json) {
-                        pagination.print(model, json);
+                $(document).on('click', '[filter-event="' + model.name + '"]', pagination.filter);
+
+                if (model.scroll_laod) {
+                    $(document).on('scroll', function () {
+                        pagination.scroll(model.name);
                     });
-                });
+                }
             }
 
             pagination.model[model.name] = model;
@@ -42,6 +41,7 @@ window.pagination = {
                     url: parent.attr('page-url') ? parent.attr('page-url') : location.href,
                     replace: parent.attr('page-replace') ? (parent.attr('page-replace') == 'false' ? false : true) : true,
                     method: parent.attr('page-method') ? parent.attr('page-method') : 'append',
+                    scroll_laod: typeof parent.attr('page-scroll-load') !== 'undefined' ? true : false,
                     selector: {
                         list: parent.attr('page-list') ? parent.attr('page-list') : '[page-model="' + name + '"]',
                         item: parent.attr('page-item') ? parent.attr('page-item') : '[' + name + '-item]',
@@ -49,6 +49,10 @@ window.pagination = {
                         last_page: parent.attr('page-last-page') ? parent.attr('page-last-page') : '[' + name + '-last-page]'
                     }
                 };
+
+                if (data.scroll_laod) {
+                    data.replace = false;
+                }
 
                 if ($(data.selector.item + ':eq(0)').length) {
                     data.clone = $(data.selector.item + ':eq(0)')[0].outerHTML;
@@ -73,6 +77,16 @@ window.pagination = {
         }
     },
 
+    filter: function (name) {
+        var model = pagination.model.get(name ? name : $(this));
+
+        model.page = 1;
+
+        pagination.load(model, function (json) {
+            pagination.print(model, json);
+        });
+    },
+
     print: function (model, json) {
         $('[page-preloader="' + model.name + '"]').remove();
 
@@ -93,6 +107,8 @@ window.pagination = {
         }
 
         if (json && json.data && json.data.length) {
+            var scroll_top = $(window).scrollTop();
+
             $.each(json.data, function (i, item) {
                 var html = $(model.clone),
                     html = typeof model.html === 'function'
@@ -104,22 +120,14 @@ window.pagination = {
                 } else {
                     $(model.selector.list).prepend(html);
                 }
+
+                $(window).scrollTop(scroll_top);
             });
         } else {
             $(model.selector.list).html(model.empty ? model.empty : 'Ничего не найдено');
         }
 
-        if (model.replace) {
-            $(model.selector.list).css('height', 'auto');
-        }
-
-        $(model.selector.list).trigger('pagination.print');
-
-        if (typeof webp === 'object') {
-            if (webp.init) {
-                webp.init();
-            }
-        }
+        $(model.selector.list).css('height', 'auto').trigger('pagination.print');
     },
 
     init: function () {
@@ -129,16 +137,19 @@ window.pagination = {
             .on('scroll', '[page-scroll]', pagination.scroll);
     },
 
-    scroll: function () {
-        var model = pagination.model.get($(this));
+    scroll: function (name) {
+        var model = pagination.model.get(name ? name : $(this));
 
         if (model.page < model.last_page) {
-            if ($(window).height() + $(window).scrollTop() >= $(document).height() - 300 && !pagination.load) {
-                pagination.load = true;
+            if ($(window).height() + $(window).scrollTop() >= $(document).height() - 300 && !pagination.loadStatus) {
+                pagination.loadStatus = true;
                 model.page++;
                 pagination.load(model, function (json) {
                     pagination.print(model, json);
-                    pagination.load = false;
+                    setTimeout(function () {
+                        pagination.loadStatus = false;
+                    }, 1000);
+
                 });
             }
         }
@@ -155,48 +166,64 @@ window.pagination = {
         }
     },
 
-    next: function () {
-        var model = pagination.model.get($(this));
+    next: function (name, callback) {
+        var model = pagination.model.get(name ? name : $(this));
 
         if (model.page < model.last_page) {
             model.page++;
             pagination.load(model, function (json) {
                 pagination.print(model, json);
+                if (callback) callback(true);
             });
+        } else {
+            if (callback) callback(false);
         }
     },
 
+    preloader: function (replace, model) {
+        if (!$('[page-preloader]').length) {
+            if (typeof model === 'string') {
+                model = pagination.model.get(model);
+            }
+
+            var preloader = model.preloader
+                ? $(model.preloader)
+                : $('<div class="text-center py-5 text-muted">Загрузка..</div>');
+
+            preloader.attr('page-preloader', model.name);
+
+            if (replace) {
+                $(model.selector.list).css('height', $(model.selector.list).css('height'));
+                $(model.selector.list).html(preloader);
+            } else {
+                $(model.selector.list).append(preloader);
+            }
+        }
+    },
+
+    loadStatus: false,
     load: function (model, callback) {
         pagination.model.set(model);
 
         $(model.selector.current_page).html(model.page);
 
-        var preloader = '<div page-preloader="' + model.name + '">' + (model.preloader ? model.preloader : '<div class="text-center py-5 text-muted">Загрузка..</div>') + '</div>';
-
-        if (model.replace) {
-            $(model.selector.list).css('height', $(model.selector.list).css('height'));
-            $(model.selector.list).html(preloader);
-        } else {
-            $(model.selector.list).append(preloader);
-        }
-
-        if (typeof scroll === 'object') {
-            var elem_to = (
-                $('a[name="' + model.name + '"]').length
-                    ? $('a[name="' + model.name + '"]')
-                    : (
-                        $('#' + model.name).length ? $('#' + model.name) : false
-                    )
-            );
-            scroll.to(elem_to);
-        }
+        pagination.preloader(model.replace, model);
 
         var data = typeof model.filter === 'function' ? model.filter() : (
             typeof model.filter === 'object' ? model.filter : {}
         );
 
-        data.page = model.page;
-        data.count = data.count ? data.count : model.count;
+        if (typeof data === 'string') {
+            data += '&page=' + model.page;
+            data += '&count=' + (data.count ? data.count : model.count);
+
+            if (model.pushState) {
+                history.pushState(null, null, location.pathname + '?' + data);
+            }
+        } else {
+            data.page = model.page;
+            data.count = data.count ? data.count : model.count;
+        }
 
         ajax({
             url: model.url,

@@ -89,17 +89,19 @@ window.webp = {
 	go_canas: function(img, callback){
 		if(typeof img !== 'undefined'){
 			if(img.length){
-				img.attr('webp', true);
-
-				webp.canvas((
+				webp.getUrl((
 					img.attr('src') ? img.attr('src') : img.attr('data-src')
-				), function (canvas) {
-					if(canvas){
-						canvas = webp.canvas_attr(img, canvas);
-						img.before(canvas).hide();
-						img.remove();
+				), function (response) {
+					if(response){
+						webp.decode(response, function(canvas){
+							if(canvas){
+								img.before(webp.canvas_attr(img, canvas)).remove();
+							}
+							callback();
+						});
+					} else {
+						callback();
 					}
-					callback();
 				});
 			} else {
 				callback();
@@ -110,10 +112,10 @@ window.webp = {
 	},
 	
 	img: function(){
-		if ($('img[src*=".webp"]:not([webp])').length) {
-			return $('img[src*=".webp"]:not([webp]):eq(0)');
-		} else if ($('img[data-src*=".webp"]:not([webp])').length) {
-			return $('img[data-src*=".webp"]:not([webp]):eq(0)');
+		if ($('img[src*=".webp"]').length) {
+			return $('img[src*=".webp"]:eq(0)');
+		} else if ($('img[data-src*=".webp"]').length) {
+			return $('img[data-src*=".webp"]:eq(0)');
 		}
 		return false;
 	},
@@ -130,12 +132,12 @@ window.webp = {
     decode: function (response, callback) {
         response = webp.convertBinaryToArray(response);
 
-        var imagearray = WebPRiffParser(response, 0);
+		var imagearray = WebPRiffParser(response, 0);
         imagearray['response'] = response;
         imagearray['rgbaoutput'] = true;
         imagearray['dataurl'] = false;
 
-        new WebPImageViewer(new WebPDecoder(), imagearray, function (frame) {
+        new WebPImageViewer(imagearray, function (frame) {
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
             var width = imagearray['header'] ? imagearray['header']['canvas_width'] : frame['imgwidth'];
@@ -146,36 +148,27 @@ window.webp = {
             var rgba = frame['rgbaoutput'];
             for (var i = 0; i < width * height * 4; i++)
                 imagedata.data[i] = rgba[i];
-            ctx.putImageData(imagedata, 0, 0);
+			ctx.putImageData(imagedata, 0, 0);
             callback(canvas);
         });
     },
 
-    canvas: function (url, callback) {
-        var http = navigator.appName == "Microsoft Internet Explorer"
-            ? new ActiveXObject("Microsoft.XMLHTTP")
-            : new XMLHttpRequest();
-
-        http.open('get', url);
-
-        if (http.overrideMimeType) {
-            http.overrideMimeType('text/plain; charset=x-user-defined');
-        } else {
-            http.setRequestHeader('Accept-Charset', 'x-user-defined');
-        }
-
-        http.onreadystatechange = function () {
-            if (http.readyState == 4) {
-                var response = http.responseText.split('').map(function (e) {
-                    return String.fromCharCode(e.charCodeAt(0) & 0xff);
-                }).join('');
-                webp.decode(response, callback);
-            } else {
-				callback(false, callback);
+    getUrl: function (url, callback) {
+		$.ajax({
+			url: url, 
+			type: 'get',
+			mimeType: 'text/plain; charset=x-user-defined',
+			complete: function(response){
+				if(response.responseText){
+					var response = response.responseText.split('').map(function (e) {
+						return String.fromCharCode(e.charCodeAt(0) & 0xff);
+					}).join('');
+					callback(response);
+				} else {
+					callback(false);
+				}
 			}
-        };
-
-        http.send(null);
+		});
     },
 
     support: function (callback) {
@@ -187,8 +180,8 @@ window.webp = {
             webP.onload = webP.onerror = function () {
                 webp.support_status = webP.height === 2 ? true : false;
                 callback(webp.support_status);
-            }
-        }
+			}
+		}
     }
 
 };
@@ -427,9 +420,9 @@ var imagearray={};var i=0;var alpha_chunk=false;var alpha_size=0; var alpha_offs
 	return imagearray;
 }
 
-window['WebPRiffParser']=WebPRiffParser;
+window.WebPRiffParser = WebPRiffParser;
 
-function WebPImageViewer(webpdecoder,imagearray,image) {
+function WebPImageViewer(imagearray,image) {
 	var canvas = document.createElement('canvas');
 	var ctx = canvas.getContext('2d');
 	var response=imagearray['response'];
@@ -448,7 +441,7 @@ function WebPImageViewer(webpdecoder,imagearray,image) {
 		var height=[0];
 		var width=[0];
 		var frame=frames[f];
-		var rgba = webpdecoder.WebPDecodeRGBA(response,frame['src_off'],frame['src_size'],width,height);
+		var rgba = new WebPDecoder().WebPDecodeRGBA(response,frame['src_off'],frame['src_size'],width,height);
 		frame['rgba']=rgba;
 		frame['imgwidth']=width[0];
 		frame['imgheight']=height[0];
@@ -514,6 +507,6 @@ function WebPImageViewer(webpdecoder,imagearray,image) {
 	drawframes(imagearray,0,image);
 }
 
-window['WebPImageViewer']=WebPImageViewer;
+window.WebPImageViewer = WebPImageViewer;
 
 $(webp.init);
