@@ -17,9 +17,9 @@ window.entryModal = {
     },
 
     url: function (model) {
-        if (location.href.indexOf(model.name + '=') > -1) {
-            var url = new URL(location.href),
-                entry_id = url.searchParams.get(model.name);
+        if (location.href.indexOf(model.name + '=') > -1 && typeof $.url_get === 'function') {
+            var entry_id = $.url_get(model.name);
+
             model.data(entry_id, function (data) {
                 if (data || typeof data === 'object') {
                     entryModal.open(model, data);

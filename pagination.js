@@ -115,6 +115,10 @@ window.pagination = {
                         ? model.html(html, item)
                         : html;
 
+                if (model.display) {
+                    html.css('display', model.display);
+                }
+
                 if (model.method == 'append') {
                     $(model.selector.list).append(html);
                 } else {
@@ -166,8 +170,12 @@ window.pagination = {
         }
     },
 
-    next: function (name, callback) {
+    next: function (name, callback, obj) {
         var model = pagination.model.get(name ? name : $(this));
+
+        if (obj) {
+            model = Object.assign(model, obj);
+        }
 
         if (model.page < model.last_page) {
             model.page++;
@@ -186,25 +194,29 @@ window.pagination = {
                 model = pagination.model.get(model);
             }
 
-            var preloader = model.preloader
-                ? $(model.preloader)
-                : $('<div class="text-center py-5 text-muted">Загрузка..</div>');
+            if (typeof model.preloader !== 'undefined' && model.preloader !== false) {
+                var preloader = (
+                    model.preloader
+                        ? $(model.preloader)
+                        : $('<div class="text-center py-5 text-muted">Загрузка..</div>')
+                );
 
-            preloader.attr('page-preloader', model.name);
+                preloader.attr('page-preloader', model.name);
+            } else {
+                preloader = false;
+            }
 
             if (replace) {
                 $(model.selector.list).css('height', $(model.selector.list).css('height'));
-                $(model.selector.list).html(preloader);
+                if (preloader) $(model.selector.list).html(preloader);
             } else {
-                $(model.selector.list).append(preloader);
+                if (preloader) $(model.selector.list).append(preloader);
             }
         }
     },
 
     loadStatus: false,
     load: function (model, callback) {
-        pagination.model.set(model);
-
         $(model.selector.current_page).html(model.page);
 
         pagination.preloader(model.replace, model);
