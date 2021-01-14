@@ -31,20 +31,25 @@ window.validate = {
 
         form = typeof form !== 'undefined' ? form : $('body');
 
-        var error_elem = form.find('[name="' + key + '"]:eq(0)').length 
-            ? form.find('[name="' + key + '"]:eq(0)')
-            : form.find('[name^="' + key + '["]:eq(0)');
+        var error_elem = form.find('[name="' + key + '"]').length 
+            ? form.find('[name="' + key + '"]')
+            : form.find('[name^="' + key + '["]');
 
         if(!error_elem.length && key.indexOf('.') > -1){
             var str_arr = key.split('.');
-            error_elem = form.find('[name="' + str_arr[0] + '['+ str_arr[1] +']"]:eq(0)');
+            error_elem = form.find('[name="' + str_arr[0] + '['+ str_arr[1] +']"]');
         }
 
         if (error_elem.length) {
             $('[data-error-input="' + key + '"]').remove();
+
             error_elem
                 .addClass('is-invalid')
                 .after('<div data-error-input="' + key + '" class="invalid-feedback">' + (typeof string === 'object' ? string.join('<br>') : string) + '</div>');
+
+            $('.d-none [data-error-input="' + key + '"]').remove();
+            $('.d-none .is-invalid').removeClass('is-invalid');
+
             return true;
         } else {
             return false;
