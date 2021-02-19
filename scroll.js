@@ -1,9 +1,16 @@
 window.scroll = {
 
+    first: false,
+
     init: function () {
         if (location.href.indexOf('#') > -1) {
             setTimeout(function () {
-                scroll.to(scroll.elem(scroll.hash(location.href)));
+                var elem = scroll.elem(scroll.hash(location.href));
+                scroll.replace_attr(elem);
+                scroll.to(elem, function () {
+                    scroll.replace_attr(elem);
+                    this_elem.trigger('scroll-complete');
+                });
             }, 100);
         }
 
@@ -19,7 +26,6 @@ window.scroll = {
                 this_elem.trigger('scroll-start');
                 scroll.to(elem, function () {
                     location.hash = href;
-                    scroll.replace_attr(elem);
                     this_elem.trigger('scroll-complete');
                 });
                 return false;
@@ -53,15 +59,15 @@ window.scroll = {
             elem
                 .attr('data-name', elem.attr('name'))
                 .removeAttr('name');
-        } else if(elem.attr('id')) {
+        } else if (elem.attr('id')) {
             elem
                 .attr('data-id', elem.attr('id'))
                 .removeAttr('id');
-        } else if(elem.attr('data-id')) {
+        } else if (elem.attr('data-id')) {
             elem
                 .attr('id', elem.attr('data-id'))
                 .removeAttr('data-id');
-        } else if(elem.attr('data-name')) {
+        } else if (elem.attr('data-name')) {
             elem
                 .attr('name', elem.attr('data-name'))
                 .removeAttr('data-name');
@@ -90,7 +96,6 @@ window.scroll = {
             $('html, body').stop().animate({
                 'scrollTop': scrollTop
             }, 400, 'swing', function () {
-                scroll.replace_attr(elem);
                 if (callback) callback();
                 elem.trigger('scroll-complete');
             });

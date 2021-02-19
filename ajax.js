@@ -36,7 +36,7 @@ window.ajax = function (obj, callback, form) {
             }
 
             button
-                .css('width', parseFloat(button.css('width')) + 'px')
+                .css('min-width', parseFloat(button.css('width')) + 'px')
                 .html(preloader);
         }
     }
@@ -79,11 +79,6 @@ $(document).on('ajax.update', function () {
         $('[ajax-elem]', html).each(function (index) {
             $('[ajax-elem]:eq(' + index + ')').before($(this).clone()).remove();
         });
-        
         $(document).trigger('ajax.update.success');
-
-        if (typeof webp !== 'undefined') {
-            webp.init();
-        }
     });
 });
