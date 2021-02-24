@@ -42,7 +42,10 @@ window.scroll = {
 
     elem: function (str) {
         if (str) {
-            if (($('#' + str).length && $('#' + str).css('display') == 'none') || $('#' + str).hasClass('modal')) {
+            if (
+                ($('#' + str).length && $('#' + str).css('display') == 'none') ||
+                $('#' + str).hasClass('modal')
+            ) {
                 return false;
             }
 
