@@ -104,4 +104,4 @@ window.scroll = {
 
 }
 
-scroll.init();
+$(scroll.init);
