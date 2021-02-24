@@ -50,22 +50,30 @@ window.scroll = {
     },
 
     replace_attr: function (elem) {
-        if (elem.attr('name')) {
-            elem
-                .attr('data-name', elem.attr('name'))
-                .removeAttr('name');
-        } else if (elem.attr('id')) {
-            elem
-                .attr('data-id', elem.attr('id'))
-                .removeAttr('id');
-        } else if (elem.attr('data-id')) {
-            elem
-                .attr('id', elem.attr('data-id'))
-                .removeAttr('data-id');
-        } else if (elem.attr('data-name')) {
-            elem
-                .attr('name', elem.attr('data-name'))
-                .removeAttr('data-name');
+        if (elem.attr('name') || elem.attr('id')) {
+            if (elem.attr('name')) {
+                elem
+                    .attr('data-name', elem.attr('name'))
+                    .removeAttr('name');
+            }
+
+            if (elem.attr('id')) {
+                elem
+                    .attr('data-id', elem.attr('id'))
+                    .removeAttr('id');
+            }
+        } else {
+            if (elem.attr('data-id')) {
+                elem
+                    .attr('id', elem.attr('data-id'))
+                    .removeAttr('data-id');
+            }
+
+            if (elem.attr('data-name')) {
+                elem
+                    .attr('name', elem.attr('data-name'))
+                    .removeAttr('data-name');
+            }
         }
     },
 
@@ -77,6 +85,10 @@ window.scroll = {
 
             if ($('[data-toggle="dropdown"]').length && typeof $.fn.dropdown !== 'undefined') {
                 $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
+            }
+
+            if ($('.modal-open').length) {
+                $('.modal-open').removeClass('modal-open');
             }
 
             var scrollTop = elem.offset().top;
