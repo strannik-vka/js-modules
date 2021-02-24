@@ -10,7 +10,7 @@ window.scroll = {
                     scroll.replace_attr(elem);
                     scroll.to(elem, function () {
                         scroll.replace_attr(elem);
-                        this_elem.trigger('scroll-complete');
+                        elem.trigger('scroll-complete');
                     });
                 }
             }, 100);
@@ -21,14 +21,14 @@ window.scroll = {
                 $(this).attr('href')
                     ? $(this).attr('href')
                     : $(this).attr('data-target')
-            ), elem = scroll.elem(href), this_elem = $(this);
+            ), elem = scroll.elem(href);
 
             if (elem && elem.length) {
                 e.preventDefault();
-                this_elem.trigger('scroll-start');
+                elem.trigger('scroll-start');
                 scroll.to(elem, function () {
                     location.hash = href;
-                    this_elem.trigger('scroll-complete');
+                    elem.trigger('scroll-complete');
                 });
                 return false;
             }
