@@ -18,9 +18,8 @@ window.scroll = {
 
             if (elem && elem.length) {
                 e.preventDefault();
-                scroll.to(elem, function () {
-                    location.hash = href;
-                });
+                scroll.to(elem);
+                location.hash = href;
                 return false;
             }
         });
@@ -76,8 +75,8 @@ window.scroll = {
 
             scroll.replace_attr(elem);
 
-            if ($('[data-toggle="dropdown"]').length) {
-                $('[data-toggle="dropdown"]').dropdown('hide');
+            if ($('[data-toggle="dropdown"]').length && typeof $.fn.dropdown !== 'undefined') {
+                $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
             }
 
             var scrollTop = elem.offset().top;
