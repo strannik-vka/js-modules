@@ -10,6 +10,10 @@ window.scroll = {
         }
 
         $(document).on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
+            if ($(this).attr('data-toggle') == 'collapse') {
+                return false;
+            }
+
             var href = scroll.hash(
                 $(this).attr('href')
                     ? $(this).attr('href')
@@ -79,16 +83,20 @@ window.scroll = {
 
     to: function (elem, callback) {
         if (elem && elem.length) {
+            if ($('.modal-open').length) {
+                if ($('.modal').find(elem).length) {
+                    return false;
+                } else {
+                    $('.modal-open').removeClass('modal-open');
+                }
+            }
+
             elem.trigger('scroll-start');
 
             scroll.replace_attr(elem);
 
             if ($('[data-toggle="dropdown"]').length && typeof $.fn.dropdown !== 'undefined') {
                 $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
-            }
-
-            if ($('.modal-open').length) {
-                $('.modal-open').removeClass('modal-open');
             }
 
             var scrollTop = elem.offset().top;
