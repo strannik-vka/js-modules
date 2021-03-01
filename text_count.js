@@ -26,7 +26,7 @@ var text_count = {
     },
 
     count: function (elem) {
-        return $.trim(elem.val()).length;
+        return $.trim(elem.val()).replace(/\n/g, '\n\r').length;
     }
 
 }
