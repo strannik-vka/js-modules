@@ -35,21 +35,25 @@ window.scroll = {
     },
 
     elem: function (str) {
-        if (str) {
-            if (
-                ($('#' + str).length && $('#' + str).css('display') == 'none') ||
-                $('#' + str).hasClass('modal')
-            ) {
-                return false;
+        if (str && str.indexOf('://') == -1) {
+            if ($('#' + str).length) {
+                if (
+                    $('#' + str).css('display') == 'none' ||
+                    $('#' + str).hasClass('modal')
+                ) {
+                    return false;
+                }
             }
 
-            return $('#' + str).length ? $('#' + str)
+            return $('#' + str).length
+                ? $('#' + str)
                 : (
                     $('a[name="' + str + '"]').length
                         ? $('a[name="' + str + '"]')
                         : false
                 );
         }
+
         return false;
     },
 
