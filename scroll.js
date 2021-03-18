@@ -36,7 +36,9 @@ window.scroll = {
 
     elem: function (str) {
         if (str && str.indexOf('://') == -1) {
-            if ($('#' + str).length) {
+            var isElem = $('*').is('#' + str);
+
+            if (isElem) {
                 if (
                     $('#' + str).css('display') == 'none' ||
                     $('#' + str).hasClass('modal')
@@ -45,10 +47,10 @@ window.scroll = {
                 }
             }
 
-            return $('#' + str).length
+            return isElem
                 ? $('#' + str)
                 : (
-                    $('a[name="' + str + '"]').length
+                    $('a').is('[name="' + str + '"]')
                         ? $('a[name="' + str + '"]')
                         : false
                 );
