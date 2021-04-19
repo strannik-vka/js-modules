@@ -10,6 +10,7 @@ window.webp = {
 				if (!support) {
 					webp.start();
 				}
+				$('body').addClass('webp-true');
 			});
 		}
 	},
