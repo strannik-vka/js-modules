@@ -45,7 +45,7 @@ window.items = {
 
                 items.clear(model);
 
-                if (model.scroll) {
+                if (model.scroll || model.scroll_window) {
                     items.events.scroll(model);
                 }
 
