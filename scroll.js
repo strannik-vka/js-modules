@@ -9,7 +9,9 @@ window.scroll = {
             }, 100);
         }
 
-        $(document).on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
+        $(document)
+        .on('click', '[top]', scroll.toTop)
+        .on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
             if ($(this).attr('data-toggle') == 'collapse') {
                 return false;
             }
