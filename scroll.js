@@ -10,25 +10,25 @@ window.scroll = {
         }
 
         $(document)
-        .on('click', '[top]', scroll.toTop)
-        .on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
-            if ($(this).attr('data-toggle') == 'collapse') {
-                return false;
-            }
+            .on('click', '[scroll-top]', scroll.toTop)
+            .on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
+                if ($(this).attr('data-toggle') == 'collapse') {
+                    return false;
+                }
 
-            var href = scroll.hash(
-                $(this).attr('href')
-                    ? $(this).attr('href')
-                    : $(this).attr('data-target')
-            ), elem = scroll.elem(href);
+                var href = scroll.hash(
+                    $(this).attr('href')
+                        ? $(this).attr('href')
+                        : $(this).attr('data-target')
+                ), elem = scroll.elem(href);
 
-            if (elem && elem.length) {
-                e.preventDefault();
-                scroll.to(elem);
-                location.hash = href;
-                return false;
-            }
-        });
+                if (elem && elem.length) {
+                    e.preventDefault();
+                    scroll.to(elem);
+                    location.hash = href;
+                    return false;
+                }
+            });
     },
 
     hash: function (url) {
@@ -129,6 +129,10 @@ window.scroll = {
 
             scroll.replace_attr(elem);
         }
+    },
+
+    toTop: function () {
+        scroll.to($('body'));
     }
 
 }
