@@ -192,7 +192,8 @@ window.items = {
                 });
 
                 html.find('[attr]').each(function () {
-                    $(this).attr(attr_arr[0], data[attr_arr[0]]);
+                    var attr_arr = $(this).attr('attr').split(':');
+                    $(this).attr(attr_arr[0], data[attr_arr[1]]);
                 });
             }
 
