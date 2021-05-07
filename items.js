@@ -190,6 +190,10 @@ window.items = {
                 $.each(data, function (name, value) {
                     html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
                 });
+
+                html.find('[attr]').each(function () {
+                    $(this).attr(attr_arr[0], data[attr_arr[0]]);
+                });
             }
 
             return html.show()
