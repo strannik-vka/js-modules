@@ -193,7 +193,7 @@ window.items = {
 
                 html.find('[attr]').each(function () {
                     var attr_arr = $(this).attr('attr').split(':');
-                    $(this).attr(attr_arr[0], data[attr_arr[1]]);
+                    $(this).attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
                 });
             }
 
