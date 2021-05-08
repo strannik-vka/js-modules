@@ -2,6 +2,23 @@ window.validate = {
 
     initOn: false,
 
+    notSeen: function (s) {
+        var scrollTop = $(window).scrollTop(),
+            windowHeight = $(window).height(),
+            currentEls = $(s),
+            result = [];
+
+        currentEls.each(function () {
+            var el = $(this), offset = el.offset();
+
+            if (scrollTop <= offset.top && (el.height() + offset.top) < (scrollTop + windowHeight)) { } else {
+                result.push(this);
+            }
+        });
+
+        return $(result);
+    },
+
     init: function () {
         validate.initOn = true;
         $(document).on('keyup change', '.is-invalid, .is-invalid *, .selectized', function () {
@@ -66,7 +83,9 @@ window.validate = {
 
         if ($('.is-invalid').length) {
             if (typeof scroll !== 'undefined') {
-                scroll.to($('.is-invalid:eq(0)'));
+                if (validate.notSeen($('.is-invalid:eq(0)')).length) {
+                    scroll.to($('.is-invalid:eq(0)'));
+                }
             }
         }
     }
