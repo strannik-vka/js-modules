@@ -26,7 +26,7 @@ window.caruselCursor = {
             elem.addClass('cursor-right');
         }
 
-        if ($(event.target).closest('.white').length) {
+        if ($(event.target).closest('.white').length || $(event.target).closest('.direction-item') || $(event.target).closest('.card-company')) {
             elem.removeClass('cursor-white');
             elem.addClass('cursor-black');
         } else {
