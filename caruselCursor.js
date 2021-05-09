@@ -4,7 +4,9 @@ window.caruselCursor = {
 
     isLeftHalf_old: false,
 
-    create: function (elem) {
+    create: function (elem, {
+        container: container
+    }) {
         elem.each(function () {
             var this_elem = $(this);
 
@@ -19,15 +21,34 @@ window.caruselCursor = {
             });
 
             if (this_elem.find('.swiper-container').length) {
-                this_elem.find('.swiper-container').on('click', function () {
-                    var swiper = $(this)[0].swiper;
+                var swiper = this_elem[0].querySelector('.swiper-container').swiper,
+                    container_left = (container.offset().left + 15);
 
+                this_elem.find('.swiper-container').on('click', function () {
                     if (caruselCursor.isLeftHalf_old) {
                         swiper.slidePrev();
                     } else {
                         swiper.slideNext();
                     }
                 });
+
+                swiper.on('slideChange', function () {
+                    if (caruselCursor.isLeftHalf_old) {
+                        if (swiper.realIndex == 0) {
+                            this_elem.animate({
+                                'padding-left': container_left + 'px'
+                            }, 0);
+                        }
+                    } else {
+                        if (swiper.realIndex > 0) {
+                            this_elem.animate({
+                                'padding-left': 0
+                            }, 0);
+                        }
+                    }
+                });
+
+                this_elem.css('padding-left', container_left + 'px');
             }
         });
     },
