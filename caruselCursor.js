@@ -7,32 +7,34 @@ window.caruselCursor = {
     create: function (elem, {
         container: container
     }) {
-        elem.each(function () {
-            var this_elem = $(this);
+        if ($(window).width() >= 576) {
+            elem.each(function () {
+                var this_elem = $(this);
 
-            this_elem.on('mousemove', function (event) {
-                if (!caruselCursor.timer) {
-                    caruselCursor.timer = setTimeout(function () {
-                        caruselCursor.statusClass(this_elem, event);
+                this_elem.on('mousemove', function (event) {
+                    if (!caruselCursor.timer) {
+                        caruselCursor.timer = setTimeout(function () {
+                            caruselCursor.statusClass(this_elem, event);
 
-                        caruselCursor.timer = false;
-                    }, 100);
-                }
-            });
-
-            if (this_elem.find('.swiper-container').length) {
-                var swiper = this_elem[0].querySelector('.swiper-container').swiper,
-                    container_left = (container.offset().left + 15);
-
-                this_elem.find('.swiper-container').on('click', function () {
-                    if (caruselCursor.isLeftHalf_old) {
-                        swiper.slidePrev();
-                    } else {
-                        swiper.slideNext();
+                            caruselCursor.timer = false;
+                        }, 100);
                     }
                 });
 
-                if ($(window).width() >= 576) {
+
+                if (this_elem.find('.swiper-container').length) {
+                    var swiper = this_elem[0].querySelector('.swiper-container').swiper,
+                        container_left = (container.offset().left + 15);
+
+                    this_elem.find('.swiper-container').on('click', function () {
+                        if (caruselCursor.isLeftHalf_old) {
+                            swiper.slidePrev();
+                        } else {
+                            swiper.slideNext();
+                        }
+                    });
+
+
                     swiper.on('slideChange', function () {
                         if (caruselCursor.isLeftHalf_old) {
                             if (swiper.realIndex == 0) {
@@ -51,8 +53,8 @@ window.caruselCursor = {
 
                     this_elem.css('padding-left', container_left + 'px');
                 }
-            }
-        });
+            });
+        }
     },
 
     statusClass: function (elem, event) {
