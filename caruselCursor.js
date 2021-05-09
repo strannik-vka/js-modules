@@ -32,23 +32,25 @@ window.caruselCursor = {
                     }
                 });
 
-                swiper.on('slideChange', function () {
-                    if (caruselCursor.isLeftHalf_old) {
-                        if (swiper.realIndex == 0) {
-                            this_elem.animate({
-                                'padding-left': container_left + 'px'
-                            }, 0);
+                if ($(window).width() >= 576) {
+                    swiper.on('slideChange', function () {
+                        if (caruselCursor.isLeftHalf_old) {
+                            if (swiper.realIndex == 0) {
+                                this_elem.animate({
+                                    'padding-left': container_left + 'px'
+                                }, 0);
+                            }
+                        } else {
+                            if (swiper.realIndex > 0) {
+                                this_elem.animate({
+                                    'padding-left': 0
+                                }, 0);
+                            }
                         }
-                    } else {
-                        if (swiper.realIndex > 0) {
-                            this_elem.animate({
-                                'padding-left': 0
-                            }, 0);
-                        }
-                    }
-                });
+                    });
 
-                this_elem.css('padding-left', container_left + 'px');
+                    this_elem.css('padding-left', container_left + 'px');
+                }
             }
         });
     },
