@@ -2,6 +2,8 @@ window.caruselCursor = {
 
     timer: false,
 
+    isLeftHalf_old: false,
+
     create: function (elem) {
         elem.each(function () {
             var this_elem = $(this);
@@ -15,6 +17,18 @@ window.caruselCursor = {
                     }, 100);
                 }
             });
+
+            if (this_elem.find('.swiper-container').length) {
+                this_elem.find('.swiper-container').on('click', function () {
+                    var swiper = $(this)[0].swiper;
+
+                    if (caruselCursor.isLeftHalf_old) {
+                        swiper.slidePrev();
+                    } else {
+                        swiper.slideNext();
+                    }
+                });
+            }
         });
     },
 
@@ -56,7 +70,7 @@ window.caruselCursor = {
         var document_width = $(elem).width(),
             document_half = document_width / 2;
 
-        return event.clientX < document_half;
+        return caruselCursor.isLeftHalf_old = event.clientX < document_half;
     }
 
 }
