@@ -3,16 +3,19 @@ window.caruselCursor = {
     timer: false,
 
     create: function (elem) {
-        elem
-            .on('mousemove', function (event) {
+        elem.each(function () {
+            var this_elem = $(this);
+
+            this_elem.on('mousemove', function (event) {
                 if (!caruselCursor.timer) {
                     caruselCursor.timer = setTimeout(function () {
-                        caruselCursor.statusClass(elem, event);
+                        caruselCursor.statusClass(this_elem, event);
 
                         caruselCursor.timer = false;
                     }, 100);
                 }
             });
+        });
     },
 
     statusClass: function (elem, event) {
@@ -26,9 +29,13 @@ window.caruselCursor = {
             elem.addClass('cursor-right');
         }
 
-        if ($(event.target).closest('.white').length || $(event.target).closest('.direction-item') || $(event.target).closest('.card-company')) {
-            elem.removeClass('cursor-white');
+        if (
+            $(event.target).closest('.white').length ||
+            $(event.target).closest('.direction-item').length ||
+            $(event.target).closest('.card-company').length
+        ) {
             elem.addClass('cursor-black');
+            elem.removeClass('cursor-white');
         } else {
             elem.addClass('cursor-white');
             elem.removeClass('cursor-black');
