@@ -29,11 +29,21 @@ window.caruselCursor = {
             elem.addClass('cursor-right');
         }
 
-        if (
-            $(event.target).closest('.white').length ||
-            $(event.target).closest('.direction-item').length ||
-            $(event.target).closest('.card-company').length
-        ) {
+        var cursor_color = 'black';
+
+        if ($(event.target).closest('.black-block').length) {
+            cursor_color = 'white';
+        }
+
+        if ($(event.target).closest('.white').length) {
+            cursor_color = 'black';
+        }
+
+        if ($(event.target).closest('.black').length) {
+            cursor_color = 'white';
+        }
+
+        if (cursor_color == 'black') {
             elem.addClass('cursor-black');
             elem.removeClass('cursor-white');
         } else {
