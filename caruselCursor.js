@@ -4,10 +4,8 @@ window.caruselCursor = {
 
     isLeftHalf_old: false,
 
-    create: function (elem, {
-        container: container
-    }) {
-        if ($(window).width() >= 576) {
+    create: function (elem, options) {
+        if ($(window).width() >= options.minWidth) {
             elem.each(function () {
                 var this_elem = $(this);
 
@@ -21,10 +19,9 @@ window.caruselCursor = {
                     }
                 });
 
-
                 if (this_elem.find('.swiper-container').length) {
                     var swiper = this_elem[0].querySelector('.swiper-container').swiper,
-                        container_left = (container.offset().left + 15);
+                        container_left = (options.container.offset().left + 15);
 
                     this_elem.find('.swiper-container').on('click', function () {
                         if (caruselCursor.isLeftHalf_old) {
@@ -33,7 +30,6 @@ window.caruselCursor = {
                             swiper.slideNext();
                         }
                     });
-
 
                     swiper.on('slideChange', function () {
                         if (caruselCursor.isLeftHalf_old) {
