@@ -29,7 +29,7 @@ window.ajax = function (obj, callback, form) {
         headers: {}
     },
         token = localStorage.getItem('token'),
-        preloader = 'Подождите..';
+        preloader = obj.preloader_html ? obj.preloader_html : 'Подождите..';
 
     if (token) {
         settings.headers.Authorization = 'Bearer ' + token;
