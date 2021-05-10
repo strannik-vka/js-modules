@@ -29,7 +29,7 @@ window.ajax = function (obj, callback, form) {
         headers: {}
     },
         token = localStorage.getItem('token'),
-        preloader = obj.preloader_html ? obj.preloader_html : 'Подождите..';
+        preloader = 'Подождите..';
 
     if (token) {
         settings.headers.Authorization = 'Bearer ' + token;
@@ -37,6 +37,10 @@ window.ajax = function (obj, callback, form) {
 
     if (typeof obj === 'object') {
         settings = Object.assign(settings, obj);
+
+        if (obj.preloader_html) {
+            preloader = obj.preloader_html;
+        }
 
         if (obj.preloader) {
             obj.preloader
