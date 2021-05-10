@@ -2,20 +2,23 @@ window.ajaxProcess = false;
 
 window.queue = {
     list: [],
-    start: function () {
+    start: function() {
         if (queue.list.length) {
-            var first = queue.list.splice(0, 1), first = first[0];
+            var first = queue.list.splice(0, 1),
+                first = first[0];
             ajax(first.obj, first.callback, first.form);
         }
     }
 }
 
-window.ajax = function (obj, callback, form) {
+window.ajax = function(obj, callback, form) {
     if (ajaxProcess) {
         if (typeof obj === 'object') {
             if (obj.queue) {
                 queue.list.push({
-                    obj: obj, callback: callback, form: form
+                    obj: obj,
+                    callback: callback,
+                    form: form
                 });
             }
         }
@@ -26,8 +29,8 @@ window.ajax = function (obj, callback, form) {
     ajaxProcess = true;
 
     var settings = {
-        headers: {}
-    },
+            headers: {}
+        },
         token = localStorage.getItem('token'),
         preloader = 'Подождите..';
 
@@ -38,7 +41,7 @@ window.ajax = function (obj, callback, form) {
     if (typeof obj === 'object') {
         settings = Object.assign(settings, obj);
 
-        if (obj.preloader_html) {
+        if (typeof obj.preloader_html !== 'undefined') {
             preloader = obj.preloader_html;
         }
 
@@ -60,7 +63,7 @@ window.ajax = function (obj, callback, form) {
     if (form) {
         var button = form.find('button:eq(-1)');
 
-        if (button.length) {
+        if (button.length && preloader) {
             if (!button.attr('text')) {
                 button.attr('text', button.html());
             }
@@ -71,9 +74,9 @@ window.ajax = function (obj, callback, form) {
         }
     }
 
-    $.ajax(settings).always(function (response) {
+    $.ajax(settings).always(function(response) {
         if (form) {
-            if (button.length) {
+            if (button.length && preloader) {
                 button.html(button.attr('text'));
                 button.removeAttr('style');
             }
@@ -108,9 +111,9 @@ window.ajax = function (obj, callback, form) {
     });
 }
 
-$(document).on('ajax.update', function () {
-    ajax(location.href, function (html) {
-        $('[ajax-elem]', html).each(function (index) {
+$(document).on('ajax.update', function() {
+    ajax(location.href, function(html) {
+        $('[ajax-elem]', html).each(function(index) {
             $('[ajax-elem]:eq(' + index + ')').before($(this).clone()).remove();
         });
         $(document).trigger('ajax.update.success');
