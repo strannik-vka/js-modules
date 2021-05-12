@@ -15,7 +15,9 @@ window.cursorStatus = {
         var elemMouseMove = function (this_elem) {
             this_elem.on('mousemove', function () {
                 $(this).off('mousemove');
-                bodyMouseMove(this_elem);
+                setTimeout(function () {
+                    bodyMouseMove(this_elem);
+                }, 0);
             });
         }
 
@@ -32,11 +34,29 @@ window.cursorStatus = {
                     cursorStatus.timer = setTimeout(function () {
                         cursorStatus.changeClass(this_elem, event);
 
+                        if (typeof options.hover === 'object' && options.hover != null) {
+                            var lastHover = false;
+                            if ($(options.hover.selector).isMouseOver(event.pageY, event.pageX)) {
+                                if (!lastHover) {
+                                    lastHover = true;
+                                    options.hover.function($(options.hover.selector), false);
+                                    options.hover.function($(options.hover.selector).eq(isMouseOverI), true);
+                                }
+                            } else {
+                                if (lastHover) {
+                                    lastHover = false;
+                                    options.hover.function($(options.hover.selector), false);
+                                }
+                            }
+                        }
+
                         if (this_elem.isMouseOver(event.pageY)) {
                             $('body').removeClass('cursor-off');
                         } else {
                             $('body').addClass('cursor-off').off('mousemove');
-                            elemMouseMove(this_elem);
+                            setTimeout(function () {
+                                elemMouseMove(this_elem);
+                            }, 0);
                         }
 
                         cursorStatus.timer = false;
