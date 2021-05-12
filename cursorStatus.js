@@ -6,21 +6,21 @@ window.cursorStatus = {
 
     isLeftHalf_old: false,
 
-    create: function(elem, options) {
-        var elemMouseMove = function(this_elem) {
-            this_elem.on('mousemove', function() {
+    create: function (elem, options) {
+        var cursor = {
+            height: options.cursor ? $(options.cursor).height() / 2 : 0,
+            width: options.cursor ? $(options.cursor).width() / 2 : 0
+        }
+
+        var elemMouseMove = function (this_elem) {
+            this_elem.on('mousemove', function () {
                 $(this).off('mousemove');
                 bodyMouseMove(this_elem);
             });
         }
 
-        var bodyMouseMove = function(this_elem) {
-            var cursor = {
-                height: options.cursor ? $(options.cursor).height() / 2 : 0,
-                width: options.cursor ? $(options.cursor).width() / 2 : 0
-            }
-
-            $('body').on('mousemove', function(event) {
+        var bodyMouseMove = function (this_elem) {
+            $('body').on('mousemove', function (event) {
                 if (options.cursor) {
                     $(options.cursor).css({
                         top: event.clientY - cursor.height,
@@ -29,10 +29,10 @@ window.cursorStatus = {
                 }
 
                 if (!cursorStatus.timer) {
-                    cursorStatus.timer = setTimeout(function() {
+                    cursorStatus.timer = setTimeout(function () {
                         cursorStatus.changeClass(this_elem, event);
 
-                        if (this_elem.ismouseover()) {
+                        if (this_elem.isMouseOver(event.pageY)) {
                             $('body').removeClass('cursor-off');
                         } else {
                             $('body').addClass('cursor-off').off('mousemove');
@@ -45,20 +45,30 @@ window.cursorStatus = {
             });
         }
 
-        elem.each(function() {
+        elem.each(function () {
             var this_elem = $(this);
 
             elemMouseMove(this_elem);
 
             if (typeof options.on === 'object' && options.on != null) {
                 if (options.on.click) {
-                    this_elem.on('click', options.on.click);
+                    if (options.cursor) {
+                        $(options.cursor).on('click', function (event) {
+                            if (this_elem.isMouseOver(event.pageY)) {
+                                options.on.click(this_elem);
+                            }
+                        });
+                    } else {
+                        this_elem.on('click', function () {
+                            options.on.click(this_elem);
+                        });
+                    }
                 }
             }
         });
     },
 
-    changeClass: function(elem, event) {
+    changeClass: function (elem, event) {
         var left = cursorStatus.isLeftHalf(elem, event);
 
         if (left) {
@@ -71,15 +81,15 @@ window.cursorStatus = {
 
         var cursor_color = 'black';
 
-        if ($(event.target).closest('.black-block').length) {
+        if ($('.black-block').isMouseOver(event.pageY, event.pageX)) {
             cursor_color = 'white';
         }
 
-        if ($(event.target).closest('.white').length) {
+        if ($('.white').isMouseOver(event.pageY, event.pageX)) {
             cursor_color = 'black';
-        }
-
-        if ($(event.target).closest('.black').length) {
+        } 
+        
+        if ($('.black').isMouseOver(event.pageY, event.pageX)) {
             cursor_color = 'white';
         }
 
@@ -92,7 +102,7 @@ window.cursorStatus = {
         }
     },
 
-    isLeftHalf: function(elem, event) {
+    isLeftHalf: function (elem, event) {
         var document_width = $(elem).width(),
             document_half = document_width / 2;
 

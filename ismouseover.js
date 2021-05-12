@@ -1,12 +1,19 @@
-(function($) {
-    $.mlp = { x: 0, y: 0 }; // Mouse Last Position
-    $.fn.ismouseover = function() {
+(function ($) {
+    $.fn.isMouseOver = function (y, x) {
         var result = false;
-        this.eq(0).each(function() {
-            var $current = $(this);
-            var offset = $current.offset();
-            result = offset.left <= $.mlp.x && offset.left + $current.outerWidth() > $.mlp.x &&
-                offset.top <= $.mlp.y && offset.top + $current.outerHeight() > $.mlp.y;
+        this.each(function () {
+            var offset = $(this).offset();
+
+            if (x) {
+                result = offset.left <= x && offset.left + $(this).outerWidth() > x &&
+                    offset.top <= y && offset.top + $(this).outerHeight() > y;
+            } else {
+                result = offset.top <= y && offset.top + $(this).outerHeight() > y;
+            }
+
+            if (result) {
+                return false;
+            }
         });
         return result;
     };
