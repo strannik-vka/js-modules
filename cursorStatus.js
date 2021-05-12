@@ -104,7 +104,6 @@ window.cursorStatus = {
                         .attr('data-cursor-index', cursorStatus.elemHoverIndex);
 
                     $('[data-cursor-index!="' + cursorStatus.elemHoverIndex + '"]').removeClass('hover');
-                    console.log('hover');
                 }
             } else {
                 $('[data-cursor-index]').removeClass('hover');
