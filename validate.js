@@ -50,6 +50,10 @@ window.validate = {
             error_elem = form.find('[name="' + str_arr[0] + '[' + str_arr[1] + ']"]:eq(0)');
         }
 
+        if ($('[data-valid-input="' + key + '"]').length) {
+            error_elem = $('[data-valid-input="' + key + '"]');
+        }
+
         if (error_elem.length) {
             $('[data-error-input="' + key + '"]').remove();
             error_elem
