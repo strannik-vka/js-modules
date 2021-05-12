@@ -6,19 +6,49 @@ window.cursorStatus = {
 
     isLeftHalf_old: false,
 
-    create: function (elem, options) {
-        elem.each(function () {
-            var this_elem = $(this);
+    create: function(elem, options) {
+        var elemMouseMove = function(this_elem) {
+            this_elem.on('mousemove', function() {
+                $(this).off('mousemove');
+                bodyMouseMove(this_elem);
+            });
+        }
 
-            this_elem.on('mousemove', function (event) {
+        var bodyMouseMove = function(this_elem) {
+            var cursor = {
+                height: options.cursor ? $(options.cursor).height() / 2 : 0,
+                width: options.cursor ? $(options.cursor).width() / 2 : 0
+            }
+
+            $('body').on('mousemove', function(event) {
+                if (options.cursor) {
+                    $(options.cursor).css({
+                        top: event.clientY - cursor.height,
+                        left: event.clientX - cursor.width
+                    });
+                }
+
                 if (!cursorStatus.timer) {
-                    cursorStatus.timer = setTimeout(function () {
+                    cursorStatus.timer = setTimeout(function() {
                         cursorStatus.changeClass(this_elem, event);
+
+                        if (this_elem.ismouseover()) {
+                            $('body').removeClass('cursor-off');
+                        } else {
+                            $('body').addClass('cursor-off').off('mousemove');
+                            elemMouseMove(this_elem);
+                        }
 
                         cursorStatus.timer = false;
                     }, 100);
                 }
             });
+        }
+
+        elem.each(function() {
+            var this_elem = $(this);
+
+            elemMouseMove(this_elem);
 
             if (typeof options.on === 'object' && options.on != null) {
                 if (options.on.click) {
@@ -28,15 +58,15 @@ window.cursorStatus = {
         });
     },
 
-    changeClass: function (elem, event) {
+    changeClass: function(elem, event) {
         var left = cursorStatus.isLeftHalf(elem, event);
 
         if (left) {
-            elem.addClass('cursor-left');
-            elem.removeClass('cursor-right');
+            $('body').addClass('cursor-left');
+            $('body').removeClass('cursor-right');
         } else {
-            elem.removeClass('cursor-left');
-            elem.addClass('cursor-right');
+            $('body').removeClass('cursor-left');
+            $('body').addClass('cursor-right');
         }
 
         var cursor_color = 'black';
@@ -54,15 +84,15 @@ window.cursorStatus = {
         }
 
         if (cursor_color == 'black') {
-            elem.addClass('cursor-black');
-            elem.removeClass('cursor-white');
+            $('body').addClass('cursor-black');
+            $('body').removeClass('cursor-white');
         } else {
-            elem.addClass('cursor-white');
-            elem.removeClass('cursor-black');
+            $('body').addClass('cursor-white');
+            $('body').removeClass('cursor-black');
         }
     },
 
-    isLeftHalf: function (elem, event) {
+    isLeftHalf: function(elem, event) {
         var document_width = $(elem).width(),
             document_half = document_width / 2;
 
