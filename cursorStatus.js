@@ -45,27 +45,23 @@ window.cursorStatus = {
             });
         }
 
-        elem.each(function () {
-            var this_elem = $(this);
+        elemMouseMove(elem);
 
-            elemMouseMove(this_elem);
-
-            if (typeof options.on === 'object' && options.on != null) {
-                if (options.on.click) {
-                    if (options.cursor) {
-                        $(options.cursor).on('click', function (event) {
-                            if (this_elem.isMouseOver(event.pageY)) {
-                                options.on.click(this_elem);
-                            }
-                        });
-                    } else {
-                        this_elem.on('click', function () {
-                            options.on.click(this_elem);
-                        });
-                    }
+        if (typeof options.on === 'object' && options.on != null) {
+            if (options.on.click) {
+                if (options.cursor) {
+                    $(options.cursor).on('click', function (event) {
+                        if (elem.isMouseOver(event.pageY)) {
+                            options.on.click(elem.eq(isMouseOverI));
+                        }
+                    });
+                } else {
+                    elem.on('click', function () {
+                        options.on.click(elem);
+                    });
                 }
             }
-        });
+        }
     },
 
     changeClass: function (elem, event) {
@@ -87,8 +83,8 @@ window.cursorStatus = {
 
         if ($('.white').isMouseOver(event.pageY, event.pageX)) {
             cursor_color = 'black';
-        } 
-        
+        }
+
         if ($('.black').isMouseOver(event.pageY, event.pageX)) {
             cursor_color = 'white';
         }

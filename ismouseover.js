@@ -1,7 +1,7 @@
 (function ($) {
     $.fn.isMouseOver = function (y, x) {
         var result = false;
-        this.each(function () {
+        this.each(function (i) {
             var offset = $(this).offset();
 
             if (x) {
@@ -12,6 +12,7 @@
             }
 
             if (result) {
+                window.isMouseOverI = i;
                 return false;
             }
         });
