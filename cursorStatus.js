@@ -33,22 +33,7 @@ window.cursorStatus = {
                 if (!cursorStatus.timer) {
                     cursorStatus.timer = setTimeout(function () {
                         cursorStatus.changeClass(this_elem, event);
-
-                        if (typeof options.hover === 'object' && options.hover != null) {
-                            var lastHover = false;
-                            if ($(options.hover.selector).isMouseOver(event.pageY, event.pageX)) {
-                                if (!lastHover) {
-                                    lastHover = true;
-                                    options.hover.function($(options.hover.selector), false);
-                                    options.hover.function($(options.hover.selector).eq(isMouseOverI), true);
-                                }
-                            } else {
-                                if (lastHover) {
-                                    lastHover = false;
-                                    options.hover.function($(options.hover.selector), false);
-                                }
-                            }
-                        }
+                        cursorStatus.elemHover(options, event);
 
                         if (this_elem.isMouseOver(event.pageY)) {
                             $('body').removeClass('cursor-off');
@@ -67,19 +52,62 @@ window.cursorStatus = {
 
         elemMouseMove(elem);
 
+        cursorStatus.elemClick(elem, options);
+    },
+
+    bodyTriggerMousemoveTimer: false,
+    bodyTriggerMousemove: function (eventClick) {
+        if (cursorStatus.bodyTriggerMousemoveTimer) {
+            clearTimeout(cursorStatus.bodyTriggerMousemoveTimer);
+        }
+
+        cursorStatus.bodyTriggerMousemoveTimer = setTimeout(function () {
+            var event = $.Event('mousemove');
+            event.pageX = eventClick.pageX;
+            event.pageY = eventClick.pageY;
+            $('body').trigger(event);
+        }, 500);
+    },
+
+    elemClickTimer: false,
+    elemClick: function (elem, options) {
         if (typeof options.on === 'object' && options.on != null) {
             if (options.on.click) {
                 if (options.cursor) {
                     $(options.cursor).on('click', function (event) {
                         if (elem.isMouseOver(event.pageY)) {
                             options.on.click(elem.eq(isMouseOverI));
+                            cursorStatus.bodyTriggerMousemove(event);
                         }
                     });
                 } else {
                     elem.on('click', function () {
                         options.on.click(elem);
+                        cursorStatus.bodyTriggerMousemove(event);
                     });
                 }
+            }
+        }
+    },
+
+    elemHoverIndex: 0,
+    elemHover: function (options, event) {
+        if (options.hover) {
+            if ($(options.hover).isMouseOver(event.pageY, event.pageX)) {
+                var elem = $(options.hover).eq(isMouseOverI);
+
+                if (!elem.hasClass('hover')) {
+                    cursorStatus.elemHoverIndex++;
+
+                    $(options.hover).eq(isMouseOverI)
+                        .addClass('hover')
+                        .attr('data-cursor-index', cursorStatus.elemHoverIndex);
+
+                    $('[data-cursor-index!="' + cursorStatus.elemHoverIndex + '"]').removeClass('hover');
+                    console.log('hover');
+                }
+            } else {
+                $('[data-cursor-index]').removeClass('hover');
             }
         }
     },
@@ -122,7 +150,7 @@ window.cursorStatus = {
         var document_width = $(elem).width(),
             document_half = document_width / 2;
 
-        return cursorStatus.isLeftHalf_old = event.clientX < document_half;
+        return cursorStatus.isLeftHalf_old = event.pageX < document_half;
     }
 
 }
