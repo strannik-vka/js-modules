@@ -77,7 +77,7 @@ window.validate = {
             if (validate.checkTimeout) clearTimeout(validate.checkTimeout);
             validate.checkTimeout = setTimeout(function () {
                 validate.errors(errors, form);
-            }, 500);
+            }, 100);
         }
 
         return errors;
