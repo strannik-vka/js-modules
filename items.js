@@ -181,23 +181,20 @@ window.items = {
     },
 
     html: function (model, data, i) {
-        var html = typeof model.html === 'function'
-            ? model.html($(model.outerHTML), data, i)
-            : $(model.outerHTML);
+        var html = $(model.outerHTML);
+
+        if (data && typeof data === 'object') {
+            $.each(data, function (name, value) {
+                html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
+            });
+        }
+
+        if (typeof model.html === 'function') {
+            html = model.html(html, data, i);
+        }
 
         if (html) {
-            if (data && typeof data === 'object') {
-                $.each(data, function (name, value) {
-                    html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
-                });
-
-                html.find('[attr]').each(function () {
-                    var attr_arr = $(this).attr('attr').split(':');
-                    $(this).attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
-                });
-            }
-
-            return html.show()
+            return html.show();
         }
     },
 
