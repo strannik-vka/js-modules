@@ -181,14 +181,14 @@ window.webp = {
     },
 
     support: function (callback) {
-        if (typeof webp.support_status !== 'undefined') {
-            callback(webp.support_status);
+        if (typeof webp.isWork !== 'undefined') {
+            callback(webp.isWork);
         } else {
             var webP = new Image();
             webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
             webP.onload = webP.onerror = function () {
-                webp.support_status = webP.height === 2 ? true : false;
-                callback(webp.support_status);
+                webp.isWork = webP.height === 2 ? true : false;
+                callback(webp.isWork);
 			}
 		}
     }

@@ -198,6 +198,12 @@ window.items = {
             html = model.html(html, data, i);
         }
 
+        if (typeof webp !== 'undefined') {
+            if (!webp.isWork) {
+                html.find('[src*=".webp"]').css('opacity', 0);
+            }
+        }
+
         if (html) {
             return html.show();
         }
