@@ -19,6 +19,7 @@ window.webp = {
 	start: function(){
 		if(!webp.startStatus){
 			webp.startStatus = true;
+			webp.webpHide();
 			webp.lazyload_off();
 			webp.to_canvas();
 		}
@@ -84,6 +85,9 @@ window.webp = {
 				canvas.setAttribute(item.name, item.value);
 			});
 		}
+
+		canvas.style.opacity = 1;
+
 		return canvas;
 	},
 
@@ -110,6 +114,10 @@ window.webp = {
 		} else {
 			callback();
 		}
+	},
+
+	webpHide: function(){
+		$('img[src*=".webp"], img[data-src*=".webp"]').css('opacity', 0);
 	},
 	
 	img: function(){
