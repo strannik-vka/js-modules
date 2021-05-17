@@ -187,6 +187,11 @@ window.items = {
             $.each(data, function (name, value) {
                 html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
             });
+
+            html.find('[attr]').each(function () {
+                var attr_arr = $(this).attr('attr').split(':');
+                $(this).attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
+            });
         }
 
         if (typeof model.html === 'function') {
