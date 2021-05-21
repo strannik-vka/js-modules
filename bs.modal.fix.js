@@ -1,6 +1,6 @@
 let previousScrollY = 0;
 
-$(document).on('show.bs.modal', () => {
+$(document).on('shown.bs.modal', () => {
     previousScrollY = window.scrollY;
     $('html').addClass('modal-open').css({
         marginTop: -previousScrollY,
