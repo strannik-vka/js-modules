@@ -5,11 +5,15 @@ window.webp = {
     init: function () {
 		if(!webp.status){
 			webp.status = true;
+
 			webp.support(function (support) {
 				$(document).trigger('webp.'+ (support ? 'true' : 'false'));
+
 				if (!support) {
 					webp.start();
+					document.addEventListener('DOMSubtreeModified', webp.start);
 				}
+
 				$('body').addClass('webp-true');
 			});
 		}
@@ -17,19 +21,12 @@ window.webp = {
 
 	startStatus: false,
 	start: function(){
+		webp.webpHide();
+		
 		if(!webp.startStatus){
 			webp.startStatus = true;
-			webp.webpHide();
 			webp.lazyload_off();
 			webp.to_canvas();
-		}
-	},
-
-	detectStatus: false,
-	detect: function(){
-		if(!webp.detectStatus){
-			webp.detectStatus = true;
-			document.addEventListener('DOMSubtreeModified', webp.start);
 		}
 	},
 
@@ -41,7 +38,6 @@ window.webp = {
 			});
 		} else {
 			webp.startStatus = false;
-			webp.detect();
 			$(document).trigger('webp.success');
 		}
 	},
