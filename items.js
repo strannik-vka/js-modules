@@ -20,22 +20,24 @@
 
 window.items = {
 
-    ajaxProcess: false,
+    ajaxProcess: {},
 
     model: {},
 
     create: function (model) {
-        if (!model.url) {
-            model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
+        if ($('[items-list-' + model.name + ']').length) {
+            if (!model.url) {
+                model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
+            }
+
+            model.items = model.items ? model.items : {};
+            model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
+            model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
+
+            items.model[model.name] = model;
+
+            setTimeout(items.init, 0);
         }
-
-        model.items = model.items ? model.items : {};
-        model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
-        model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
-
-        items.model[model.name] = model;
-
-        setTimeout(items.init, 0);
     },
 
     init: function () {
@@ -101,16 +103,12 @@ window.items = {
     },
 
     loadNextData: function (model) {
-        if (!items.ajaxProcess && items.isNextData(model)) {
+        model = items.model[model.name];
+        
+        if (!items.ajaxProcess[model.name] && items.isNextData(model)) {
             var elem = items.elem(model);
 
             elem.preloader.show();
-
-            if (typeof model.data === 'function') {
-                model.data = model.data();
-            }
-
-            model.data.page = model.items.current_page + 1;
 
             items.load(model, function (response) {
                 elem.preloader.hide();
@@ -119,7 +117,8 @@ window.items = {
                     items.print(model, response);
                 }
             }, {
-                ajaxProcessTimeout: 1000
+                ajaxProcessTimeout: 1000,
+                page: model.items.current_page + 1
             });
         }
     },
@@ -158,25 +157,32 @@ window.items = {
             options = {};
         }
 
-        if (!items.ajaxProcess) {
-            items.ajaxProcess = true;
+        if (!items.ajaxProcess[model.name]) {
+            items.ajaxProcess[model.name] = true;
 
             if (model.onBeforeLoad) {
                 model.onBeforeLoad();
             }
 
+            var data = typeof model.data === 'function' ? model.data() : model.data;
+
+            if (options.page) {
+                data.page = options.page;
+            }
+
             ajax({
                 url: model.url,
-                data: typeof model.data === 'function' ? model.data() : model.data
+                data: data,
+                queue: true
             }, function (response) {
                 items.model[model.name].items = response;
 
                 if (options.ajaxProcessTimeout) {
                     setTimeout(function () {
-                        items.ajaxProcess = false;
+                        items.ajaxProcess[model.name] = false;
                     }, options.ajaxProcessTimeout);
                 } else {
-                    items.ajaxProcess = false;
+                    items.ajaxProcess[model.name] = false;
                 }
 
                 callback(response);
