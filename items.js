@@ -30,8 +30,8 @@ window.items = {
         }
 
         model.items = model.items ? model.items : {};
-        model.data = typeof model.data === 'object' && model.data != null ? model.data : {};
         model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
+        model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
 
         items.model[model.name] = model;
 
@@ -97,7 +97,7 @@ window.items = {
     },
 
     isNextData: function (model) {
-        return model.items.to != model.items.total;
+        return model.items.to != null && model.items.to != model.items.total;
     },
 
     loadNextData: function (model) {
@@ -105,6 +105,10 @@ window.items = {
             var elem = items.elem(model);
 
             elem.preloader.show();
+
+            if (typeof model.data === 'function') {
+                model.data = model.data();
+            }
 
             model.data.page = model.items.current_page + 1;
 
@@ -163,7 +167,7 @@ window.items = {
 
             ajax({
                 url: model.url,
-                data: model.data
+                data: typeof model.data === 'function' ? model.data() : model.data
             }, function (response) {
                 items.model[model.name].items = response;
 
@@ -180,6 +184,13 @@ window.items = {
         }
     },
 
+    attr: function (elem, data) {
+        if (elem.attr('attr')) {
+            var attr_arr = elem.attr('attr').split(':');
+            elem.attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
+        }
+    },
+
     html: function (model, data, i) {
         var html = $(model.outerHTML);
 
@@ -189,19 +200,14 @@ window.items = {
             });
 
             html.find('[attr]').each(function () {
-                var attr_arr = $(this).attr('attr').split(':');
-                $(this).attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
+                items.attr($(this), data);
             });
+
+            items.attr(html, data);
         }
 
         if (typeof model.html === 'function') {
             html = model.html(html, data, i);
-        }
-
-        if (typeof webp !== 'undefined') {
-            if (!webp.isWork) {
-                html.find('[src*=".webp"]').css('opacity', 0);
-            }
         }
 
         if (html) {
