@@ -1,13 +1,17 @@
 window.validate = {
 
     initOn: false,
+    name: false, // текущий проверяемый name поля
+    form: false, // текущая проверяемая форма
 
     list: {},
 
     valid_text: {
         required: 'Заполните это поле',
         max: 'Сократите текст',
-        email: 'Введите корректный электронный адрес'
+        min: 'Количество символов должно быть не менее :min',
+        email: 'Введите корректный электронный адрес',
+        confirmed: 'Не совпадает с подтверждением'
     },
 
     valid: {
@@ -21,6 +25,14 @@ window.validate = {
         max: function (value, max) {
             var length = validate.helper.length(value);
             return parseFloat(max) >= length;
+        },
+        min: function (value, min) {
+            var length = validate.helper.length(value);
+            return parseFloat(min) <= length;
+        },
+        confirmed: function (value) {
+            var value2 = validate.helper.value(validate.name.replace('_confirmation', ''), validate.form);
+            return value == value2;
         }
     },
 
@@ -41,13 +53,22 @@ window.validate = {
 
     checkTimeout: false,
     check: function (form, obj, text, errorsView) {
+        if (typeof text !== 'object' && text === true) {
+            text = false;
+            errorsView = true;
+        }
+
         var errors = {};
 
         $.each(obj, function (name, methods) {
+            validate.form = form;
+
             var value = validate.helper.value(name, form),
                 methods = methods.split('|');
 
             $.each(methods, function (i, method) {
+                validate.name = name;
+
                 var args = method.split(':'),
                     method = args.splice(0, 1);
 
@@ -62,11 +83,13 @@ window.validate = {
 
                     var valid_text = validate.valid_text[method];
 
-                    if (typeof text !== 'undefined' && text != null) {
+                    if (typeof text === 'object' && text != null) {
                         if (text[name + '.' + method]) {
                             valid_text = text[name + '.' + method];
                         }
                     }
+
+                    valid_text = valid_text.replace(':' + method, args[0]);
 
                     errors[name].push(valid_text);
                 }
@@ -102,19 +125,11 @@ window.validate = {
 
     init: function () {
         validate.initOn = true;
-        $(document).on('keyup change', '.is-invalid, .is-invalid *, .selectized', function () {
-            $(this).removeClass('is-invalid');
 
-            $('[data-error-input="' + $(this).attr('name') + '"]')
-                .parents('.is-invalid')
-                .removeClass('is-invalid');
-
-            if ($('[data-error-input="' + $(this).attr('name') + '"]').parents('.form-group').length) {
-                $('[data-error-input="' + $(this).attr('name') + '"]').parents('.form-group').find('.invalid-label').removeClass('invalid-label');
-            }
-
-            $('[data-error-input="' + $(this).attr('name') + '"]').remove();
-        });
+        $(document)
+            .on('keyup change', '.is-invalid, .is-invalid *, .selectized', function () {
+                validate.error_remove($(this));
+            });
     },
 
     error: function (key, string, form) {
@@ -151,8 +166,26 @@ window.validate = {
         }
     },
 
+    error_remove: function (input) {
+        input.removeClass('is-invalid');
+
+        $('[data-error-input="' + input.attr('name') + '"]')
+            .parents('.is-invalid')
+            .removeClass('is-invalid');
+
+        if ($('[data-error-input="' + input.attr('name') + '"]').parents('.form-group').length) {
+            $('[data-error-input="' + input.attr('name') + '"]').parents('.form-group').find('.invalid-label').removeClass('invalid-label');
+        }
+
+        $('[data-error-input="' + input.attr('name') + '"]').remove();
+    },
+
     errors: function (response_errors, form) {
         if (!validate.initOn) validate.init();
+
+        $('.is-invalid').each(function () {
+            validate.error_remove($(this));
+        });
 
         var errors = [];
 
