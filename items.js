@@ -16,6 +16,8 @@
         items: { data: [ список, если есть, то выведет сразу ] },
         html: function(html, data){ html - $(item), data - { данные } }
     });
+
+    items.update('name');
 */
 
 window.items = {
@@ -23,6 +25,25 @@ window.items = {
     ajaxProcess: {},
 
     model: {},
+
+    update: function (name) {
+        var model = items.model[name],
+            elem = items.elem(model);
+
+        elem.list.hide().find('[items-html-' + model.name + ']').remove();
+        elem.empty.hide();
+        elem.preloader.show();
+
+        items.load(model, function (response) {
+            elem.preloader.hide();
+
+            if (response.data.length) {
+                items.print(model, response);
+            } else {
+                elem.empty.show();
+            }
+        });
+    },
 
     create: function (model) {
         if ($('[items-list-' + model.name + ']').length) {
@@ -33,6 +54,10 @@ window.items = {
             model.items = model.items ? model.items : {};
             model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
+
+            if (items.model[model.name]) {
+                model.clear = true;
+            }
 
             items.model[model.name] = model;
 
@@ -45,7 +70,9 @@ window.items = {
             if (!model.init) {
                 items.model[name].init = true;
 
-                items.clear(model);
+                if (model.clear) {
+                    items.clear(model);
+                }
 
                 if (model.scroll || model.scroll_window) {
                     items.events.scroll(model);
@@ -104,7 +131,7 @@ window.items = {
 
     loadNextData: function (model) {
         model = items.model[model.name];
-        
+
         if (!items.ajaxProcess[model.name] && items.isNextData(model)) {
             var elem = items.elem(model);
 
