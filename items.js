@@ -224,9 +224,17 @@ window.items = {
         }
     },
 
-    html: function (model, data, i) {
-        var html = $(model.outerHTML);
+    getDataValue: function (str, data) {
+        return str.split('.').reduce((a, v) => {
+            if (a === null || !a) {
+                return data[v] ? data[v] : null;
+            }
 
+            return a[v] ? a[v] : null;
+        }, null);
+    },
+
+    dataInHtml: function (html, data) {
         if (data && typeof data === 'object') {
             $.each(data, function (name, value) {
                 html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
@@ -237,7 +245,19 @@ window.items = {
             });
 
             items.attr(html, data);
+
+            html.find('[html]').each(function () {
+                $(this).html(items.getDataValue($(this).attr('html'), data));
+            });
         }
+
+        return html;
+    },
+
+    html: function (model, data, i) {
+        var html = $(model.outerHTML);
+
+        html = items.dataInHtml(html, data);
 
         if (typeof model.html === 'function') {
             html = model.html(html, data, i);
