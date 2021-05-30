@@ -220,7 +220,7 @@ window.items = {
     attr: function (elem, data) {
         if (elem.attr('attr')) {
             var attr_arr = elem.attr('attr').split(':');
-            elem.attr(attr_arr[0].replace(/_/g, '-'), data[attr_arr[1]]);
+            elem.attr(attr_arr[0].replace(/_/g, '-'), items.getDataValue(attr_arr[1], data));
         }
     },
 
