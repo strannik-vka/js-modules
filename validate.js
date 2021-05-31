@@ -134,6 +134,20 @@ window.validate = {
             }
 
             return $.trim(input.val());
+        },
+        formGroup: function (elem) {
+            return elem.closest('[data-valid-group], .form-group');
+        },
+        groupLabel: function (elem) {
+            var formGroup = validate.helper.formGroup(elem);
+
+            if (formGroup.length) {
+                var label = formGroup.find('[data-valid-label]:eq(0)');
+
+                return label.length ? label : formGroup.find('label:eq(0)');
+            }
+
+            return $();
         }
     },
 
@@ -236,8 +250,10 @@ window.validate = {
                 .addClass('is-invalid')
                 .after('<div data-error-input="' + key + '" class="invalid-feedback">' + (typeof string === 'object' ? string[0] : string) + '</div>');
 
-            if (error_elem.parents('.form-group').length) {
-                error_elem.parents('.form-group').find('label:eq(0)').addClass('invalid-label');
+            var groupLabel = validate.helper.groupLabel(error_elem);
+
+            if (groupLabel.length) {
+                groupLabel.addClass('invalid-label');
             }
 
             return true;
@@ -253,12 +269,16 @@ window.validate = {
             .parents('.is-invalid')
             .removeClass('is-invalid');
 
-        if ($('[data-error-input="' + input.attr('name') + '"]').parents('.form-group').length) {
-            $('[data-error-input="' + input.attr('name') + '"]').parents('.form-group').find('.invalid-label').removeClass('invalid-label');
+        var formGroup = validate.helper.formGroup($('[data-error-input="' + input.attr('name') + '"]'));
+
+        if (formGroup.length) {
+            formGroup.find('.invalid-label').removeClass('invalid-label');
         }
 
         $('[data-error-input="' + input.attr('name') + '"]').remove();
     },
+
+
 
     errors: function (response_errors, form) {
         if (!validate.initOn) validate.init();
