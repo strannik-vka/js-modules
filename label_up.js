@@ -1,12 +1,22 @@
-setTimeout(function () {
-    $('input.form-control, input.form-type-text, textarea.form-type-text').each(function () {
-        if ($(this).prev().length) {
-            if ($(this).prev()[0].tagName == 'LABEL' && $.trim($(this).val())) {
-                $(this).prev().addClass('label-up');
+var method = {
+
+    each: function (form) {
+        form.find('input.form-control, input.form-type-text, textarea.form-type-text').each(function () {
+            if ($(this).prev().length) {
+                if ($(this).prev()[0].tagName == 'LABEL' && $.trim($(this).val())) {
+                    $(this).prev().addClass('label-up');
+                } else {
+                    $(this).prev().removeClass('label-up');
+                }
             }
-        }
-    });
-}, 500);
+        });
+    }
+
+}
+
+setTimeout(function () {
+    method.each($('body'));
+}, 600);
 
 $(document)
     .on('change', 'input[type="file"]', function () {
@@ -31,4 +41,11 @@ $(document)
                 $(this).prev().removeClass('label-up');
             }
         }
+    })
+    .on('reset', 'form', function () {
+        var form = $(this);
+
+        setTimeout(function () {
+            method.each(form);
+        }, 500);
     });
