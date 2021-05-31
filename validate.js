@@ -43,7 +43,7 @@ window.validate = {
         },
         confirmed: function (input) {
             var val1 = validate.helper.value(input),
-                val2 = validate.helper.value(validate.name.replace('_confirmation', ''));
+                val2 = validate.helper.value(validate.form.find('[name="' + validate.name.replace('_confirmation', '') + '"]'));
 
             return val1 == val2;
         },
