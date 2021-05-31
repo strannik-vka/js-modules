@@ -87,7 +87,7 @@ window.items = {
                     items.load(model, function (response) {
                         elem.preloader.hide();
 
-                        if (response.total) {
+                        if (response.data.length) {
                             items.print(model, response);
                         } else {
                             elem.empty.show();
@@ -212,6 +212,10 @@ window.items = {
                     items.ajaxProcess[model.name] = false;
                 }
 
+                if (model.onAfterLoad) {
+                    model.onAfterLoad(response);
+                }
+    
                 callback(response);
             });
         }
