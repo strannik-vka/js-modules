@@ -5,6 +5,8 @@ window.modalNotify = {
             $('body').removeClass('open-modal-notify');
             modalNotify.clear();
         });
+
+        $('body').append('<style>#modalNotify {z-index: 2050;} .open-modal-notify .modal-backdrop:last-child {z-index: 2000;} </style>');
     },
 
     close: function () {
