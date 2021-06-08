@@ -27,7 +27,7 @@ window.items = {
     model: {},
 
     update: function (name) {
-        if ($('[items-list-' + model.name + ']').length) {
+        if ($('[items-list-' + name + ']').length) {
             var model = items.model[name],
                 elem = items.elem(model);
 
