@@ -80,6 +80,8 @@ window.items = {
                     items.events.scroll(model);
                 }
 
+                items.events.update(model);
+
                 var elem = items.elem(model);
 
                 if (model.first_load) {
@@ -125,6 +127,7 @@ window.items = {
         elem.list.hide();
 
         elem.list.off('scroll');
+        elem.list.off('update');
     },
 
     isNextData: function (model) {
@@ -153,6 +156,13 @@ window.items = {
     },
 
     events: {
+        update: function (model) {
+            var elem = items.elem(model);
+
+            elem.list.on('update', function () {
+                items.update(model.name);
+            });
+        },
         scroll: function (model) {
             var elem = items.elem(model);
 

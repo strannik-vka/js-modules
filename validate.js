@@ -302,7 +302,11 @@ window.validate = {
         if ($('.is-invalid').length) {
             if (typeof scroll !== 'undefined') {
                 if (validate.notSeen($('.is-invalid:eq(0)')).length) {
-                    scroll.to($('.is-invalid:eq(0)'));
+                    if (typeof scroller !== 'undefined') {
+                        scroller.to($('.is-invalid:eq(0)'));
+                    } else if (typeof scroll !== 'undefined') {
+                        scroll.to($('.is-invalid:eq(0)'));
+                    }
                 }
             }
         }
