@@ -27,22 +27,24 @@ window.items = {
     model: {},
 
     update: function (name) {
-        var model = items.model[name],
-            elem = items.elem(model);
+        if ($('[items-list-' + model.name + ']').length) {
+            var model = items.model[name],
+                elem = items.elem(model);
 
-        elem.list.hide().find('[items-html-' + model.name + ']').remove();
-        elem.empty.hide();
-        elem.preloader.show();
+            elem.list.hide().find('[items-html-' + model.name + ']').remove();
+            elem.empty.hide();
+            elem.preloader.show();
 
-        items.load(model, function (response) {
-            elem.preloader.hide();
+            items.load(model, function (response) {
+                elem.preloader.hide();
 
-            if (response.data.length) {
-                items.print(model, response);
-            } else {
-                elem.empty.show();
-            }
-        });
+                if (response.data.length) {
+                    items.print(model, response);
+                } else {
+                    elem.empty.show();
+                }
+            });
+        }
     },
 
     create: function (model) {
@@ -215,7 +217,7 @@ window.items = {
                 if (model.onAfterLoad) {
                     model.onAfterLoad(response);
                 }
-    
+
                 callback(response);
             });
         }
