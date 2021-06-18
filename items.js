@@ -1,6 +1,7 @@
 /* 
     items-html-NAME - шаблон item
     items-list-NAME - родитель списка, в значение можно ставить ссылку на список
+    items-paginate="10" - атрибут в items-list-NAME для кол-ва материалов
     items-preloader-NAME - прелоадер
     items-empty-NAME - пусто
 
@@ -189,7 +190,12 @@ window.items = {
                 model.onBeforeLoad();
             }
 
-            var data = typeof model.data === 'function' ? model.data() : model.data;
+            var elem = items.elem(model),
+                data = typeof model.data === 'function' ? model.data() : model.data;
+
+            if (typeof data.paginate === 'undefined' && elem.list.attr('items-paginate')) {
+                data.paginate = elem.list.attr('items-paginate');
+            }
 
             if (options.page) {
                 data.page = options.page;
