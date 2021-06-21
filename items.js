@@ -93,7 +93,7 @@ window.items = {
                         setTimeout(items.init, 0);
                     });
                 } else if (model.items.data) {
-                    items.print(model, response);
+                    items.print(model, model.items);
 
                     setTimeout(items.init, 0);
                 } else {
