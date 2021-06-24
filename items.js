@@ -183,8 +183,11 @@ window.items = {
             options = {};
         }
 
-        if (!items.ajaxProcess[model.name]) {
-            items.ajaxProcess[model.name] = true;
+        if (items.ajaxProcess[model.name]) {
+            clearTimeout(items.ajaxProcess[model.name]);
+        }
+
+        items.ajaxProcess[model.name] = setTimeout(function () {
 
             if (model.onBeforeLoad) {
                 model.onBeforeLoad();
@@ -221,8 +224,10 @@ window.items = {
                 }
 
                 callback(response);
+
+                items.ajaxProcess[model.name] = false;
             });
-        }
+        }, items.ajaxProcess[model.name] ? 1000 : 0);
     },
 
     attr: function (elem, data) {
