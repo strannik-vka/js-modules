@@ -21,6 +21,7 @@
     });
 
     items.update('name');
+    items.htmlUpdate(name, item, data);
 */
 
 window.items = {
@@ -301,6 +302,15 @@ window.items = {
 
         if (html) {
             return html.show();
+        }
+    },
+
+    htmlUpdate: function (name, item, data) {
+        if (item.length) {
+            var model = items.model[name],
+                new_item = items.html(model, data);
+
+            item.after(new_item).remove();
         }
     },
 
