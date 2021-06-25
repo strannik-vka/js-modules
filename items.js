@@ -314,6 +314,14 @@ window.items = {
         }
     },
 
+    htmlAppend: function (name, data) {
+        var model = items.model[name],
+            new_item = items.html(model, data),
+            elem = items.elem(model);
+
+        elem.list.append(new_item);
+    },
+
     print: function (model, response) {
         var elem = items.elem(model);
 
