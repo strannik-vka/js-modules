@@ -9,13 +9,15 @@
         name: 'название списка'
         url: 'ссылка на список',
         data: { данные при ajax запросе к списку },
-        scroll: true - подгрузка по скроллу (на родителе спсика)
+        scroll: true - подгрузка по скроллу (на родителе списка)
+        scroll_elem: selector - элемент по котрому надо скролить
         scroll_window: true - подгрузка по скроллу на window
         first_load: true - подгрузит список из ссылки
         onBeforeLoad: function(){ запуск до ajax запроса },
         onPrint: function(){ запуск после вывода списка },
         items: { data: [ список, если есть, то выведет сразу ] },
-        html: function(html, data){ html - $(item), data - { данные } }
+        html: function(html, data){ html - $(item), data - { данные } },
+        prepend: true | false (default) - сверху или нет
     });
 
     items.update('name');
@@ -50,6 +52,8 @@ window.items = {
                 model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
             }
 
+            model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
+            model.prepend = model.prepend ? model.prepend : false;
             model.items = model.items ? model.items : {};
             model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
@@ -151,17 +155,41 @@ window.items = {
             });
         },
         scroll: function (model) {
-            var elem = items.elem(model);
+            var elem = items.elem(model),
+                isScrollStart = function (scroll_elem) {
+                    if (scroll_elem == 'window') {
+                        return $(window).scrollTop() < 300;
+                    }
+
+                    return scroll_elem.scrollTop() < 300;
+                },
+                isScrollEnd = function (scroll_elem) {
+                    if (model.prepend) {
+                        return isScrollStart(scroll_elem);
+                    }
+
+                    if (scroll_elem == 'window') {
+                        return $(window).height() + $(window).scrollTop() >= $(document).height() - 300;
+                    }
+
+                    return scroll_elem.height() + scroll_elem.scrollTop() >= scroll_elem[0].scrollHeight - 300;
+                };
 
             if (model.scroll_window) {
                 $(window).on('scroll', function () {
-                    if ($(window).height() + $(window).scrollTop() >= $(document).height() - 300) {
+                    if (isScrollEnd('window')) {
+                        items.loadNextData(model);
+                    }
+                });
+            } else if (model.scroll_elem) {
+                model.scroll_elem.on('scroll', function () {
+                    if (isScrollEnd(model.scroll_elem)) {
                         items.loadNextData(model);
                     }
                 });
             } else {
                 elem.list.on('scroll', function () {
-                    if (elem.list.height() + elem.list.scrollTop() >= elem.list[0].scrollHeight - 300) {
+                    if (isScrollEnd(elem.list)) {
                         items.loadNextData(model);
                     }
                 });
@@ -282,9 +310,15 @@ window.items = {
         if (response.data.length) {
             elem.list.show();
 
-            $.each(response.data, function (i, data) {
-                elem.list.append(items.html(model, data, i));
-            });
+            if (model.prepend) {
+                $.each(response.data, function (i, data) {
+                    elem.list.prepend(items.html(model, data, i));
+                });
+            } else {
+                $.each(response.data, function (i, data) {
+                    elem.list.append(items.html(model, data, i));
+                });
+            }
         } else {
             elem.empty.show();
             elem.list.hide();
