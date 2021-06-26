@@ -138,7 +138,7 @@ window.items = {
             items.load(model, function (response) {
                 elem.preloader.hide();
 
-                if (response.data.length) {
+                if (Object.keys(response.data).length) {
                     items.print(model, response);
                 }
             }, {
@@ -327,7 +327,7 @@ window.items = {
     print: function (model, response) {
         var elem = items.elem(model);
 
-        if (response.data.length) {
+        if (Object.keys(response.data).length) {
             elem.list.show();
 
             if (model.prepend) {
