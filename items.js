@@ -15,6 +15,7 @@
         first_load: true - подгрузит список из ссылки
         onBeforeLoad: function(){ запуск до ajax запроса },
         onPrint: function(){ запуск после вывода списка },
+        onBeforeScrollOriginal : () => { запуск до прокрутки скролла в исходное состояние }
         items: { data: [ список, если есть, то выведет сразу ] },
         html: function(html, data){ html - $(item), data - { данные } },
         prepend: true | false (default) - сверху или нет
@@ -203,7 +204,8 @@ window.items = {
             preloader: $('[items-preloader-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
             list: $('[items-list-' + model.name + ']'),
-            html: $(model.outerHTML)
+            html: $(model.outerHTML),
+            scroll: model.scroll_elem ? model.scroll_elem : $('[items-list-' + model.name + ']')
         };
     },
 
@@ -329,9 +331,18 @@ window.items = {
             elem.list.show();
 
             if (model.prepend) {
+                var currentScroll = elem.scroll.scrollTop(),
+                    currentHeight = elem.list.height();
+
                 $.each(response.data, function (i, data) {
                     elem.list.prepend(items.html(model, data, i));
                 });
+
+                if (model.onBeforeScrollOriginal) {
+                    model.onBeforeScrollOriginal(response);
+                }
+
+                elem.scroll.scrollTop(currentScroll + (elem.list.height() - currentHeight));
             } else {
                 $.each(response.data, function (i, data) {
                     elem.list.append(items.html(model, data, i));
