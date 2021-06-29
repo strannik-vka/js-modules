@@ -4,6 +4,7 @@
     items-paginate="10" - атрибут в items-list-NAME для кол-ва материалов
     items-preloader-NAME - прелоадер
     items-empty-NAME - пусто
+    items-show-more-NAME - Кнопка показать ещё
 
     items.create({
         name: 'название списка'
@@ -56,7 +57,9 @@ window.items = {
 
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
-            model.items = model.items ? model.items : {};
+            model.items = model.items ? model.items : {
+                current_page: 1
+            };
             model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
 
@@ -84,6 +87,7 @@ window.items = {
                 }
 
                 items.events.update(model);
+                items.events.showMore(model);
 
                 var elem = items.elem(model);
 
@@ -121,10 +125,12 @@ window.items = {
 
         elem.list.off('scroll');
         elem.list.off('update');
+        elem.showMore.off('click');
     },
 
     isNextData: function (model) {
-        return model.items.to != null && model.items.to != model.items.total;
+        if (model.items.to == null) return true;
+        return model.items.to != model.items.total;
     },
 
     loadNextData: function (model) {
@@ -138,6 +144,10 @@ window.items = {
             items.load(model, function (response) {
                 elem.preloader.hide();
 
+                if (!items.isNextData(model)) {
+                    elem.showMore.hide();
+                }
+
                 if (Object.keys(response.data).length) {
                     items.print(model, response);
                 }
@@ -149,6 +159,13 @@ window.items = {
     },
 
     events: {
+        showMore: function (model) {
+            var elem = items.elem(model);
+
+            elem.showMore.on('click', function () {
+                items.loadNextData(model);
+            });
+        },
         update: function (model) {
             var elem = items.elem(model);
 
@@ -204,6 +221,7 @@ window.items = {
             preloader: $('[items-preloader-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
             list: $('[items-list-' + model.name + ']'),
+            showMore: $('[items-show-more-' + model.name + ']'),
             html: $(model.outerHTML),
             scroll: model.scroll_elem ? model.scroll_elem : $('[items-list-' + model.name + ']')
         };
