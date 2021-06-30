@@ -133,7 +133,7 @@ window.items = {
         return model.items.to != model.items.total;
     },
 
-    loadNextData: function (model) {
+    loadNextData: function (model, callback) {
         model = items.model[model.name];
 
         if (!items.ajaxProcess[model.name] && items.isNextData(model)) {
@@ -150,11 +150,16 @@ window.items = {
 
                 if (Object.keys(response.data).length) {
                     items.print(model, response);
+                    if (callback) callback();
+                } else {
+                    if (callback) callback();
                 }
             }, {
                 ajaxProcessTimeout: 1000,
                 page: model.items.current_page + 1
             });
+        } else {
+            if (callback) callback();
         }
     },
 
