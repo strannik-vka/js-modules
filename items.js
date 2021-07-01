@@ -148,7 +148,7 @@ window.items = {
                     elem.showMore.hide();
                 }
 
-                if (Object.keys(response.data).length) {
+                if (response.data && Object.keys(response.data).length) {
                     items.print(model, response);
                     if (callback) callback();
                 } else {
@@ -350,7 +350,7 @@ window.items = {
     print: function (model, response) {
         var elem = items.elem(model);
 
-        if (Object.keys(response.data).length) {
+        if (response.data && Object.keys(response.data).length) {
             elem.list.show();
 
             if (model.prepend) {
