@@ -110,7 +110,8 @@ $.fn.extend({
 						}
 					}),
 				defaultBuffer = buffer.join(''),
-				focusText = input.val();
+				focusText = input.val(),
+				isFocus = false;
 
 			function tryFireCompleted() {
 				if (!settings.completed) {
@@ -218,8 +219,9 @@ $.fn.extend({
 				tryFireCompleted();
 			}
 
-
 			function blurEvent(e) {
+				isFocus = false;
+
 				checkVal();
 
 				if (input.val() != focusText)
@@ -239,17 +241,20 @@ $.fn.extend({
 				//backspace, delete, and escape get special treatment
 				if (k === 8 || k === 46 || (iPhone && k === 127)) {
 					pos = input.caret();
-					begin = pos.begin;
-					end = pos.end;
 
-					if (end - begin === 0) {
-						begin = k !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
-						end = k === 46 ? seekNext(end) : end;
+					if (typeof pos !== 'undefined') {
+						begin = pos.begin;
+						end = pos.end;
+
+						if (end - begin === 0) {
+							begin = k !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
+							end = k === 46 ? seekNext(end) : end;
+						}
+						clearBuffer(begin, end);
+						shiftL(begin, end - 1);
+
+						e.preventDefault();
 					}
-					clearBuffer(begin, end);
-					shiftL(begin, end - 1);
-
-					e.preventDefault();
 				} else if (k === 13) { // enter
 					blurEvent.call(this, e);
 				} else if (k === 27) { // escape
@@ -270,7 +275,7 @@ $.fn.extend({
 					c,
 					next;
 
-				if (e.ctrlKey || e.altKey || e.metaKey || k < 32) {//Ignore
+				if (e.ctrlKey || e.altKey || e.metaKey || k < 32 || typeof pos === 'undefined') {//Ignore
 					return;
 				} else if (k && k !== 13) {
 					if (pos.end - pos.begin !== 0) {
@@ -350,6 +355,7 @@ $.fn.extend({
 						}
 					}
 				}
+
 				if (allow) {
 					writeBuffer();
 				} else if (lastMatch + 1 < partialPosition) {
@@ -370,12 +376,81 @@ $.fn.extend({
 				return (partialPosition ? i : firstNonMaskPos);
 			}
 
+			function isPhone(elem) {
+				return elem.attr('data-type-phone') !== undefined;
+			}
+
+			function getCursorPos(elem) {
+				var input = elem[0],
+					r, re, rc,
+					pos;
+
+				if (input.selectionStart) {
+					pos = input.selectionStart;
+				} else if (document.selection) {
+					input.focus();
+
+					r = document.selection.createRange();
+					if (r === null || typeof r === 'undefined') {
+						pos = 0;
+					} else {
+						re = input.createTextRange();
+						rc = re.duplicate();
+						re.moveToBookmark(r.getBookmark());
+						rc.setEndPoint('EndToStart', re);
+
+						pos = rc.text.length;
+					}
+				} else {
+					pos = 0;
+				}
+
+				return pos;
+			}
+
+			// Ввод телефона
+			var fix_phone = {
+				// Проверка на цифру
+				isNumber: function (char) {
+					return /\d/.test(char);
+				},
+
+				// Ввод телефона
+				key: function (e) {
+					if (isPhone($(e.currentTarget))) {
+						fix_phone.val = $(e.currentTarget).val();
+						var test_del = fix_phone.del();
+						if (fix_phone.isNumber(String.fromCharCode(e.which))) {
+							if (test_del) {
+								var firstNonMask = input.val().substr(0, firstNonMaskPos);
+								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + String.fromCharCode(e.which));
+								checkVal();
+								fix_phone.two_click = 1;
+							}
+						}
+					}
+				},
+
+				// Удаление второй цифры, если больше 11 цифр
+				del: function () {
+					if (checkVal(true) == len) {
+						if (fix_phone.two_click == 1) {
+							fix_phone.val = fix_phone.val.slice(firstNonMaskPos + 1);
+							return true;
+						}
+						fix_phone.two_click = 1;
+					} else {
+						fix_phone.two_click = 0;
+					}
+					return false;
+				}
+			}
+
 			input.data($.mask.dataName, function () {
 				return $.map(buffer, function (c, i) {
 					return tests[i] && c != getPlaceholder(i) ? c : null;
 				}).join('');
 			});
-
 
 			input
 				.one("unmask", function () {
@@ -388,24 +463,39 @@ $.fn.extend({
 						return;
 					}
 
-					clearTimeout(caretTimeoutId);
 					var pos;
 
 					focusText = input.val();
 
 					pos = checkVal();
 
+					clearTimeout(caretTimeoutId);
+
 					caretTimeoutId = setTimeout(function () {
 						if (input.get(0) !== document.activeElement) {
 							return;
 						}
+
 						writeBuffer();
+
 						if (pos == mask.replace("?", "").length) {
 							input.caret(0, pos);
 						} else {
 							if (input.caret) input.caret(pos);
 						}
-					}, 10);
+
+						isFocus = true;
+					}, 100);
+				})
+				.on('mousedown', function () {
+					if (isPhone(input) && isFocus) {
+						setTimeout(function () {
+							var pos = checkVal(true);
+							if (getCursorPos(input) > pos) {
+								if (input.caret) input.caret(pos);
+							}
+						}, 100);
+					}
 				})
 				.on("blur.mask", blurEvent)
 				.on("keydown.mask", keydownEvent)
@@ -420,7 +510,8 @@ $.fn.extend({
 						if (input.caret) input.caret(pos);
 						tryFireCompleted();
 					}, 0);
-				});
+				})
+				.on('keyup', fix_phone.key);
 			if (chrome && android) {
 				input
 					.off('input.mask')
