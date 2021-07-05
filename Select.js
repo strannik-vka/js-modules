@@ -55,7 +55,7 @@ class Select {
                 this.ajax($(item));
             }
 
-            if (select.type == 'checked') {
+            if (select.type == 'checkbox') {
                 select.addClass('multiple');
             }
         });
@@ -76,8 +76,8 @@ class Select {
             $.each(json.data, (i, item) => {
                 select.options.append('\
                     <div class="__select__checkbox" data-select-option>\
-                        <input name="'+ select.name + '" id="' + select.name + '_' + i + '" class="__select__input" type="' + select.type + '" value="' + item.id + '" />\
-                        <label for="' + select.name + '_' + i + '" class="__select__label">' + item.name + '</label>\
+                        <input name="'+ select.name + '" id="' + select.name + '_' + item.id + '" class="__select__input" type="' + select.type + '" value="' + item.id + '" />\
+                        <label for="' + select.name + '_' + item.id + '" class="__select__label">' + item.name + '</label>\
                     </div>\
                 ');
             });
@@ -134,7 +134,7 @@ class Select {
             text_arr.push($.trim(select.elem.find('[for="' + $(item).attr('id') + '"]:eq(0)').text()));
         });
 
-        select.title.text(select.selected ? text_arr.join(', ') : select.title.placeholder);
+        select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
 
         if (select.selected) {
             select.elem.addClass('selected');
