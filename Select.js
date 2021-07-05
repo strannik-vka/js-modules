@@ -54,6 +54,10 @@ class Select {
             if (select.url) {
                 this.ajax($(item));
             }
+
+            if (select.type == 'checked') {
+                select.addClass('multiple');
+            }
         });
     }
 
