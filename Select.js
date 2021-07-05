@@ -56,7 +56,7 @@ class Select {
             }
 
             if (select.type == 'checkbox') {
-                select.addClass('multiple');
+                select.elem.addClass('multiple');
             }
         });
     }
