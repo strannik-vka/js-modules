@@ -6,7 +6,8 @@ class Select {
             options: '[data-select-options]',
             option: '[data-select-option]',
             type: '[data-select-type]',
-            query: '[data-select-query]'
+            query: '[data-select-query]',
+            count: '[data-select-count]'
         };
 
         this.ajaxTimer = false;
@@ -22,6 +23,7 @@ class Select {
         return {
             title: title,
             options: options,
+            elem: select,
             type: options.attr('data-select-type'),
             selected: select.find('input:checked').length,
             query: select.find(this.selector.query).length
@@ -121,22 +123,22 @@ class Select {
     }
 
     change(e) {
-        var parent = $(e.currentTarget).parents(this.selector.parent),
-            titleElem = parent.find(this.selector.title);
+        var select = this.select($(e.currentTarget).parents(this.selector.parent)),
+            text_arr = [];
 
-        var text_arr = [];
-        parent.find('input:checked').each(function () {
-            var text = $.trim(parent.find('[for="' + $(this).attr('id') + '"]:eq(0)').text());
-            text_arr.push(text);
+        select.options.find('input:checked').each((i, item) => {
+            text_arr.push($.trim(select.elem.find('[for="' + $(item).attr('id') + '"]:eq(0)').text()));
         });
 
-        titleElem.text(text_arr.length ? text_arr.join(', ') : titleElem.attr('data-select-title'));
+        select.title.text(select.selected ? text_arr.join(', ') : select.title.placeholder);
 
-        if (text_arr.length) {
-            parent.addClass('selected');
+        if (select.selected) {
+            select.elem.addClass('selected');
         } else {
-            parent.removeClass('selected');
+            select.elem.removeClass('selected');
         }
+
+        select.elem.find(this.selector.count).html(text_arr.length);
     }
 }
 
