@@ -134,7 +134,9 @@ class Select {
             text_arr.push($.trim(select.elem.find('[for="' + $(item).attr('id') + '"]:eq(0)').text()));
         });
 
-        select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
+        if (select.type == 'radio') {
+            select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
+        }
 
         if (select.selected) {
             select.elem.addClass('selected');
