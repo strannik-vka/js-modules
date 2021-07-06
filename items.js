@@ -192,7 +192,7 @@ window.items = {
 
                             $('body').append(html);
 
-                            html.modal('show');
+                            $('[items-modal-' + model.name + ']').modal('show');
                         });
                     })
                     .on('hidden.bs.modal', '[items-modal-' + model.name + ']', function () {
