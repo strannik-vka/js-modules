@@ -59,8 +59,6 @@ window.items = {
             if (model.modal != null) {
                 model.modal.outerHTML = $('[items-modal-' + model.name + ']:eq(0)')[0].outerHTML;
 
-                $('[items-modal-' + model.name + ']:eq(0)').remove();
-
                 if (!model.modal.selector) {
                     model.modal.selector = '[items-html-' + model.name + ']';
                 }
@@ -180,7 +178,8 @@ window.items = {
             if (model.modal != null) {
                 $(document)
                     .on('click', model.modal.selector, function () {
-                        var entry_id = $(this).attr('items-html-' + model.name);
+                        var entry_id = $(this).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name);
+
                         model.modal.data(entry_id, function (data) {
                             var html = $(model.modal.outerHTML);
 
@@ -189,6 +188,8 @@ window.items = {
                             if (typeof model.modal.html === 'function') {
                                 html = model.modal.html(html, data);
                             }
+
+                            $('[items-modal-' + model.name + ']').remove();
 
                             $('body').append(html);
 
