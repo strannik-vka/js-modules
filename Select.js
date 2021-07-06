@@ -116,7 +116,7 @@ class Select {
     closest(e) {
         if (!$(e.target).closest(this.selector.parent).length) {
             $(this.selector.parent).removeClass('active');
-            $(this.selector.query).removeAttr('placeholder');
+            $(this.selector.query).val('').removeAttr('placeholder');
         }
     }
 
