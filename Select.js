@@ -116,16 +116,23 @@ class Select {
     closest(e) {
         if (!$(e.target).closest(this.selector.parent).length) {
             $(this.selector.parent).removeClass('active');
+            $(this.selector.query).removeAttr('placeholder');
         }
     }
 
     toggleActive(e) {
-        var parent = $(e.currentTarget).parents(this.selector.parent);
+        var select = this.select($(e.currentTarget).parents(this.selector.parent));
 
-        if (parent.hasClass('active') && $(e.currentTarget)[0].tagName != 'INPUT') {
-            parent.removeClass('active');
+        if (select.elem.hasClass('active') && $(e.currentTarget)[0].tagName != 'INPUT') {
+            select.elem.removeClass('active');
         } else {
-            parent.addClass('active');
+            select.elem.addClass('active');
+
+            if (select.type == 'checkbox') {
+                setTimeout(() => {
+                    select.elem.find(this.selector.query).attr('placeholder', select.elem.find(this.selector.query).attr('data-placeholder'));
+                }, 200);
+            }
         }
     }
 
