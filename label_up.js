@@ -31,7 +31,7 @@ setTimeout(function () {
 $(document)
     .on('change', 'input[type="file"]', function () {
         if ($(this).prev().length) {
-            if ($(this).prev()[0].tagName == 'LABEL' && $method.val($(this))) {
+            if ($(this).prev()[0].tagName == 'LABEL' && method.val($(this))) {
                 $(this).prev().addClass('label-up');
             } else {
                 $(this).prev().removeClass('label-up');

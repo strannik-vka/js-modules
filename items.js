@@ -335,7 +335,9 @@ window.items = {
     dataInHtml: function (html, data) {
         if (data && typeof data === 'object') {
             $.each(data, function (name, value) {
-                html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
+                if (name.indexOf('[') == -1) {
+                    html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
+                }
             });
 
             html.find('[attr]').each(function () {
