@@ -99,6 +99,9 @@ class Select {
             .on('input', this.selector.query, (e) => {
                 this.search(e);
             })
+            .on('click', this.selector.parent + ' label', (e) => {
+                $(e.currentTarget).parent().find('input').trigger('change');
+            })
             .on('change', this.selector.parent + ' input', (e) => {
                 this.change(e);
             })
