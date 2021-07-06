@@ -24,7 +24,7 @@ class Select {
             title: title,
             options: options,
             elem: select,
-            type: options.attr('data-select-type'),
+            type: options.attr('data-select-type') ? options.attr('data-select-type') : options.find('input').attr('type'),
             selected: select.find('input:checked').length,
             query: select.find(this.selector.query).length
                 ? $.trim(select.find(this.selector.query).val())
@@ -134,10 +134,6 @@ class Select {
             text_arr.push($.trim(select.elem.find('[for="' + $(item).attr('id') + '"]:eq(0)').text()));
         });
 
-        if (select.type == 'radio') {
-            select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
-        }
-
         if (select.selected) {
             select.elem.addClass('selected');
         } else {
@@ -145,6 +141,11 @@ class Select {
         }
 
         select.elem.find(this.selector.count).html(text_arr.length);
+
+        if (select.type == 'radio') {
+            select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
+            select.elem.removeClass('active');
+        }
     }
 }
 
