@@ -55,6 +55,17 @@ window.items = {
                 model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
             }
 
+            model.modal = model.modal ? model.modal : null;
+            if (model.modal != null) {
+                model.modal.outerHTML = $('[items-modal-' + model.name + ']:eq(0)')[0].outerHTML;
+
+                $('[items-modal-' + model.name + ']:eq(0)').remove();
+
+                if (!model.modal.selector) {
+                    model.modal.selector = '[items-html-' + model.name + ']';
+                }
+            }
+
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
             model.items = model.items ? model.items : {
@@ -88,6 +99,7 @@ window.items = {
 
                 items.events.update(model);
                 items.events.showMore(model);
+                items.events.modal(model);
 
                 var elem = items.elem(model);
 
@@ -164,6 +176,30 @@ window.items = {
     },
 
     events: {
+        modal: function (model) {
+            if (model.modal != null) {
+                $(document)
+                    .on('click', model.modal.selector, function () {
+                        var entry_id = $(this).attr('items-html-' + model.name);
+                        model.modal.data(entry_id, function (data) {
+                            var html = $(model.modal.outerHTML);
+
+                            html = items.dataInHtml(html, data);
+
+                            if (typeof model.modal.html === 'function') {
+                                html = model.modal.html(html, data);
+                            }
+
+                            $('body').append(html);
+
+                            html.modal('show');
+                        });
+                    })
+                    .on('hidden.bs.modal', '[items-modal-' + model.name + ']', function () {
+                        $(this).remove();
+                    });
+            }
+        },
         showMore: function (model) {
             var elem = items.elem(model);
 
@@ -326,6 +362,12 @@ window.items = {
         }
 
         if (html) {
+            if (typeof data === 'object' && data != null) {
+                if (data.id) {
+                    html.attr('items-html-' + model.name, data.id);
+                }
+            }
+
             return html.show();
         }
     },
