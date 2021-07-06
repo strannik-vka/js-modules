@@ -13,7 +13,6 @@ class Select {
         this.ajaxTimer = false;
 
         this.events();
-        this.each();
     }
 
     select(select) {
@@ -52,7 +51,7 @@ class Select {
             }
 
             if (select.url) {
-                this.ajax($(item));
+                this.ajax($(item), i);
             }
 
             if (select.type == 'checkbox') {
@@ -61,7 +60,7 @@ class Select {
         });
     }
 
-    ajax(select) {
+    ajax(select, key) {
         var select = this.select(select);
 
         $.get(select.url, {
@@ -76,8 +75,10 @@ class Select {
             $.each(json.data, (i, item) => {
                 select.options.append('\
                     <div class="__select__checkbox" data-select-option>\
-                        <input name="'+ select.name + '" id="' + select.name + '_' + item.id + '" class="__select__input" type="' + select.type + '" value="' + item.id + '" />\
-                        <label for="' + select.name + '_' + item.id + '" class="__select__label">' + item.name + '</label>\
+                        <label for="' + select.name + '_' + item.id + '_' + key + '" class="__select__label">\
+                            ' + item.name + '\
+                            <input name="'+ select.name + '" id="' + select.name + '_' + item.id + '_' + key + '" class="__select__input" type="' + select.type + '" value="' + item.id + '" />\
+                        </label>\
                     </div>\
                 ');
             });
@@ -111,6 +112,10 @@ class Select {
             .on('click', (e) => {
                 this.closest(e);
             });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            this.each();
+        }, false);
     }
 
     closest(e) {
@@ -136,12 +141,26 @@ class Select {
         }
     }
 
+    getTextLabel(input) {
+        var parent = input.parent();
+
+        if (parent[0].tagName == 'LABEL') {
+            return $.trim(parent.text());
+        }
+
+        if (parent.find('label').length) {
+            return $.trim(parent.find('label').text());
+        }
+
+        return $.trim($('[for="' + input.attr('id') + '"]:eq(0)').text());
+    }
+
     change(e) {
         var select = this.select($(e.currentTarget).parents(this.selector.parent)),
             text_arr = [];
 
         select.options.find('input:checked').each((i, item) => {
-            text_arr.push($.trim(select.elem.find('[for="' + $(item).attr('id') + '"]:eq(0)').text()));
+            text_arr.push(this.getTextLabel($(item)));
         });
 
         if (select.selected) {
