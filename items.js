@@ -195,9 +195,6 @@ window.items = {
 
                             $('[items-modal-' + model.name + ']').modal('show');
                         });
-                    })
-                    .on('hidden.bs.modal', '[items-modal-' + model.name + ']', function () {
-                        $(this).remove();
                     });
             }
         },
