@@ -377,7 +377,7 @@ $.fn.extend({
 			}
 
 			function isPhone(elem) {
-				return elem.attr('data-type-phone') !== undefined;
+				return elem.attr('data-type-phone') !== undefined || elem.attr('data-mask-phone') !== undefined;
 			}
 
 			function getCursorPos(elem) {
