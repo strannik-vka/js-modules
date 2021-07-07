@@ -60,28 +60,13 @@ class Select {
         });
     }
 
-    ajax(select, key) {
+    ajax(select) {
         var select = this.select(select);
 
         $.get(select.url, {
             name: select.query
         }, (json) => {
-            select.options.find(this.selector.option).each((i, item) => {
-                if (!$(item).find('input').is(':checked')) {
-                    $(item).remove();
-                }
-            });
-
-            $.each(json.data, (i, item) => {
-                select.options.append('\
-                    <div class="__select__checkbox" data-select-option>\
-                        <label for="' + select.name + '_' + item.id + '_' + key + '" class="__select__label">\
-                            ' + item.name + '\
-                            <input name="'+ select.name + '" id="' + select.name + '_' + item.id + '_' + key + '" class="__select__input" type="' + select.type + '" value="' + item.id + '" />\
-                        </label>\
-                    </div>\
-                ');
-            });
+            this.addOptions(select.elem, json.data);
         });
     }
 
@@ -174,6 +159,41 @@ class Select {
         if (select.type == 'radio') {
             select.title.text(select.selected ? text_arr.join(', ') : select.placeholder);
             select.elem.removeClass('active');
+        }
+    }
+
+    addOptions(select, options, obj) {
+        var select = this.select(select),
+            obj = obj ? obj : {
+                remove: true,
+                checked: false
+            }
+
+        if (obj.remove) {
+            select.options.find(this.selector.option).each((i, item) => {
+                if (!$(item).find('input').is(':checked')) {
+                    $(item).remove();
+                }
+            });
+        }
+
+        $.each(options, (i, item) => {
+            if (select.options.find('[value="' + item.id + '"]').length == 0) {
+                select.options.append('\
+                    <div class="__select__checkbox" data-select-option>\
+                        <label class="__select__label">\
+                            ' + item.name + '\
+                            <input class="__select__input" '+ (obj.checked ? 'checked' : '') + ' name="' + select.name + '" type="' + select.type + '" value="' + item.id + '" />\
+                        </label>\
+                    </div>\
+                ');
+            } else {
+                $('[value="' + item.id + '"]').prop('checked', true);
+            }
+        });
+
+        if (obj.checked) {
+            select.options.find('input').trigger('change');
         }
     }
 }
