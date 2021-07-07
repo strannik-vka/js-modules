@@ -133,11 +133,13 @@ class Select {
             return $.trim(parent.text());
         }
 
-        if (parent.find('label').length) {
-            return $.trim(parent.find('label').text());
+        if ($('[for="' + input.attr('id') + '"]:eq(0)').length) {
+            return $.trim($('[for="' + input.attr('id') + '"]:eq(0)').text());
         }
 
-        return $.trim($('[for="' + input.attr('id') + '"]:eq(0)').text());
+        if (parent.find('label').length && parent.attr('data-select-options') === undefined) {
+            return $.trim(parent.find('label').text());
+        }
     }
 
     change(e) {
