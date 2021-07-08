@@ -30,7 +30,8 @@ $(document)
     .on('click', '[file-change-name] [delete]', function (e) {
         e.preventDefault();
 
-        var parent = input.parents('.input-group, [file-group]'),
+        var parent = $(this).parents('.input-group, [file-group]'),
+            input = parent.find('input[type="file"]'),
             name_elem = $(this).parents('[file-change-name]'),
             input = parent.length
                 ? parent.find('[name="' + name_elem.attr('file-change-name') + '"]')
@@ -40,7 +41,7 @@ $(document)
 
         parent.removeClass('active');
         input.replaceWith(input.clone().val(''));
-        input.trigger('change');
+        parent.find('input[type="file"]').trigger('change');
 
         return false;
     });
