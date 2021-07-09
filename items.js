@@ -215,11 +215,9 @@ window.items = {
         scroll: function (model) {
             var elem = items.elem(model),
                 isScrollStart = function (scroll_elem) {
-                    if (scroll_elem == 'window') {
-                        return $(window).scrollTop() < 300;
-                    }
-
-                    return scroll_elem.scrollTop() < 300;
+                    return scroll_elem == 'window'
+                        ? $(window).scrollTop() < 300
+                        : scroll_elem.scrollTop() < 300;
                 },
                 isScrollEnd = function (scroll_elem) {
                     if (model.prepend) {
@@ -227,7 +225,13 @@ window.items = {
                     }
 
                     if (scroll_elem == 'window') {
-                        return $(window).height() + $(window).scrollTop() >= $(document).height() - 300;
+                        var notScrollHeight = 0;
+
+                        $('[items-not-scroll-window]').each((i, item) => {
+                            notScrollHeight += parseFloat($(item).css('height'));
+                        });
+
+                        return $(window).height() + $(window).scrollTop() >= ($(document).height() - notScrollHeight) - 300;
                     }
 
                     return scroll_elem.height() + scroll_elem.scrollTop() >= scroll_elem[0].scrollHeight - 300;
