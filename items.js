@@ -132,6 +132,7 @@ window.items = {
         elem.preloader.hide();
         elem.empty.hide();
         elem.list.hide();
+        elem.isset.hide();
 
         elem.list.off('scroll');
         elem.list.off('update');
@@ -263,6 +264,7 @@ window.items = {
         return {
             preloader: $('[items-preloader-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
+            isset: $('[items-isset-' + model.name + ']'),
             list: $('[items-list-' + model.name + ']'),
             showMore: $('[items-show-more-' + model.name + ']'),
             html: $(model.outerHTML),
@@ -398,6 +400,7 @@ window.items = {
 
         if (response.data && Object.keys(response.data).length) {
             elem.list.show();
+            elem.isset.show();
 
             if (model.prepend) {
                 var currentScroll = elem.scroll.scrollTop(),
@@ -420,6 +423,7 @@ window.items = {
         } else {
             elem.empty.show();
             elem.list.hide();
+            elem.isset.hide();
         }
 
         if (model.onPrint) {
