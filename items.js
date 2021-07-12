@@ -29,6 +29,7 @@
 window.items = {
 
     ajaxProcess: {},
+    updateTimeout: false,
 
     model: {},
 
@@ -41,11 +42,17 @@ window.items = {
             elem.empty.hide();
             elem.preloader.show();
 
-            items.load(model, function (response) {
-                elem.preloader.hide();
+            if (items.updateTimeout) clearTimeout(items.updateTimeout);
 
-                items.print(model, response);
-            });
+            items.updateTimeout = setTimeout(() => {
+                items.ajaxProcess[model.name] = false;
+
+                items.load(model, function (response) {
+                    elem.preloader.hide();
+
+                    items.print(model, response);
+                });
+            }, 1000);
         }
     },
 
