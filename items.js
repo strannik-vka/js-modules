@@ -29,7 +29,7 @@
 window.items = {
 
     ajaxProcess: {},
-    updateTimeout: false,
+    updateTimeout: {},
 
     model: {},
 
@@ -42,9 +42,9 @@ window.items = {
             elem.empty.hide();
             elem.preloader.show();
 
-            if (items.updateTimeout) clearTimeout(items.updateTimeout);
+            if (items.updateTimeout[name]) clearTimeout(items.updateTimeout[name]);
 
-            items.updateTimeout = setTimeout(() => {
+            items.updateTimeout[name] = setTimeout(() => {
                 items.ajaxProcess[model.name] = false;
 
                 items.load(model, function (response) {
