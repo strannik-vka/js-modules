@@ -4,6 +4,9 @@
 */
 
 $(document)
+    .on('reset', 'form', (e) => {
+        $(e.currentTarget).find('[file-change-name] [delete]').click();
+    })
     .on('change', '[type="file"]', function () {
         var names = [],
             parent = $(this).parents('.input-group, [file-group]'),
