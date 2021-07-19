@@ -1,0 +1,27 @@
+.multiple_block_icon {
+    transition: background 20ms ease-in 0s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 3px;
+    height: 24px;
+    width: 24px;
+    margin-left: 4px;
+    background: rgba(55, 53, 47, 0.08);
+    vertical-align: middle;
+
+    &:hover {
+        background: rgba(55, 53, 47, 0.13);
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
+        display: block;
+        fill: rgba(55, 53, 47, 0.4);
+        flex-shrink: 0;
+        backface-visibility: hidden;
+    }
+}
