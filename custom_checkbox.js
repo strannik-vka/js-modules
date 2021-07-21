@@ -2,7 +2,7 @@ var customCheckbox = $('[custom-checkbox]');
 
 custom_checkbox = {
     init: function () {
-        customCheckbox.thigger('click', 'customCheckbox', function () {
+        customCheckbox.trigger('click', 'customCheckbox', function () {
             $(this).find('[custom-checkbox-input]').prop('checked', true);
         });
     }
