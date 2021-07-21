@@ -4,7 +4,7 @@ custom_checkbox = {
 
         customCheckbox.on('click', function () {
 
-            if (customCheckbox.find('[custom-checkbox-input]').is(':checked')) {
+            if ($(this).find('[custom-checkbox-input]').is(':checked')) {
                 $(this).find('[custom-checkbox-input]').prop('checked', false);
             } else {
                 $(this).find('[custom-checkbox-input]').prop('checked', true);
