@@ -19,7 +19,7 @@ class Scroll {
             }
 
             if (obj.onEnd) {
-                obj.onStart(scrollLeft < 1 && delta < 1);
+                // obj.onEnd(scrollLeft < 1 && delta < 1);
             }
 
             e.preventDefault();
