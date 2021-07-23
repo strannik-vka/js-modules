@@ -5,21 +5,26 @@ class Scroll {
     }
 
     horizontal(elem, obj) {
+        elem = $(elem);
         obj = this._getObject({}, obj);
 
-        $(elem).off('wheel').on('wheel', function (e) {
+        elem.off('wheel').on('wheel', (e) => {
             var delta = e.originalEvent.deltaY !== 0 ? e.originalEvent.deltaY : e.originalEvent.deltaX,
-                scrollLeft = $(this).scrollLeft(),
+                scrollLeft = elem.scrollLeft(),
                 newScrollLeft = scrollLeft + delta;
 
-            $(this).scrollLeft(newScrollLeft);
+            elem.scrollLeft(newScrollLeft);
 
-            if (obj.onStart && parseInt(newScrollLeft) == 0) {
-                obj.onStart(-delta);
+            if (obj.onStart) {
+                if (newScrollLeft < 0) {
+                    obj.onStart(-delta);
+                }
             }
 
             if (obj.onEnd) {
-                // obj.onEnd(scrollLeft < 1 && delta < 1);
+                if (this.isEndHorizontal(elem)) {
+                    obj.onEnd(delta);
+                }
             }
 
             e.preventDefault();
@@ -114,9 +119,13 @@ class Scroll {
                         et = $(elem).offset().top,
                         eh = $(elem).outerHeight();
 
-                    if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+                    var isFull = et >= wt && et + eh <= wh + wt,
+                        isShow = wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh),
+                        result = isFull ? 'full' : (isShow ? 'show' : false);
+
+                    if (result) {
                         if (this.viewElems[elem].status == null || this.viewElems[elem].status == false) {
-                            callback(true);
+                            callback(result);
                         }
                         this.viewElems[elem].status = true;
                     } else {
@@ -136,6 +145,20 @@ class Scroll {
 
     disabled(elem) {
         $(elem).css('overflow', 'hidden');
+    }
+
+    isEndHorizontal(elem) {
+        return elem[0].$
+            ? Math.round($(window).width() + $(window).scrollLeft()) >= $(document).width()
+            : Math.round(elem.width() + elem.scrollLeft()) >= elem[0].scrollWidth;
+    }
+
+    isEnd(elem) {
+        if (typeof elem === 'object') {
+            return $(window).height() + $(window).scrollTop() >= ($(document).height());
+        }
+
+        return elem.height() + elem.scrollTop() >= elem[0].scrollHeight;
     }
 
     _replaceAttr(elem) {
