@@ -1,7 +1,7 @@
 class Scroll {
 
     constructor() {
-        this.viewElems = {};
+        this.distanceElems = {};
     }
 
     horizontal(elem, obj) {
@@ -9,7 +9,7 @@ class Scroll {
         obj = this._getObject({}, obj);
 
         elem.off('wheel').on('wheel', (e) => {
-            var delta = e.originalEvent.deltaY !== 0 ? e.originalEvent.deltaY : e.originalEvent.deltaX,
+            var delta = this._getDelta(e),
                 scrollLeft = elem.scrollLeft(),
                 newScrollLeft = scrollLeft + delta;
 
@@ -40,11 +40,11 @@ class Scroll {
         }
 
         if (elem && elem.length) {
-            var timeout = elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0,
-                obj = this._getObject({
-                    top: 0,
-                    animate_time: 400
-                }, obj);
+            obj = this._getObject({
+                top: 0,
+                animate_time: 400,
+                timeout: elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0
+            }, obj);
 
             setTimeout(() => {
                 if ($('.modal-open').length) {
@@ -89,53 +89,34 @@ class Scroll {
                 });
 
                 this._replaceAttr(elem);
-            }, timeout);
+            }, obj.timeout);
         }
     }
 
-    viewOff(elem) {
-        this.viewElems[elem].off = true;
-    }
-
-    viewOn(elem) {
-        this.viewElems[elem].off = false;
-    }
-
-    view(elem, callback, obj) {
+    distance(elem, callback, obj) {
         obj = this._getObject({
             scroll: window
         }, obj);
 
-        if (typeof this.viewElems[elem] === 'undefined') {
-            this.viewElems[elem] = {
-                status: null,
-                off: false
-            };
+        if (typeof this.distanceElems[elem] === 'undefined') {
+            this.distanceElems[elem] = $(obj.scroll).scrollTop();
 
-            $(obj.scroll).on('scroll', () => {
-                if (this.viewElems[elem].off != true) {
-                    var wt = $(obj.scroll).scrollTop(),
-                        wh = $(obj.scroll).height(),
-                        et = $(elem).offset().top,
-                        eh = $(elem).outerHeight();
+            $(obj.scroll)
+                .on('scroll', () => {
+                    var up = this.distanceElems[elem] > $(obj.scroll).scrollTop(),
+                        top = $(elem).offset().top - this.distanceElems[elem];
 
-                    var isFull = et >= wt && et + eh <= wh + wt,
-                        isShow = wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh),
-                        result = isFull ? 'full' : (isShow ? 'show' : false);
+                    callback({
+                        top: top,
+                        percent: {
+                            top: 100 / ($(obj.scroll).height() / top)
+                        },
+                        up: up,
+                        down: !up
+                    });
 
-                    if (result) {
-                        if (this.viewElems[elem].status == null || this.viewElems[elem].status == false) {
-                            callback(result);
-                        }
-                        this.viewElems[elem].status = true;
-                    } else {
-                        if (this.viewElems[elem].status == null || this.viewElems[elem].status == true) {
-                            callback(false);
-                        }
-                        this.viewElems[elem].status = false;
-                    }
-                }
-            });
+                    this.distanceElems[elem] = $(obj.scroll).scrollTop();
+                });
         }
     }
 
@@ -191,6 +172,10 @@ class Scroll {
 
     _getObject(default_obj, obj) {
         return obj = typeof obj === 'object' && obj != null ? $.extend(default_obj, obj) : default_obj;
+    }
+
+    _getDelta(e) {
+        return e.originalEvent.deltaY !== 0 ? e.originalEvent.deltaY : e.originalEvent.deltaX;
     }
 
 }
