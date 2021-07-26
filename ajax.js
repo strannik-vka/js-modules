@@ -2,7 +2,7 @@ window.ajaxProcess = false;
 
 window.queue = {
     list: [],
-    start: function() {
+    start: function () {
         if (queue.list.length) {
             var first = queue.list.splice(0, 1),
                 first = first[0];
@@ -11,7 +11,7 @@ window.queue = {
     }
 }
 
-window.ajax = function(obj, callback, form) {
+window.ajax = function (obj, callback, form) {
     if (ajaxProcess) {
         if (typeof obj === 'object') {
             if (obj.queue) {
@@ -29,10 +29,10 @@ window.ajax = function(obj, callback, form) {
     ajaxProcess = true;
 
     var settings = {
-            headers: {}
-        },
+        headers: {}
+    },
         token = localStorage.getItem('token'),
-        preloader = 'Подождите..';
+        preloader = '<div class="spinner-border w-50 h-50" role="status"><span class="sr-only">Loading...</span></div>';
 
     if (token) {
         settings.headers.Authorization = 'Bearer ' + token;
@@ -74,7 +74,7 @@ window.ajax = function(obj, callback, form) {
         }
     }
 
-    $.ajax(settings).always(function(response) {
+    $.ajax(settings).always(function (response) {
         if (form) {
             if (button.length && preloader) {
                 button.html(button.attr('text'));
@@ -111,9 +111,9 @@ window.ajax = function(obj, callback, form) {
     });
 }
 
-$(document).on('ajax.update', function() {
-    ajax(location.href, function(html) {
-        $('[ajax-elem]', html).each(function(index) {
+$(document).on('ajax.update', function () {
+    ajax(location.href, function (html) {
+        $('[ajax-elem]', html).each(function (index) {
             $('[ajax-elem]:eq(' + index + ')').before($(this).clone()).remove();
         });
         $(document).trigger('ajax.update.success');
