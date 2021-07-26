@@ -10,22 +10,22 @@ class AjaxForm {
     submit() {
         $(document).on('submit', this.selector, (e) => {
             e.preventDefault();
-            this.ajax();
+            this.ajax($(e.currentTarget));
         });
     }
 
-    options() {
+    options(form) {
         return {
-            url: $(this.selector).attr('action') ? $(this.selector).attr('action') : location.href,
-            type: $(this.selector).attr('method') ? $(this.selector).attr('method') : 'post',
-            data: new FormData($(this.selector)[0]),
+            url: form.attr('action') ? form.attr('action') : location.href,
+            type: form.attr('method') ? form.attr('method') : 'post',
+            data: new FormData(form[0]),
             processData: false,
             contentType: false
         }
     }
 
-    ajax() {
-        ajax(this.options(), response => {
+    ajax(form) {
+        ajax(this.options(form), response => {
             if (this.callback) {
                 this.callback(response);
             }
@@ -35,7 +35,14 @@ class AjaxForm {
                     text: response.success
                 });
             }
-        }, $(this.selector));
+
+            if (response.success) {
+                form.trigger('reset');
+
+                form.find('[data-ajax-form-show]').show();
+                form.find('[data-ajax-form-hide]').hide();
+            }
+        }, form);
     }
 
 }
