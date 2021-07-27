@@ -39,8 +39,15 @@ class AjaxForm {
             if (response.success) {
                 form.trigger('reset');
 
-                form.find('[data-ajax-form-show]').show();
-                form.find('[data-ajax-form-hide]').hide();
+                var key = form.attr('data-ajax-form');
+
+                if (key) {
+                    $('[data-ajax-form-show="' + key + '"]').show();
+                    $('[data-ajax-form-hide="' + key + '"]').hide();
+                } else {
+                    form.find('[data-ajax-form-show]').show();
+                    form.find('[data-ajax-form-hide]').hide();
+                }
             }
         }, form);
     }
