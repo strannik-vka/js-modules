@@ -77,6 +77,7 @@ window.items = {
                 current_page: 1
             };
             model.outerHTML = $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
+            $('[items-html-' + model.name + ']:eq(0)').remove();
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
 
             if (items.model[model.name]) {
@@ -334,13 +335,17 @@ window.items = {
     },
 
     getDataValue: function (str, data) {
-        return str.split('.').reduce((a, v) => {
-            if (a === null || !a) {
-                return data[v] ? data[v] : null;
-            }
+        var parts = str.split('.');
 
-            return a[v] ? a[v] : null;
-        }, null);
+        for (var i = 0; i < parts.length; i++) {
+            data = data[parts[i]];
+
+            if (!data) {
+                break;
+            }
+        }
+
+        return data ? data : null;
     },
 
     dataInHtml: function (html, data) {
@@ -358,7 +363,15 @@ window.items = {
             items.attr(html, data);
 
             html.find('[html]').each(function () {
-                $(this).html(items.getDataValue($(this).attr('html'), data));
+                var value = items.getDataValue($(this).attr('html'), data);
+
+                if (value) {
+                    $(this).html(value);
+
+                    if ($(this).css('display') == 'none') {
+                        $(this).show();
+                    }
+                }
             });
         }
 
