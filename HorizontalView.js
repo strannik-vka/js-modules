@@ -18,7 +18,7 @@ class HorizontalView {
                 $(this.content).css('transform', 'translateX(' + top + 'px)');
 
                 if (this.onScrollPercent) {
-                    var width = parseFloat($(this.content).css('width')),
+                    var width = parseFloat($(this.content).css('width')) - $(window).width(),
                         scrollPercent = 100 / (width / -(top));
 
                     this.onScrollPercent(scrollPercent);
@@ -29,7 +29,7 @@ class HorizontalView {
     sticky() {
         $(this.section).wrap('<div data-horizontal-section="' + this.section + '"></div>');
 
-        var width = parseFloat($(this.content).css('width')),
+        var width = parseFloat($(this.content).css('width')) - $(window).width(),
             height = parseFloat($(this.sectionWrap).css('height'));
 
         $(this.sectionWrap).css({
