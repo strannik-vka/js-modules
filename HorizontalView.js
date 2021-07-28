@@ -4,6 +4,7 @@ class HorizontalView {
         this.section = obj.section ? obj.section : obj.content;
         this.sectionWrap = '[data-horizontal-section="' + this.section + '"]';
         this.content = obj.content;
+        this.onScrollPercent = obj.onScrollPercent;
 
         this.sticky();
         this.scroll();
@@ -15,6 +16,13 @@ class HorizontalView {
                 var top = $(this.sectionWrap).offset().top - $(window).scrollTop();
 
                 $(this.content).css('transform', 'translateX(' + top + 'px)');
+
+                if (this.onScrollPercent) {
+                    var width = parseFloat($(this.content).css('width')),
+                        scrollPercent = 100 / (width / -(top));
+
+                    this.onScrollPercent(scrollPercent);
+                }
             });
     }
 
