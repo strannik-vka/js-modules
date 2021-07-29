@@ -4,17 +4,35 @@ class AjaxForm {
         this.selector = selector;
         this.callback = callback;
 
-        this.submit();
+        this.events();
     }
 
-    submit() {
-        $(document).on('submit', this.selector, (e) => {
-            e.preventDefault();
-            this.ajax($(e.currentTarget));
-        });
+    events() {
+        $(document)
+            .on('click', '[data-ajax-form-reset]', (e) => {
+                this.reset($(e.currentTarget).parents('[data-ajax-form]'));
+            })
+            .on('submit', this.selector, (e) => {
+                e.preventDefault();
+                this.submit($(e.currentTarget));
+            });
     }
 
-    options(form) {
+    reset(form) {
+        form.trigger('reset').removeClass('success');
+
+        var key = form.attr('data-ajax-form');
+
+        if (key) {
+            $('[data-ajax-form-show="' + key + '"]').hide();
+            $('[data-ajax-form-hide="' + key + '"]').show();
+        }
+
+        form.find('[data-ajax-form-show]').hide();
+        form.find('[data-ajax-form-hide]').show();
+    }
+
+    formData(form) {
         return {
             url: form.attr('action') ? form.attr('action') : location.href,
             type: form.attr('method') ? form.attr('method') : 'post',
@@ -24,8 +42,8 @@ class AjaxForm {
         }
     }
 
-    ajax(form) {
-        ajax(this.options(form), response => {
+    submit(form) {
+        ajax(this.formData(form), response => {
             if (this.callback) {
                 this.callback(response);
             }
@@ -37,17 +55,21 @@ class AjaxForm {
             }
 
             if (response.success) {
-                form.trigger('reset');
+                form.addClass('success');
+
+                if (form.find('[data-ajax-form-reset]').length == 0) {
+                    form.trigger('reset');
+                }
 
                 var key = form.attr('data-ajax-form');
 
                 if (key) {
                     $('[data-ajax-form-show="' + key + '"]').show();
                     $('[data-ajax-form-hide="' + key + '"]').hide();
-                } else {
-                    form.find('[data-ajax-form-show]').show();
-                    form.find('[data-ajax-form-hide]').hide();
                 }
+
+                form.find('[data-ajax-form-show]').show();
+                form.find('[data-ajax-form-hide]').hide();
             }
         }, form);
     }
