@@ -234,13 +234,7 @@ window.items = {
                     }
 
                     if (scroll_elem == 'window') {
-                        var notScrollHeight = 0;
-
-                        $('[items-not-scroll-window]').each((i, item) => {
-                            notScrollHeight += parseFloat($(item).css('height'));
-                        });
-
-                        return $(window).height() + $(window).scrollTop() >= ($(document).height() - notScrollHeight) - 300;
+                        return $(window).height() + $(window).scrollTop() >= elem.list.height() - 300;
                     }
 
                     return scroll_elem.height() + scroll_elem.scrollTop() >= scroll_elem[0].scrollHeight - 300;
