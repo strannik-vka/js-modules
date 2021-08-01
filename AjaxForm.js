@@ -57,7 +57,7 @@ class AjaxForm {
             }
 
             if (typeof response !== 'object') {
-                if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1) {
+                if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
                     var response = {
                         success: true
                     }
