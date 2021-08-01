@@ -13,7 +13,7 @@
         scroll: true - подгрузка по скроллу (на родителе списка)
         scroll_elem: selector - элемент по котрому надо скролить
         scroll_window: true - подгрузка по скроллу на window
-        first_load: true - подгрузит список из ссылки
+        first_load: true - первоначально подгрузит список из ссылки
         onBeforeLoad: function(){ запуск до ajax запроса },
         onPrint: function(){ запуск после вывода списка },
         onBeforeScrollOriginal : () => { запуск до прокрутки скролла в исходное состояние }
