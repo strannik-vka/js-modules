@@ -56,9 +56,11 @@ class AjaxForm {
                 });
             }
 
-            if (typeof response !== 'object' && formData.url.indexOf('login') > -1) {
-                var response = {
-                    success: true
+            if (typeof response !== 'object') {
+                if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1) {
+                    var response = {
+                        success: true
+                    }
                 }
             }
 
