@@ -43,7 +43,9 @@ class AjaxForm {
     }
 
     submit(form) {
-        ajax(this.formData(form), response => {
+        var formData = this.formData(form);
+
+        ajax(formData, response => {
             if (this.callback) {
                 this.callback(response);
             }
@@ -54,7 +56,21 @@ class AjaxForm {
                 });
             }
 
+            if (typeof response !== 'object' && formData.url.indexOf('login') > -1) {
+                var response = {
+                    success: true
+                }
+            }
+
             if (response.success) {
+                if (form.attr('data-ajax-form-reload')) {
+                    location.reload();
+                }
+
+                if (form.attr('data-ajax-form-redirect')) {
+                    location.href = form.attr('data-ajax-form-redirect');
+                }
+
                 form.addClass('success');
 
                 if (form.find('[data-ajax-form-reset]').length == 0) {

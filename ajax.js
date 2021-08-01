@@ -74,7 +74,7 @@ window.ajax = function (obj, callback, form) {
         }
     }
 
-    $.ajax(settings).always(function (response) {
+    $.ajax(settings).always(function (response, textStatus, xhr) {
         if (form) {
             if (button.length && preloader) {
                 button.html(button.attr('text'));
