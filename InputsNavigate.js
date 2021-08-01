@@ -9,7 +9,21 @@ class InputsNavigate {
             .on('click', '[data-inputs-next]', (e) => {
                 this.currentElems(e);
                 this.next();
+            })
+            .on('input', '[data-inputs-navigate] input:eq(-1)', (e) => {
+                this.currentElems(e);
+                this.changeEndInput(e);
             });
+    }
+
+    changeEndInput(e) {
+        var val = $.trim($(e.currentTarget).val());
+
+        if (val) {
+            $('[data-inputs-end-show]').show();
+        } else {
+            $('[data-inputs-end-show]').hide();
+        }
     }
 
     currentElems(e) {
