@@ -30,9 +30,12 @@ class Distance {
                     if (this.isOff == false) {
                         var up = this.scrollTopLast > $(window).scrollTop(),
                             top = $(this.selector).offset().top - this.scrollTopLast,
+                            bottom = top + parseFloat($(this.selector).css('height')),
                             data = {
                                 top: top,
                                 topPercent: 100 / ($(window).height() / top),
+                                bottom: bottom,
+                                bottomPercent: 100 / ($(window).height() / bottom),
                                 up: up,
                                 down: !up
                             };
