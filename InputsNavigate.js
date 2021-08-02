@@ -10,19 +10,29 @@ class InputsNavigate {
                 this.currentElems(e);
                 this.changeEndInput(e);
             });
+
+        $('[data-inputs-navigate]').each((e, item) => {
+            $(item).parents('form').on('ajax-response', (e) => {
+                this.submit(e);
+            });
+        });
+    }
+
+    submit(e) {
+        var form = $(e.currentTarget);
+
+        if (form.find('[data-error-input]').length) {
+            this.showErrorInput();
+        }
     }
 
     currentElems(e) {
         this.button = $(e.currentTarget);
         this.parent = this.button.parents('[data-inputs-navigate]');
         this.currentInput = this.parent.find('[data-inputs-input].active');
-        this.isNext = this.button.attr('data-inputs-next') != undefined;
-        this.prevInput = this.currentInput.prev('[data-inputs-input]');
-        this.nextInput = this.currentInput.next('[data-inputs-input]');
-        this.showInput = this.isNext ? this.nextInput : this.prevInput;
-        this.showInputNext = this.isNext ?
-            this.showInput.next('[data-inputs-input]') :
-            this.showInput.prev('[data-inputs-input]');
+        this.showInput = this.button.attr('data-inputs-next') != undefined ?
+            this.currentInput.next('[data-inputs-input]') :
+            this.currentInput.prev('[data-inputs-input]');
     }
 
     isErrors() {
@@ -41,18 +51,19 @@ class InputsNavigate {
                 return false;
             }
         });
-
-        $('[data-inputs-prev], [data-inputs-next]').removeClass('active').addClass('deactive');
     }
 
     changeEndInput(e) {
-        var val = $.trim($(e.currentTarget).val());
+        if (this.changeEndInputTimer) clearTimeout(this.changeEndInputTimer);
+        this.changeEndInputTimer = setTimeout(() => {
+            var val = $.trim($(e.currentTarget).val());
 
-        if (val && !this.isErrors()) {
-            $('[data-inputs-end-show]').show();
-        } else {
-            $('[data-inputs-end-show]').hide();
-        }
+            if (val && !this.isErrors()) {
+                $('[data-inputs-end-show]').show();
+            } else {
+                $('[data-inputs-end-show]').hide();
+            }
+        }, 400);
     }
 
     show() {
@@ -62,8 +73,12 @@ class InputsNavigate {
 
             this.parent.find('.deactive').removeClass('deactive');
 
-            if (this.showInputNext.length == 0) {
-                this.button.addClass('deactive');
+            if (this.showInput.next('[data-inputs-input]').length == 0) {
+                this.parent.find('[data-inputs-next]').addClass('deactive');
+            }
+
+            if (this.showInput.prev('[data-inputs-input]').length == 0) {
+                this.parent.find('[data-inputs-prev]').addClass('deactive');
             }
         }
     }

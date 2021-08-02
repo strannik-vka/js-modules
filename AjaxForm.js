@@ -14,8 +14,14 @@ class AjaxForm {
             })
             .on('submit', this.selector, (e) => {
                 e.preventDefault();
-                this.submit($(e.currentTarget));
+                if (!this.isErrors($(e.currentTarget))) {
+                    this.submit($(e.currentTarget));
+                }
             });
+    }
+
+    isErrors(form) {
+        return form.find('[data-error-input]').length;
     }
 
     reset(form) {
@@ -89,6 +95,8 @@ class AjaxForm {
                 form.find('[data-ajax-form-show]').show();
                 form.find('[data-ajax-form-hide]').hide();
             }
+
+            form.trigger('ajax-response');
         }, form);
     }
 
