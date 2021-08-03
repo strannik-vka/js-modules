@@ -32,7 +32,7 @@ window.ajax = function (obj, callback, form) {
         headers: {}
     },
         token = localStorage.getItem('token'),
-        preloader = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>';
+        preloader = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>';
 
     if (token) {
         settings.headers.Authorization = 'Bearer ' + token;
