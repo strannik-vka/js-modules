@@ -6,7 +6,7 @@ class HorizontalView {
         this.content = obj.content;
         this.onScrollPercent = obj.onScrollPercent;
 
-        if ($(this.sectionWrap).length) {
+        if ($(this.section).length) {
             this.sticky();
             this.scroll();
         }
