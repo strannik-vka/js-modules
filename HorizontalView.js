@@ -2,9 +2,13 @@ class HorizontalView {
 
     constructor(obj) {
         this.section = obj.section ? obj.section : obj.content;
-        this.sectionWrap = '[data-horizontal-section="' + this.section + '"]';
-        this.content = obj.content;
+        this.content = $(obj.content);
+        this.width = parseFloat(this.content.css('width')) - $(window).width();
         this.onScrollPercent = obj.onScrollPercent;
+
+        $(window).on('resize', () => {
+            this.width = parseFloat(this.content.css('width')) - $(window).width();
+        });
 
         if ($(this.section).length) {
             this.sticky();
@@ -15,15 +19,12 @@ class HorizontalView {
     scroll() {
         $(window)
             .on('scroll', () => {
-                var top = $(this.sectionWrap).offset().top - $(window).scrollTop();
+                var top = this.sectionWrap.offset().top - $(window).scrollTop();
 
-                $(this.content).css('transform', 'translateX(' + top + 'px)');
+                this.content.css('transform', 'translateX(' + top + 'px)');
 
                 if (this.onScrollPercent) {
-                    var width = parseFloat($(this.content).css('width')) - $(window).width(),
-                        scrollPercent = 100 / (width / -(top));
-
-                    this.onScrollPercent(scrollPercent);
+                    this.onScrollPercent(100 / (this.width / -(top)));
                 }
             });
     }
@@ -31,12 +32,13 @@ class HorizontalView {
     sticky() {
         $(this.section).wrap('<div data-horizontal-section="' + this.section + '"></div>');
 
-        var width = parseFloat($(this.content).css('width')) - $(window).width(),
-            height = parseFloat($(this.sectionWrap).css('height'));
+        this.sectionWrap = $('[data-horizontal-section="' + this.section + '"]');
 
-        $(this.sectionWrap).css({
+        var height = parseFloat(this.sectionWrap.css('height'));
+
+        this.sectionWrap.css({
             'position': 'relative',
-            'height': (width + height) + 'px'
+            'height': (this.width + height) + 'px'
         });
 
         $(this.section).css({
