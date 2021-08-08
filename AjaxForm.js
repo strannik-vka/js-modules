@@ -14,10 +14,23 @@ class AjaxForm {
             })
             .on('submit', this.selector, (e) => {
                 e.preventDefault();
-                if (!this.isErrors($(e.currentTarget))) {
+
+                if (this.isErrors($(e.currentTarget))) {
+                    this.scrollToError();
+                } else {
                     this.submit($(e.currentTarget));
                 }
             });
+    }
+
+    scrollToError() {
+        if (typeof scroller !== 'undefined') {
+            if ($('.is-invalid').length) {
+                if (validate.notSeen($('.is-invalid:eq(0)')).length) {
+                    scroller.to($('.is-invalid:eq(0)'), false, -50);
+                }
+            }
+        }
     }
 
     isErrors(form) {
@@ -56,12 +69,6 @@ class AjaxForm {
                 this.callback(response);
             }
 
-            if (typeof modalNotify !== 'undefined') {
-                modalNotify.create({
-                    text: response.success
-                });
-            }
-
             if (typeof response !== 'object') {
                 if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
                     var response = {
@@ -71,6 +78,12 @@ class AjaxForm {
             }
 
             if (response.success) {
+                if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
+                    modalNotify.create({
+                        text: response.success
+                    });
+                }
+
                 if (form.attr('data-ajax-form-reload')) {
                     location.reload();
                 }

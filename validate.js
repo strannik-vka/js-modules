@@ -278,8 +278,6 @@ window.validate = {
         $('[data-error-input="' + input.attr('name') + '"]').remove();
     },
 
-
-
     errors: function (response_errors, form) {
         if (!validate.initOn) validate.init();
 
@@ -299,14 +297,10 @@ window.validate = {
             alert(errors.join(', '));
         }
 
-        if ($('.is-invalid').length) {
-            if (typeof scroll !== 'undefined') {
+        if (typeof scroller !== 'undefined') {
+            if ($('.is-invalid').length) {
                 if (validate.notSeen($('.is-invalid:eq(0)')).length) {
-                    if (typeof scroller !== 'undefined') {
-                        scroller.to($('.is-invalid:eq(0)'));
-                    } else if (typeof scroll !== 'undefined') {
-                        scroll.to($('.is-invalid:eq(0)'));
-                    }
+                    scroller.to($('.is-invalid:eq(0)'), false, -50);
                 }
             }
         }
