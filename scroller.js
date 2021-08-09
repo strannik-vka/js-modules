@@ -2,25 +2,25 @@ window.scroller = {
 
     first: false,
 
-    init: function () {
+    init: function() {
         if (location.href.indexOf('#') > -1) {
-            setTimeout(function () {
+            setTimeout(function() {
                 scroller.to(scroller.elem(scroller.hash(location.href)));
             }, 100);
         }
 
         $(document)
             .on('click', '[scroll-top]', scroller.toTop)
-            .on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
-                if ($(this).attr('data-toggle') == 'collapse') {
+            .on('click', '[href*="#"], [data-toggle="scroll"]', function(e) {
+                if (['collapse', 'tab', 'pill'].indexOf($(this).attr('data-toggle')) > -1) {
                     return false;
                 }
 
                 var href = scroller.hash(
-                    $(this).attr('href') ?
+                        $(this).attr('href') ?
                         $(this).attr('href') :
                         $(this).attr('data-target')
-                ),
+                    ),
                     elem = scroller.elem(href);
 
                 if (elem && elem.length) {
@@ -32,12 +32,12 @@ window.scroller = {
             });
     },
 
-    hash: function (url) {
+    hash: function(url) {
         url = url.split('#');
         return url[url.length - 1];
     },
 
-    elem: function (str) {
+    elem: function(str) {
         if (str && str.indexOf('://') == -1) {
             var isElem = $('*').is('#' + str);
 
@@ -56,15 +56,15 @@ window.scroller = {
                 $('#' + str) :
                 (
                     $('a').is('[name="' + str + '"]') ?
-                        $('a[name="' + str + '"]') :
-                        false
+                    $('a[name="' + str + '"]') :
+                    false
                 );
         }
 
         return false;
     },
 
-    replace_attr: function (elem) {
+    replace_attr: function(elem) {
         if (elem.attr('name') || elem.attr('id')) {
             if (elem.attr('name')) {
                 elem
@@ -92,11 +92,11 @@ window.scroller = {
         }
     },
 
-    to: function (elem, callback, top) {
+    to: function(elem, callback, top) {
         if (elem && elem.length) {
             var timeout = elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0;
 
-            setTimeout(function () {
+            setTimeout(function() {
                 if ($('.modal-open').length) {
                     if ($('.modal').find(elem).length) {
                         return false;
@@ -120,7 +120,7 @@ window.scroller = {
                     scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
                 }
 
-                $('[scroll-fixed]').each(function () {
+                $('[scroll-fixed]').each(function() {
                     if ($(this).css('display') != 'none') {
                         scrollTop -= parseFloat($(this).css('height'));
                     }
@@ -132,7 +132,7 @@ window.scroller = {
 
                 $('html, body').stop().animate({
                     'scrollTop': scrollTop
-                }, 400, 'swing', function () {
+                }, 400, 'swing', function() {
                     elem.trigger('scroll-complete');
                     if (callback) callback();
                 });
@@ -142,7 +142,7 @@ window.scroller = {
         }
     },
 
-    toTop: function () {
+    toTop: function() {
         scroller.to($('body'));
     }
 
