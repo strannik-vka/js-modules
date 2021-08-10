@@ -2,42 +2,47 @@ window.scroller = {
 
     first: false,
 
-    init: function() {
+    init: function () {
         if (location.href.indexOf('#') > -1) {
-            setTimeout(function() {
+            window.onload = () => {
                 scroller.to(scroller.elem(scroller.hash(location.href)));
-            }, 100);
+            }
         }
 
         $(document)
             .on('click', '[scroll-top]', scroller.toTop)
-            .on('click', '[href*="#"], [data-toggle="scroll"]', function(e) {
-                if (['collapse', 'tab', 'pill'].indexOf($(this).attr('data-toggle')) > -1) {
-                    return false;
-                }
+            .on('click', '[href*="#"], [data-toggle="scroll"]', function (e) {
+                if (scroller.allowed($(this))) {
+                    var hash = scroller.elemHash($(this)), elem = scroller.elem(hash);
 
-                var href = scroller.hash(
-                        $(this).attr('href') ?
-                        $(this).attr('href') :
-                        $(this).attr('data-target')
-                    ),
-                    elem = scroller.elem(href);
-
-                if (elem && elem.length) {
-                    e.preventDefault();
-                    scroller.to(elem);
-                    location.hash = href;
-                    return false;
+                    if (elem && elem.length) {
+                        e.preventDefault();
+                        scroller.to(elem);
+                        location.hash = hash;
+                        return false;
+                    }
                 }
             });
     },
 
-    hash: function(url) {
+    allowed: (elem) => {
+        return ['collapse', 'tab', 'pill'].indexOf(elem.attr('data-toggle')) == -1;
+    },
+
+    hash: function (url) {
         url = url.split('#');
         return url[url.length - 1];
     },
 
-    elem: function(str) {
+    elemHash: (elem) => {
+        return scroller.hash(
+            elem.attr('href')
+                ? elem.attr('href')
+                : elem.attr('data-target')
+        );
+    },
+
+    elem: function (str) {
         if (str && str.indexOf('://') == -1) {
             var isElem = $('*').is('#' + str);
 
@@ -56,28 +61,16 @@ window.scroller = {
                 $('#' + str) :
                 (
                     $('a').is('[name="' + str + '"]') ?
-                    $('a[name="' + str + '"]') :
-                    false
+                        $('a[name="' + str + '"]') :
+                        false
                 );
         }
 
         return false;
     },
 
-    replace_attr: function(elem) {
-        if (elem.attr('name') || elem.attr('id')) {
-            if (elem.attr('name')) {
-                elem
-                    .attr('data-name', elem.attr('name'))
-                    .removeAttr('name');
-            }
-
-            if (elem.attr('id')) {
-                elem
-                    .attr('data-id', elem.attr('id'))
-                    .removeAttr('id');
-            }
-        } else {
+    replace_attr: function (elem, original) {
+        if (original) {
             if (elem.attr('data-id')) {
                 elem
                     .attr('id', elem.attr('data-id'))
@@ -89,60 +82,73 @@ window.scroller = {
                     .attr('name', elem.attr('data-name'))
                     .removeAttr('data-name');
             }
+        } else {
+            if (elem.attr('name')) {
+                elem
+                    .attr('data-name', elem.attr('name'))
+                    .removeAttr('name');
+            }
+
+            if (elem.attr('id')) {
+                elem
+                    .attr('data-id', elem.attr('id'))
+                    .removeAttr('id');
+            }
         }
     },
 
-    to: function(elem, callback, top) {
+    to: function (elem, callback, top) {
         if (elem && elem.length) {
+            if ($('.modal-open').length) {
+                if ($('.modal').find(elem).length) {
+                    return false;
+                } else {
+                    $('.modal-open').removeClass('modal-open');
+                }
+            }
+
+            elem.trigger('scroll-start');
+
+            scroller.replace_attr(elem);
+
+            if ($('[data-toggle="dropdown"]').length && typeof $.fn.dropdown !== 'undefined') {
+                $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
+            }
+
+            var scrollTop = elem.offset().top;
+
+            if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
+                var zoom = parseFloat($('html').css('zoom'));
+                scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
+            }
+
+            $('[scroll-fixed]').each(function () {
+                if ($(this).css('display') != 'none') {
+                    scrollTop -= parseFloat($(this).css('height'));
+                }
+            });
+
+            if (top) {
+                scrollTop += top;
+            }
+
             var timeout = elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0;
 
-            setTimeout(function() {
-                if ($('.modal-open').length) {
-                    if ($('.modal').find(elem).length) {
-                        return false;
-                    } else {
-                        $('.modal-open').removeClass('modal-open');
-                    }
-                }
-
-                elem.trigger('scroll-start');
-
-                scroller.replace_attr(elem);
-
-                if ($('[data-toggle="dropdown"]').length && typeof $.fn.dropdown !== 'undefined') {
-                    $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
-                }
-
-                var scrollTop = elem.offset().top;
-
-                if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
-                    var zoom = parseFloat($('html').css('zoom'));
-                    scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
-                }
-
-                $('[scroll-fixed]').each(function() {
-                    if ($(this).css('display') != 'none') {
-                        scrollTop -= parseFloat($(this).css('height'));
-                    }
-                });
-
-                if (top) {
-                    scrollTop += top;
-                }
-
+            setTimeout(() => {
                 $('html, body').stop().animate({
                     'scrollTop': scrollTop
-                }, 400, 'swing', function() {
+                }, 400, () => {
+                    scroller.replace_attr(elem, true);
+
                     elem.trigger('scroll-complete');
+
                     if (callback) callback();
                 });
-
-                scroller.replace_attr(elem);
             }, timeout);
         }
     },
 
-    toTop: function() {
+    toTop: function () {
         scroller.to($('body'));
     }
 
