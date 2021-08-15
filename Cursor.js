@@ -14,6 +14,7 @@ class Cursor {
 
         this.wrapDefaultCursorOff();
         this.mousemove();
+        this.click();
     }
 
     wrapDefaultCursorOff() {
@@ -56,6 +57,24 @@ class Cursor {
                 });
             }
         });
+    }
+
+    click() {
+        this.cursor.on('click', () => {
+            if (this.onClick) {
+                this.onClick({
+                    isLeft: this.isLeft,
+                    hoverElem: this.hoverElem
+                });
+            }
+        });
+    }
+
+    triggerMousemove() {
+        var event = $.Event('mousemove');
+        event.clientX = this.left + this.cursorWidth;
+        event.clientY = this.top + this.cursorHeight;
+        $('body').trigger(event);
     }
 
 }
