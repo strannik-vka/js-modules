@@ -11,8 +11,8 @@ class Cursor {
         this.onMousemove = obj.onMousemove;
         this.onClick = obj.onClick;
 
-        this.cursorWidth = $(this.cursor).width() / 2;
-        this.cursorHeight = $(this.cursor).height() / 2;
+        this.cursorWidth = this.cursor.width() / 2;
+        this.cursorHeight = this.cursor.height() / 2;
 
         this.wrapDefaultCursorOff();
         this.mousemove();
@@ -35,7 +35,7 @@ class Cursor {
     getParams(event) {
         this.hoverElem = $(document.elementFromPoint(event.clientX, event.clientY));
 
-        this.inWrap = this.hoverElem.closest(this.wrapElem).length && this.hoverElem.closest('a').length == 0;
+        this.inWrap = this.hoverElem.closest(this.wrapSelector).length && this.hoverElem.closest('a').length == 0;
 
         this.top = event.clientY - this.cursorHeight;
         this.left = event.clientX - this.cursorWidth;
