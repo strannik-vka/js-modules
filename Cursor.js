@@ -18,7 +18,7 @@ class Cursor {
     }
 
     wrapDefaultCursorOff() {
-        $('body').append('<style>' + this.wrapSelector + ', ' + this.wrapSelector + ' * {cursor: none}</style>');
+        $('body').append('<style>' + this.wrapSelector + ', ' + this.wrapSelector + ' * {cursor: none} ' + this.wrapSelector + ' a, ' + this.wrapSelector + ' a * {cursor: pointer}</style>');
     }
 
     setCursorPosition() {
