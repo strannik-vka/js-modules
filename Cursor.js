@@ -4,9 +4,7 @@ class Cursor {
         this.cursor = $(obj.cursor);
 
         this.wrapSelector = obj.wrap ? obj.wrap : 'body';
-        this.wrapElem = $(this.wrapSelector);
-        this.wrapWidth = this.wrapElem.width();
-        this.wrapWidth2 = this.wrapWidth / 2;
+        this.bodyWidth2 = $('body').width() / 2;
 
         this.onMousemove = obj.onMousemove;
         this.onClick = obj.onClick;
@@ -40,7 +38,7 @@ class Cursor {
         this.top = event.clientY - this.cursorHeight;
         this.left = event.clientX - this.cursorWidth;
 
-        this.isLeft = this.left < this.wrapWidth2;
+        this.isLeft = this.left < this.bodyWidth2;
     }
 
     mousemove() {
