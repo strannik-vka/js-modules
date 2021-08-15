@@ -5,6 +5,17 @@ window.cursorStatus = {
     timer: false,
 
     isLeftHalf_old: false,
+    hoverElem: false,
+
+    mousemoveHref: function (event, options) {
+        $(options.cursor).hide();
+
+        var elem = $(document.elementFromPoint(event.clientX, event.clientY));
+
+        if (elem[0].tagName != 'A') {
+            $(options.cursor).show();
+        }
+    },
 
     create: function (elem, options) {
         var cursor = {
@@ -28,6 +39,8 @@ window.cursorStatus = {
                         top: event.clientY - cursor.height,
                         left: event.clientX - cursor.width
                     });
+
+                    cursorStatus.mousemoveHref(event, options);
                 }
 
                 if (!cursorStatus.timer) {
@@ -75,6 +88,10 @@ window.cursorStatus = {
             if (options.on.click) {
                 if (options.cursor) {
                     $(options.cursor).on('click', function (event) {
+                        $(this).hide();
+                        cursorStatus.hoverElem = document.elementFromPoint(event.clientX, event.clientY);
+                        $(this).show();
+
                         if (elem.isMouseOver(event.pageY)) {
                             options.on.click(elem.eq(isMouseOverI));
                             cursorStatus.bodyTriggerMousemove(event);
