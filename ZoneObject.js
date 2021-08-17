@@ -18,12 +18,12 @@ class ZoneObject {
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
                 if (data.active == false) {
-                    this.elements[selector].run();
+                    this.elements[selector].run(true);
                     this.elements[selector].active = true;
                 }
             } else {
                 if (data.active == true) {
-                    this.elements[selector].stop();
+                    this.elements[selector].stop(false);
                     this.elements[selector].active = false;
                 }
             }
