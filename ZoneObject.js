@@ -12,28 +12,30 @@ class ZoneObject {
         var wt = $(window).scrollTop(),
             wh = $(window).height();
 
-        $.each(this.elements, (i, data) => {
-            var et = $(data.element).offset().top,
-                eh = $(data.element).outerHeight();
+        $.each(this.elements, (selector, data) => {
+            var et = $(selector).offset().top,
+                eh = $(selector).outerHeight();
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
                 if (data.active == false) {
-                    this.elements[i].run();
-                    this.elements[i].active = true;
+                    this.elements[selector].run();
+                    this.elements[selector].active = true;
                 }
             } else {
                 if (data.active == true) {
-                    this.elements[i].stop();
-                    this.elements[i].active = false;
+                    this.elements[selector].stop();
+                    this.elements[selector].active = false;
                 }
             }
         });
     }
 
-    create(obj) {
-        var index = Object.keys(this.elements).length;
+    create(selector, obj) {
+        this.elements[selector] = $.extend(obj, {
+            active: false
+        });
 
-        this.elements[index] = obj;
+        this.scroll();
     }
 
 }
