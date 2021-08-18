@@ -90,9 +90,9 @@ window.webp = {
 	go_canas: function (img, callback) {
 		if (typeof img !== 'undefined') {
 			if (img.length) {
-				webp.getUrl((
-					img.attr('src') ? img.attr('src') : img.attr('data-src')
-				), function (response) {
+				var src = img.attr('src') ? img.attr('src') : img.attr('data-src');
+
+				webp.getUrl(src, function (response) {
 					if (response) {
 						webp.decode(response, function (canvas) {
 							if (canvas) {
@@ -101,6 +101,7 @@ window.webp = {
 							callback();
 						});
 					} else {
+						img.attr('data-error-src', src).removeAttr('src').removeAttr('data-src');
 						callback();
 					}
 				});
@@ -208,7 +209,7 @@ window.WebPDecoder = function () {
 				-c : c
 		} function cb(a, b, c, d) { var e, f = 0; x(null != a); x(null != b); x(4294967288 > d); a.Sb = d; a.Ra = 0; a.u = 0; a.h = 0; 4 < d && (d = 4); for (e = 0; e < d; ++e)f += b[c + e] << 8 * e; a.Ra = f; a.bb = d; a.oa = b; a.pa = c } function Vb(a) { for (; 8 <= a.u && a.bb < a.Sb;)a.Ra >>>= 8, a.Ra += a.oa[a.pa + a.bb] << ob - 8 >>> 0, ++a.bb, a.u -= 8; db(a) && (a.h = 1, a.u = 0) } function D(a, b) { x(0 <= b); if (!a.h && b <= Gd) { var c = pb(a) & Hd[b]; a.u += b; Vb(a); return c } a.h = 1; return a.u = 0 } function Wb() { this.b = this.Ca = this.I = 0; this.oa = []; this.pa = 0; this.Jd = []; this.Yc = 0; this.Zc = []; this.Ka = 0 } function Ra() {
 			this.Ra =
-			0; this.oa = []; this.h = this.u = this.bb = this.Sb = this.pa = 0
+				0; this.oa = []; this.h = this.u = this.bb = this.Sb = this.pa = 0
 		} function pb(a) { return a.Ra >>> (a.u & ob - 1) >>> 0 } function db(a) { x(a.bb <= a.Sb); return a.h || a.bb == a.Sb && a.u > ob } function qb(a, b) { a.u = b; a.h = db(a) } function Sa(a) { a.u >= Xb && (x(a.u >= Xb), Vb(a)) } function Qa(a) { x(null != a && null != a.oa); a.pa < a.Zc ? (a.I = (a.oa[a.pa++] | a.I << 8) >>> 0, a.b += 8) : (x(null != a && null != a.oa), a.pa < a.Yc ? (a.b += 8, a.I = a.oa[a.pa++] | a.I << 8) : a.Ka ? a.b = 0 : (a.I <<= 8, a.b += 8, a.Ka = 1)) } function G(a) { return na(a, 1) } function K(a, b) {
 			var c = a.Ca; 0 > a.b && Qa(a); var d = a.b,
 				e = c * b >>> 8, f = (a.I >>> d > e) + 0; f ? (c -= e, a.I -= e + 1 << d >>> 0) : c = e + 1; d = c; for (e = 0; 256 <= d;)e += 8, d >>= 8; d = 7 ^ e + Id[d]; a.b -= d; a.Ca = (c << d) - 1; return f
@@ -217,7 +218,7 @@ window.WebPDecoder = function () {
 			I(b.X, 0, a.X, 0, 1 << b.Xa)
 		} function ac() { this.X = []; this.Xa = this.Mb = 0 } function bc(a, b, c, d) { x(null != c); x(null != d); var e = c[0], f = d[0]; 0 == e && (e = (a * f + b / 2) / b); 0 == f && (f = (b * e + a / 2) / a); if (0 >= e || 0 >= f) return 0; c[0] = e; d[0] = f; return 1 } function xa(a, b) { return a + (1 << b) - 1 >>> b } function yb(a, b) { return ((a & 4278255360) + (b & 4278255360) >>> 0 & 4278255360) + ((a & 16711935) + (b & 16711935) >>> 0 & 16711935) >>> 0 } function X(a, b) { self[b] = function (b, d, e, f, g, h, k) { var c; for (c = 0; c < g; ++c) { var m = self[a](h[k + c - 1], e, f + c); h[k + c] = yb(b[d + c], m) } } } function Jd() {
 			this.ud =
-			this.hd = this.jd = 0
+				this.hd = this.jd = 0
 		} function aa(a, b) { return (((a ^ b) & 4278124286) >>> 1) + (a & b) >>> 0 } function sa(a) { if (0 <= a && 256 > a) return a; if (0 > a) return 0; if (255 < a) return 255 } function eb(a, b) { return sa(a + (a - b + .5 >> 1)) } function Ia(a, b, c) { return Math.abs(b - c) - Math.abs(a - c) } function cc(a, b, c, d, e, f, g) { d = f[g - 1]; for (c = 0; c < e; ++c)f[g + c] = d = yb(a[b + c], d) } function Kd(a, b, c, d, e) { var f; for (f = 0; f < c; ++f) { var g = a[b + f], h = g >> 8 & 255, k = g & 16711935, k = k + ((h << 16) + h), k = k & 16711935; d[e + f] = (g & 4278255360) + k >>> 0 } } function dc(a, b) {
 			b.jd = a >> 0 & 255; b.hd = a >>
 				8 & 255; b.ud = a >> 16 & 255
@@ -294,15 +295,15 @@ window.WebPDecoder = function () {
 			} return 1
 		} function zc(a, b, c, d, e, f) { if (0 != a.Z) { var g = a.qd, h = a.rd; for (x(null != ia[a.Z]); b < c; ++b)ia[a.Z](g, h, d, e, d, e, f), g = d, h = e, e += f; a.qd = g; a.rd = h } } function Ib(a, b) { var c = a.l.ma, d = 0 == c.Z || 1 == c.Z ? a.l.j : a.C, d = a.C < d ? d : a.C; x(b <= a.l.o); if (b > d) { var e = a.l.width, f = c.ca, g = c.tb + e * d, h = a.V, k = a.Ba + a.c * d, l = a.gc; x(1 == a.ab); x(3 == l[0].hc); he(l[0], d, b, h, k, f, g); zc(c, d, b, f, g, e) } a.C = a.Ma = b } function Jb(a, b, c, d, e, f, g) {
 			var h = a.$ / d, k = a.$ % d,
-			l = a.m, m = a.s, n = c + a.$, r = n; e = c + d * e; var q = c + d * f, t = 280 + m.ua, v = a.Pb ? h : 16777216, p = 0 < m.ua ? m.Wa : null, u = m.wc, w = n < q ? ha(m, k, h) : null; x(a.C < f); x(q <= e); var y = !1; a: for (; ;) {
-				for (; y || n < q;) {
-					var A = 0; if (h >= v) { var v = a, E = n - c; x(v.Pb); v.wd = v.m; v.xd = E; 0 < v.s.ua && $b(v.s.Wa, v.s.vb); v = h + ie } k & u || (w = ha(m, k, h)); x(null != w); w.Qb && (b[n] = w.qb, y = !0); if (!y) if (Sa(l), w.jc) { var A = l, E = b, B = n, C = w.pd[pb(A) & xb - 1]; x(w.jc); 256 > C.g ? (qb(A, A.u + C.g), E[B] = C.value, A = 0) : (qb(A, A.u + C.g - 256), x(256 <= C.value), A = C.value); 0 == A && (y = !0) } else A = ua(w.G[0], w.H[0],
-						l); if (l.h) break; if (y || 256 > A) { if (!y) if (w.nd) b[n] = (w.qb | A << 8) >>> 0; else { Sa(l); y = ua(w.G[1], w.H[1], l); Sa(l); E = ua(w.G[2], w.H[2], l); B = ua(w.G[3], w.H[3], l); if (l.h) break; b[n] = (B << 24 | y << 16 | A << 8 | E) >>> 0 } y = !1; ++n; ++k; if (k >= d && (k = 0, ++h, null != g && h <= f && !(h % 16) && g(a, h), null != p)) for (; r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A } else if (280 > A) {
-							A = ib(A - 256, l); E = ua(w.G[4], w.H[4], l); Sa(l); E = ib(E, l); E = nc(d, E); if (l.h) break; if (n - c < E || e - n < A) break a; else for (B = 0; B < A; ++B)b[n + B] = b[n + B - E]; n += A; for (k += A; k >= d;)k -= d, ++h, null !=
-								g && h <= f && !(h % 16) && g(a, h); x(n <= e); k & u && (w = ha(m, k, h)); if (null != p) for (; r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A
-						} else if (A < t) { y = A - 280; for (x(null != p); r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A; A = n; E = p; x(!(y >>> E.Xa)); b[A] = E.X[y]; y = !0 } else break a; y || x(l.h == db(l))
-				} if (a.Pb && l.h && n < e) x(a.m.h), a.a = 5, a.m = a.wd, a.$ = a.xd, 0 < a.s.ua && $b(a.s.vb, a.s.Wa); else if (l.h) break a; else null != g && g(a, h > f ? f : h), a.a = 0, a.$ = n - c; return 1
-			} a.a = 3; return 0
+				l = a.m, m = a.s, n = c + a.$, r = n; e = c + d * e; var q = c + d * f, t = 280 + m.ua, v = a.Pb ? h : 16777216, p = 0 < m.ua ? m.Wa : null, u = m.wc, w = n < q ? ha(m, k, h) : null; x(a.C < f); x(q <= e); var y = !1; a: for (; ;) {
+					for (; y || n < q;) {
+						var A = 0; if (h >= v) { var v = a, E = n - c; x(v.Pb); v.wd = v.m; v.xd = E; 0 < v.s.ua && $b(v.s.Wa, v.s.vb); v = h + ie } k & u || (w = ha(m, k, h)); x(null != w); w.Qb && (b[n] = w.qb, y = !0); if (!y) if (Sa(l), w.jc) { var A = l, E = b, B = n, C = w.pd[pb(A) & xb - 1]; x(w.jc); 256 > C.g ? (qb(A, A.u + C.g), E[B] = C.value, A = 0) : (qb(A, A.u + C.g - 256), x(256 <= C.value), A = C.value); 0 == A && (y = !0) } else A = ua(w.G[0], w.H[0],
+							l); if (l.h) break; if (y || 256 > A) { if (!y) if (w.nd) b[n] = (w.qb | A << 8) >>> 0; else { Sa(l); y = ua(w.G[1], w.H[1], l); Sa(l); E = ua(w.G[2], w.H[2], l); B = ua(w.G[3], w.H[3], l); if (l.h) break; b[n] = (B << 24 | y << 16 | A << 8 | E) >>> 0 } y = !1; ++n; ++k; if (k >= d && (k = 0, ++h, null != g && h <= f && !(h % 16) && g(a, h), null != p)) for (; r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A } else if (280 > A) {
+								A = ib(A - 256, l); E = ua(w.G[4], w.H[4], l); Sa(l); E = ib(E, l); E = nc(d, E); if (l.h) break; if (n - c < E || e - n < A) break a; else for (B = 0; B < A; ++B)b[n + B] = b[n + B - E]; n += A; for (k += A; k >= d;)k -= d, ++h, null !=
+									g && h <= f && !(h % 16) && g(a, h); x(n <= e); k & u && (w = ha(m, k, h)); if (null != p) for (; r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A
+							} else if (A < t) { y = A - 280; for (x(null != p); r < n;)A = b[r++], p.X[(506832829 * A & 4294967295) >>> p.Mb] = A; A = n; E = p; x(!(y >>> E.Xa)); b[A] = E.X[y]; y = !0 } else break a; y || x(l.h == db(l))
+					} if (a.Pb && l.h && n < e) x(a.m.h), a.a = 5, a.m = a.wd, a.$ = a.xd, 0 < a.s.ua && $b(a.s.vb, a.s.Wa); else if (l.h) break a; else null != g && g(a, h > f ? f : h), a.a = 0, a.$ = n - c; return 1
+				} a.a = 3; return 0
 		} function Ac(a) {
 			x(null != a); a.vc = null; a.yc = null; a.Ya = null; var b =
 				a.Wa; null != b && (b.X = null); a.vb = null; x(null != a)
@@ -445,13 +446,13 @@ window.WebPDecoder = function () {
 			c, d); a[b + 3 + 96] = a[b + 2 + 64] = a[b + 1 + 32] = a[b + 0 + 0] = z(g, f, c); a[b + 3 + 64] = a[b + 2 + 32] = a[b + 1 + 0] = z(h, g, f); a[b + 3 + 32] = a[b + 2 + 0] = z(k, h, g); a[b + 3 + 0] = z(l, k, h)
 	} function kf(a, b) { var c = a[b + 1 - 32], d = a[b + 2 - 32], e = a[b + 3 - 32], f = a[b + 4 - 32], g = a[b + 5 - 32], h = a[b + 6 - 32], k = a[b + 7 - 32]; a[b + 0 + 0] = z(a[b + 0 - 32], c, d); a[b + 1 + 0] = a[b + 0 + 32] = z(c, d, e); a[b + 2 + 0] = a[b + 1 + 32] = a[b + 0 + 64] = z(d, e, f); a[b + 3 + 0] = a[b + 2 + 32] = a[b + 1 + 64] = a[b + 0 + 96] = z(e, f, g); a[b + 3 + 32] = a[b + 2 + 64] = a[b + 1 + 96] = z(f, g, h); a[b + 3 + 64] = a[b + 2 + 96] = z(g, h, k); a[b + 3 + 96] = z(h, k, k) } function jf(a, b) {
 		var c = a[b - 1 + 0],
-		d = a[b - 1 + 32], e = a[b - 1 + 64], f = a[b - 1 - 32], g = a[b + 0 - 32], h = a[b + 1 - 32], k = a[b + 2 - 32], l = a[b + 3 - 32]; a[b + 0 + 0] = a[b + 1 + 64] = f + g + 1 >> 1; a[b + 1 + 0] = a[b + 2 + 64] = g + h + 1 >> 1; a[b + 2 + 0] = a[b + 3 + 64] = h + k + 1 >> 1; a[b + 3 + 0] = k + l + 1 >> 1; a[b + 0 + 96] = z(e, d, c); a[b + 0 + 64] = z(d, c, f); a[b + 0 + 32] = a[b + 1 + 96] = z(c, f, g); a[b + 1 + 32] = a[b + 2 + 96] = z(f, g, h); a[b + 2 + 32] = a[b + 3 + 96] = z(g, h, k); a[b + 3 + 32] = z(h, k, l)
+			d = a[b - 1 + 32], e = a[b - 1 + 64], f = a[b - 1 - 32], g = a[b + 0 - 32], h = a[b + 1 - 32], k = a[b + 2 - 32], l = a[b + 3 - 32]; a[b + 0 + 0] = a[b + 1 + 64] = f + g + 1 >> 1; a[b + 1 + 0] = a[b + 2 + 64] = g + h + 1 >> 1; a[b + 2 + 0] = a[b + 3 + 64] = h + k + 1 >> 1; a[b + 3 + 0] = k + l + 1 >> 1; a[b + 0 + 96] = z(e, d, c); a[b + 0 + 64] = z(d, c, f); a[b + 0 + 32] = a[b + 1 + 96] = z(c, f, g); a[b + 1 + 32] = a[b + 2 + 96] = z(f, g, h); a[b + 2 + 32] = a[b + 3 + 96] = z(g, h, k); a[b + 3 + 32] = z(h, k, l)
 	} function lf(a, b) {
 		var c = a[b + 0 - 32], d = a[b + 1 - 32], e = a[b + 2 - 32], f = a[b + 3 - 32], g = a[b + 4 - 32], h = a[b + 5 - 32], k = a[b + 6 - 32], l = a[b + 7 - 32]; a[b + 0 + 0] = c + d + 1 >> 1; a[b + 1 + 0] = a[b + 0 + 64] = d + e + 1 >> 1; a[b + 2 + 0] =
 			a[b + 1 + 64] = e + f + 1 >> 1; a[b + 3 + 0] = a[b + 2 + 64] = f + g + 1 >> 1; a[b + 0 + 32] = z(c, d, e); a[b + 1 + 32] = a[b + 0 + 96] = z(d, e, f); a[b + 2 + 32] = a[b + 1 + 96] = z(e, f, g); a[b + 3 + 32] = a[b + 2 + 96] = z(f, g, h); a[b + 3 + 64] = z(g, h, k); a[b + 3 + 96] = z(h, k, l)
 	} function nf(a, b) { var c = a[b - 1 + 0], d = a[b - 1 + 32], e = a[b - 1 + 64], f = a[b - 1 + 96]; a[b + 0 + 0] = c + d + 1 >> 1; a[b + 2 + 0] = a[b + 0 + 32] = d + e + 1 >> 1; a[b + 2 + 32] = a[b + 0 + 64] = e + f + 1 >> 1; a[b + 1 + 0] = z(c, d, e); a[b + 3 + 0] = a[b + 1 + 32] = z(d, e, f); a[b + 3 + 32] = a[b + 1 + 64] = z(e, f, f); a[b + 3 + 64] = a[b + 2 + 64] = a[b + 0 + 96] = a[b + 1 + 96] = a[b + 2 + 96] = a[b + 3 + 96] = f } function mf(a, b) {
 		var c = a[b - 1 + 0],
-		d = a[b - 1 + 32], e = a[b - 1 + 64], f = a[b - 1 + 96], g = a[b - 1 - 32], h = a[b + 0 - 32], k = a[b + 1 - 32], l = a[b + 2 - 32]; a[b + 0 + 0] = a[b + 2 + 32] = c + g + 1 >> 1; a[b + 0 + 32] = a[b + 2 + 64] = d + c + 1 >> 1; a[b + 0 + 64] = a[b + 2 + 96] = e + d + 1 >> 1; a[b + 0 + 96] = f + e + 1 >> 1; a[b + 3 + 0] = z(h, k, l); a[b + 2 + 0] = z(g, h, k); a[b + 1 + 0] = a[b + 3 + 32] = z(c, g, h); a[b + 1 + 32] = a[b + 3 + 64] = z(d, c, g); a[b + 1 + 64] = a[b + 3 + 96] = z(e, d, c); a[b + 1 + 96] = z(f, e, d)
+			d = a[b - 1 + 32], e = a[b - 1 + 64], f = a[b - 1 + 96], g = a[b - 1 - 32], h = a[b + 0 - 32], k = a[b + 1 - 32], l = a[b + 2 - 32]; a[b + 0 + 0] = a[b + 2 + 32] = c + g + 1 >> 1; a[b + 0 + 32] = a[b + 2 + 64] = d + c + 1 >> 1; a[b + 0 + 64] = a[b + 2 + 96] = e + d + 1 >> 1; a[b + 0 + 96] = f + e + 1 >> 1; a[b + 3 + 0] = z(h, k, l); a[b + 2 + 0] = z(g, h, k); a[b + 1 + 0] = a[b + 3 + 32] = z(c, g, h); a[b + 1 + 32] = a[b + 3 + 64] = z(d, c, g); a[b + 1 + 64] = a[b + 3 + 96] = z(e, d, c); a[b + 1 + 96] = z(f, e, d)
 	} function xf(a, b) { var c; for (c = 0; 8 > c; ++c)I(a, b + 32 * c, a, b - 32, 8) } function yf(a, b) { var c; for (c = 0; 8 > c; ++c)M(a, b, a[b - 1], 8), b += 32 } function lb(a, b, c) {
 		var d; for (d = 0; 8 > d; ++d)M(b, c + 32 *
 			d, a, 8)
@@ -475,27 +476,27 @@ window.WebPDecoder = function () {
 				this.$a = this.i = this.c = 0; this.l = new Oa; this.ic = 0; this.ca = []; this.tb = 0; this.qd = null; this.rd = 0
 		} function Rb(a, b, c, d, e, f, g) { a = null == a ? 0 : a[b + 0]; for (b = 0; b < g; ++b)e[f + b] = a + c[d + b] & 255, a = e[f + b] } function Gf(a, b, c, d, e, f, g) { if (null == a) Rb(null, null, c, d, e, f, g); else { var h; for (h = 0; h < g; ++h)e[f + h] = a[b + h] + c[d + h] & 255 } } function Hf(a, b, c, d, e, f, g) { if (null == a) Rb(null, null, c, d, e, f, g); else { var h = a[b + 0], k = h, l = h, m; for (m = 0; m < g; ++m)h = a[b + m], k = l + h - k, l = c[d + m] + (k & -256 ? 0 > k ? 0 : 255 : k) & 255, k = h, e[f + m] = l } } function Le(a, b, c, d) {
 			var e = b.width,
-			f = b.o; x(null != a && null != b); if (0 > c || 0 >= d || c + d > f) return null; if (!a.Cc) {
-				if (null == a.ga) {
-					a.ga = new Ff; var g; (g = null == a.ga) || (g = b.width * b.o, x(0 == a.Gb.length), a.Gb = V(g), a.Uc = 0, null == a.Gb ? g = 0 : (a.mb = a.Gb, a.nb = a.Uc, a.rc = null, g = 1), g = !g); if (!g) {
-						g = a.ga; var h = a.Fa, k = a.P, l = a.qc, m = a.mb, n = a.nb, r = k + 1, q = l - 1, t = g.l; x(null != h && null != m && null != b); ia[0] = null; ia[1] = Rb; ia[2] = Gf; ia[3] = Hf; g.ca = m; g.tb = n; g.c = b.width; g.i = b.height; x(0 < g.c && 0 < g.i); if (1 >= l) b = 0; else if (g.$a = h[k + 0] >> 0 & 3, g.Z = h[k + 0] >> 2 & 3, g.Lc = h[k + 0] >> 4 & 3, k = h[k + 0] >> 6 & 3, 0 >
-							g.$a || 1 < g.$a || 4 <= g.Z || 1 < g.Lc || k) b = 0; else if (t.put = kc, t.ac = gc, t.bc = lc, t.ma = g, t.width = b.width, t.height = b.height, t.Da = b.Da, t.v = b.v, t.va = b.va, t.j = b.j, t.o = b.o, g.$a) b: {
-								x(1 == g.$a), b = Bc(); c: for (; ;) { if (null == b) { b = 0; break b } x(null != g); g.mc = b; b.c = g.c; b.i = g.i; b.l = g.l; b.l.ma = g; b.l.width = g.c; b.l.height = g.i; b.a = 0; cb(b.m, h, r, q); if (!rb(g.c, g.i, 1, b, null)) break c; 1 == b.ab && 3 == b.gc[0].hc && yc(b.s) ? (g.ic = 1, h = b.c * b.i, b.Ta = null, b.Ua = 0, b.V = V(h), b.Ba = 0, null == b.V ? (b.a = 1, b = 0) : b = 1) : (g.ic = 0, b = Ec(b, g.c)); if (!b) break c; b = 1; break b } g.mc =
-									null; b = 0
-							} else b = q >= g.c * g.i; g = !b
-					} if (g) return null; 1 != a.ga.Lc ? a.Ga = 0 : d = f - c
-				} x(null != a.ga); x(c + d <= f); a: {
-					h = a.ga; b = h.c; f = h.l.o; if (0 == h.$a) { r = a.rc; q = a.Vc; t = a.Fa; k = a.P + 1 + c * b; l = a.mb; m = a.nb + c * b; x(k <= a.P + a.qc); if (0 != h.Z) for (x(null != ia[h.Z]), g = 0; g < d; ++g)ia[h.Z](r, q, t, k, l, m, b), r = l, q = m, m += b, k += b; else for (g = 0; g < d; ++g)I(l, m, t, k, b), r = l, q = m, m += b, k += b; a.rc = r; a.Vc = q } else {
-						x(null != h.mc); b = c + d; g = h.mc; x(null != g); x(b <= g.i); if (g.C >= b) b = 1; else if (h.ic || Aa(), h.ic) {
-							var h = g.V, r = g.Ba, q = g.c, v = g.i, t = 1, k = g.$ / q, l = g.$ % q, m = g.m, n = g.s,
-							p = g.$, u = q * v, w = q * b, y = n.wc, A = p < w ? ha(n, l, k) : null; x(p <= u); x(b <= v); x(yc(n)); c: for (; ;) {
-								for (; !m.h && p < w;) { l & y || (A = ha(n, l, k)); x(null != A); Sa(m); v = ua(A.G[0], A.H[0], m); if (256 > v) h[r + p] = v, ++p, ++l, l >= q && (l = 0, ++k, k <= b && !(k % 16) && Ib(g, k)); else if (280 > v) { var v = ib(v - 256, m); var E = ua(A.G[4], A.H[4], m); Sa(m); E = ib(E, m); E = nc(q, E); if (p >= E && u - p >= v) { var B; for (B = 0; B < v; ++B)h[r + p + B] = h[r + p + B - E] } else { t = 0; break c } p += v; for (l += v; l >= q;)l -= q, ++k, k <= b && !(k % 16) && Ib(g, k); p < w && l & y && (A = ha(n, l, k)) } else { t = 0; break c } x(m.h == db(m)) } Ib(g, k > b ? b : k);
-								break c
-							} !t || m.h && p < u ? (t = 0, g.a = m.h ? 5 : 3) : g.$ = p; b = t
-						} else b = Jb(g, g.V, g.Ba, g.c, g.i, b, se); if (!b) { d = 0; break a }
-					} c + d >= f && (a.Cc = 1); d = 1
-				} if (!d) return null; if (a.Cc && (d = a.ga, null != d && (d.mc = null), a.ga = null, 0 < a.Ga)) return alert("todo:WebPDequantizeLevels"), null
-			} return a.nb + c * e
+				f = b.o; x(null != a && null != b); if (0 > c || 0 >= d || c + d > f) return null; if (!a.Cc) {
+					if (null == a.ga) {
+						a.ga = new Ff; var g; (g = null == a.ga) || (g = b.width * b.o, x(0 == a.Gb.length), a.Gb = V(g), a.Uc = 0, null == a.Gb ? g = 0 : (a.mb = a.Gb, a.nb = a.Uc, a.rc = null, g = 1), g = !g); if (!g) {
+							g = a.ga; var h = a.Fa, k = a.P, l = a.qc, m = a.mb, n = a.nb, r = k + 1, q = l - 1, t = g.l; x(null != h && null != m && null != b); ia[0] = null; ia[1] = Rb; ia[2] = Gf; ia[3] = Hf; g.ca = m; g.tb = n; g.c = b.width; g.i = b.height; x(0 < g.c && 0 < g.i); if (1 >= l) b = 0; else if (g.$a = h[k + 0] >> 0 & 3, g.Z = h[k + 0] >> 2 & 3, g.Lc = h[k + 0] >> 4 & 3, k = h[k + 0] >> 6 & 3, 0 >
+								g.$a || 1 < g.$a || 4 <= g.Z || 1 < g.Lc || k) b = 0; else if (t.put = kc, t.ac = gc, t.bc = lc, t.ma = g, t.width = b.width, t.height = b.height, t.Da = b.Da, t.v = b.v, t.va = b.va, t.j = b.j, t.o = b.o, g.$a) b: {
+									x(1 == g.$a), b = Bc(); c: for (; ;) { if (null == b) { b = 0; break b } x(null != g); g.mc = b; b.c = g.c; b.i = g.i; b.l = g.l; b.l.ma = g; b.l.width = g.c; b.l.height = g.i; b.a = 0; cb(b.m, h, r, q); if (!rb(g.c, g.i, 1, b, null)) break c; 1 == b.ab && 3 == b.gc[0].hc && yc(b.s) ? (g.ic = 1, h = b.c * b.i, b.Ta = null, b.Ua = 0, b.V = V(h), b.Ba = 0, null == b.V ? (b.a = 1, b = 0) : b = 1) : (g.ic = 0, b = Ec(b, g.c)); if (!b) break c; b = 1; break b } g.mc =
+										null; b = 0
+								} else b = q >= g.c * g.i; g = !b
+						} if (g) return null; 1 != a.ga.Lc ? a.Ga = 0 : d = f - c
+					} x(null != a.ga); x(c + d <= f); a: {
+						h = a.ga; b = h.c; f = h.l.o; if (0 == h.$a) { r = a.rc; q = a.Vc; t = a.Fa; k = a.P + 1 + c * b; l = a.mb; m = a.nb + c * b; x(k <= a.P + a.qc); if (0 != h.Z) for (x(null != ia[h.Z]), g = 0; g < d; ++g)ia[h.Z](r, q, t, k, l, m, b), r = l, q = m, m += b, k += b; else for (g = 0; g < d; ++g)I(l, m, t, k, b), r = l, q = m, m += b, k += b; a.rc = r; a.Vc = q } else {
+							x(null != h.mc); b = c + d; g = h.mc; x(null != g); x(b <= g.i); if (g.C >= b) b = 1; else if (h.ic || Aa(), h.ic) {
+								var h = g.V, r = g.Ba, q = g.c, v = g.i, t = 1, k = g.$ / q, l = g.$ % q, m = g.m, n = g.s,
+									p = g.$, u = q * v, w = q * b, y = n.wc, A = p < w ? ha(n, l, k) : null; x(p <= u); x(b <= v); x(yc(n)); c: for (; ;) {
+										for (; !m.h && p < w;) { l & y || (A = ha(n, l, k)); x(null != A); Sa(m); v = ua(A.G[0], A.H[0], m); if (256 > v) h[r + p] = v, ++p, ++l, l >= q && (l = 0, ++k, k <= b && !(k % 16) && Ib(g, k)); else if (280 > v) { var v = ib(v - 256, m); var E = ua(A.G[4], A.H[4], m); Sa(m); E = ib(E, m); E = nc(q, E); if (p >= E && u - p >= v) { var B; for (B = 0; B < v; ++B)h[r + p + B] = h[r + p + B - E] } else { t = 0; break c } p += v; for (l += v; l >= q;)l -= q, ++k, k <= b && !(k % 16) && Ib(g, k); p < w && l & y && (A = ha(n, l, k)) } else { t = 0; break c } x(m.h == db(m)) } Ib(g, k > b ? b : k);
+										break c
+									} !t || m.h && p < u ? (t = 0, g.a = m.h ? 5 : 3) : g.$ = p; b = t
+							} else b = Jb(g, g.V, g.Ba, g.c, g.i, b, se); if (!b) { d = 0; break a }
+						} c + d >= f && (a.Cc = 1); d = 1
+					} if (!d) return null; if (a.Cc && (d = a.ga, null != d && (d.mc = null), a.ga = null, 0 < a.Ga)) return alert("todo:WebPDequantizeLevels"), null
+				} return a.nb + c * e
 		} function If(a, b, c, d, e, f) { for (; 0 < e--;) { var g = a, h = b + (c ? 1 : 0), k = a, l = b + (c ? 0 : 3), m; for (m = 0; m < d; ++m) { var n = k[l + 4 * m]; 255 != n && (n *= 32897, g[h + 4 * m + 0] = g[h + 4 * m + 0] * n >> 23, g[h + 4 * m + 1] = g[h + 4 * m + 1] * n >> 23, g[h + 4 * m + 2] = g[h + 4 * m + 2] * n >> 23) } b += f } } function Jf(a, b, c, d, e) {
 			for (; 0 <
 				d--;) { var f; for (f = 0; f < c; ++f) { var g = a[b + 2 * f + 0], h = a[b + 2 * f + 1], k = h & 15, l = 4369 * k, h = (h & 240 | h >> 4) * l >> 16; a[b + 2 * f + 0] = (g & 240 | g >> 4) * l >> 16 & 240 | (g & 15 | g << 4) * l >> 16 >> 4 & 15; a[b + 2 * f + 1] = h & 240 | k } b += e }
