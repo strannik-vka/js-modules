@@ -39,10 +39,10 @@ export default class Suggestions {
                 count: 1,
                 bounds: "region",
                 formatSelected: function (suggestion) {
-                    return suggestion.data.region_with_type;
+                    return suggestion.data.region_with_type.replace('г ', '');
                 },
                 formatResult: function (value, currentValue, suggestion, options) {
-                    suggestion.value = suggestion.data.region_with_type;
+                    suggestion.value = suggestion.data.region_with_type.replace('г ', '');
                     return $.Suggestions.prototype.formatResult.call(this, suggestion.value, currentValue, suggestion, options);
                 },
                 onSuggestionsFetch: (json) => {
