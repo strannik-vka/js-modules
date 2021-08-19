@@ -321,7 +321,40 @@ $.fn.extend({
 				}
 			}
 
-			function writeBuffer() { input.val(buffer.join('')); }
+			function writeBuffer() {
+				input.val(buffer.join(''));
+			}
+
+			function getPositionMask() {
+				var test = input.val(), lastMatch = -1, i, c, pos;
+
+				for (i = 0, pos = 0; i < len; i++) {
+					if (tests[i]) {
+						buffer[i] = getPlaceholder(i);
+						while (pos++ < test.length) {
+							c = test.charAt(pos - 1);
+							if (tests[i].test(c)) {
+								buffer[i] = c;
+								lastMatch = i;
+								break;
+							}
+						}
+						if (pos > test.length) {
+							clearBuffer(i + 1, len);
+							break;
+						}
+					} else {
+						if (buffer[i] === test.charAt(pos)) {
+							pos++;
+						}
+						if (i < partialPosition) {
+							lastMatch = i;
+						}
+					}
+				}
+
+				return partialPosition ? i : firstNonMaskPos;
+			}
 
 			function checkVal(allow) {
 				//try to place characters where they belong
@@ -356,8 +389,11 @@ $.fn.extend({
 					}
 				}
 
+				var position = partialPosition ? i : firstNonMaskPos;
+
 				if (allow) {
 					writeBuffer();
+					input.caret(position);
 				} else if (lastMatch + 1 < partialPosition) {
 					if (settings.autoclear || buffer.join('') === defaultBuffer) {
 						// Invalid value. Remove it and replace it with the
@@ -368,12 +404,15 @@ $.fn.extend({
 						// Invalid value, but we opt to show the value to the
 						// user and allow them to correct their mistake.
 						writeBuffer();
+						input.caret(position);
 					}
 				} else {
 					writeBuffer();
 					input.val(input.val().substring(0, lastMatch + 1));
+					input.caret(position);
 				}
-				return (partialPosition ? i : firstNonMaskPos);
+
+				return position;
 			}
 
 			function isPhone(elem) {
@@ -490,16 +529,17 @@ $.fn.extend({
 				.on('mousedown', function () {
 					if (isPhone(input) && isFocus) {
 						setTimeout(function () {
-							var pos = checkVal(true);
-							if (getCursorPos(input) > pos) {
+							var cursorPos = getCursorPos(input), pos = getPositionMask();
+							if (cursorPos > pos) {
 								if (input.caret) input.caret(pos);
 							}
-						}, 100);
+						}, 110);
 					}
 				})
 				.on("blur.mask", blurEvent)
 				.on("keydown.mask", keydownEvent)
 				.on("keypress.mask", keypressEvent)
+				.on('keyup', fix_phone.key)
 				.on("input.mask paste.mask", function () {
 					if (input.prop("readonly")) {
 						return;
@@ -510,13 +550,14 @@ $.fn.extend({
 						if (input.caret) input.caret(pos);
 						tryFireCompleted();
 					}, 0);
-				})
-				.on('keyup', fix_phone.key);
+				});
+
 			if (chrome && android) {
 				input
 					.off('input.mask')
 					.on('input.mask', androidInputEvent);
 			}
+
 			checkVal(); //Perform initial check for existing values
 		});
 	}
