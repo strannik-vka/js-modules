@@ -77,9 +77,11 @@ window.items = {
                 current_page: 1
             };
 
-            model.outerHTML = typeof model.outerHTML === 'function'
-                ? model.outerHTML()
-                : $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML;
+            model.outerHTML = (
+                typeof model.outerHTML === 'function'
+                    ? model.outerHTML()
+                    : $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML
+            );
             $('[items-html-' + model.name + ']:eq(0)').remove();
 
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
