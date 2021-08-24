@@ -7,6 +7,11 @@
     items-show-more-NAME - Кнопка показать ещё
 
     items.create({
+        modal: {
+            selector: '',
+            data: '',
+            html: '',
+        },
         name: 'название списка'
         url: 'ссылка на список',
         data: { данные при ajax запросе к списку },
@@ -64,7 +69,11 @@ window.items = {
 
             model.modal = model.modal ? model.modal : null;
             if (model.modal != null) {
-                model.modal.outerHTML = $('[items-modal-' + model.name + ']:eq(0)')[0].outerHTML;
+                model.modal.name = model.modal.name ? model.modal.name : model.name;
+
+                if (!model.modal.outerHTML) {
+                    model.modal.outerHTML = $('[items-modal-' + model.modal.name + ']:eq(0)')[0].outerHTML;
+                }
 
                 if (!model.modal.selector) {
                     model.modal.selector = '[items-html-' + model.name + ']';
@@ -99,6 +108,8 @@ window.items = {
     init: function () {
         $.each(items.model, function (name, model) {
             if (!model.init) {
+                init = true;
+
                 items.model[name].init = true;
 
                 if (model.clear) {
@@ -128,19 +139,61 @@ window.items = {
 
                         items.print(model, response);
 
+                        items.modal.openUrl(model);
+
                         setTimeout(items.init, 0);
                     });
                 } else if (model.items.data) {
                     items.print(model, model.items);
 
+                    items.modal.openUrl(model);
+
                     setTimeout(items.init, 0);
                 } else {
+                    items.modal.openUrl(model);
+
                     setTimeout(items.init, 0);
                 }
 
                 return false;
             }
         });
+    },
+
+    modal: {
+        close: () => {
+            history.pushState(null, null, location.pathname);
+        },
+        open: (model, entry_id) => {
+            model.modal.data(entry_id, function (data) {
+                if (data.id && model.modal.pushState) {
+                    history.pushState(null, null, location.pathname + '?' + model.modal.name + '=' + data.id);
+                } else {
+                    history.pushState(null, null, location.pathname);
+                }
+
+                var html = $(model.modal.outerHTML);
+
+                html = items.dataInHtml(html, data);
+
+                if (typeof model.modal.html === 'function') {
+                    html = model.modal.html(html, data);
+                }
+
+                $('[items-modal-' + model.modal.name + ']').remove();
+
+                $('body').append(html);
+
+                $('[items-modal-' + model.modal.name + ']').modal('show');
+            });
+        },
+        openUrl: (model) => {
+            if (model.modal && model.modal.pushState) {
+                if (location.href.indexOf(model.modal.name + '=') > -1 && typeof $.url_get === 'function') {
+                    items.modal.open(model, $.url_get(model.modal.name));
+                }
+            }
+        }
     },
 
     clear: function (model) {
@@ -196,24 +249,11 @@ window.items = {
         modal: function (model) {
             if (model.modal != null) {
                 $(document)
-                    .on('click', model.modal.selector, function () {
-                        var entry_id = $(this).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name);
-
-                        model.modal.data(entry_id, function (data) {
-                            var html = $(model.modal.outerHTML);
-
-                            html = items.dataInHtml(html, data);
-
-                            if (typeof model.modal.html === 'function') {
-                                html = model.modal.html(html, data);
-                            }
-
-                            $('[items-modal-' + model.name + ']').remove();
-
-                            $('body').append(html);
-
-                            $('[items-modal-' + model.name + ']').modal('show');
-                        });
+                    .on('click', model.modal.selector, (e) => {
+                        items.modal.open(model, $(e.currentTarget).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name));
+                    })
+                    .on('hide.bs.modal', '[entry-modal]', () => {
+                        items.modal.close();
                     });
             }
         },
