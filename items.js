@@ -120,6 +120,10 @@ window.items = {
                     elem.preloader.show();
 
                     items.load(model, function (response) {
+                        if (response.current_page != response.last_page) {
+                            elem.showMore.show();
+                        }
+
                         elem.preloader.hide();
 
                         items.print(model, response);
