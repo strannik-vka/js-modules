@@ -221,8 +221,7 @@ window.items = {
     },
 
     isNextData: function (model) {
-        if (model.items.to == null) return true;
-        return model.items.to != model.items.total;
+        return model.items.current_page < model.items.last_page;
     },
 
     loadNextData: function (model, callback) {
