@@ -221,7 +221,7 @@ window.items = {
     },
 
     isNextData: function (model) {
-        return model.items.current_page < model.items.last_page;
+        return model.items.current_page < model.items.last_page || model.items.last_page == null;
     },
 
     loadNextData: function (model, callback) {
