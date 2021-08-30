@@ -1,3 +1,14 @@
+/*
+    ZoneObject.create('selector', {
+        run: () => {
+
+        },
+        stop: () => {
+            
+        }
+    });
+*/
+
 class ZoneObject {
 
     constructor() {
