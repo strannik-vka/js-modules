@@ -22,6 +22,7 @@
         onBeforeLoad: function(){ запуск до ajax запроса },
         onPrint: function(){ запуск после вывода списка },
         onBeforeScrollOriginal : () => { запуск до прокрутки скролла в исходное состояние }
+        onInit : () => { запуск после инициализации }
         items: { data: [ список, если есть, то выведет сразу ] },
         html: function(html, data){ html - $(item), data - { данные } },
         prepend: true | false (default) - сверху или нет
@@ -97,6 +98,10 @@ window.items = {
 
             if (items.model[model.name]) {
                 model.clear = true;
+
+                if (model.onInit) {
+                    model.onInit = null;
+                }
             }
 
             items.model[model.name] = model;
@@ -106,6 +111,16 @@ window.items = {
     },
 
     init: function () {
+        var initEnd = (model) => {
+            items.modal.openUrl(model);
+
+            if (model.onInit) {
+                model.onInit();
+            }
+
+            setTimeout(items.init, 0);
+        };
+
         $.each(items.model, function (name, model) {
             if (!model.init) {
                 init = true;
@@ -139,20 +154,14 @@ window.items = {
 
                         items.print(model, response);
 
-                        items.modal.openUrl(model);
-
-                        setTimeout(items.init, 0);
+                        initEnd(model);
                     });
                 } else if (model.items.data) {
                     items.print(model, model.items);
 
-                    items.modal.openUrl(model);
-
-                    setTimeout(items.init, 0);
+                    initEnd(model);
                 } else {
-                    items.modal.openUrl(model);
-
-                    setTimeout(items.init, 0);
+                    initEnd(model);
                 }
 
                 return false;
