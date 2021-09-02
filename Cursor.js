@@ -2,19 +2,26 @@ class Cursor {
 
     constructor(obj) {
         this.cursor = $(obj.cursor);
-
         this.wrapSelector = obj.wrap ? obj.wrap : 'body';
-        this.bodyWidth2 = $('body').width() / 2;
-
         this.onMousemove = obj.onMousemove;
         this.onClick = obj.onClick;
-
-        this.cursorWidth = this.cursor.width() / 2;
-        this.cursorHeight = this.cursor.height() / 2;
-
+        this.setParams();
         this.wrapDefaultCursorOff();
         this.mousemove();
         this.click();
+        this.resize();
+    }
+
+    resize() {
+        $(window).on('resize', () => {
+            this.setParams();
+        });
+    }
+
+    setParams() {
+        this.bodyWidth2 = $('body').width() / 2;
+        this.cursorWidth = this.cursor.width() / 2;
+        this.cursorHeight = this.cursor.height() / 2;
     }
 
     wrapDefaultCursorOff() {
