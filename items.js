@@ -90,7 +90,11 @@ window.items = {
             model.outerHTML = (
                 typeof model.outerHTML === 'function'
                     ? model.outerHTML()
-                    : $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML
+                    : (
+                        items.model[model.name]
+                            ? items.model[model.name].outerHTML
+                            : $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML
+                    )
             );
             $('[items-html-' + model.name + ']:eq(0)').remove();
 
