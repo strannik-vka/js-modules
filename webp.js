@@ -34,6 +34,7 @@ window.webp = {
 		var img = webp.img();
 		if (img) {
 			webp.go_canas(img, function () {
+				$(document).trigger('webp.gocanas');
 				setTimeout(webp.to_canvas, 0);
 			});
 		} else {
