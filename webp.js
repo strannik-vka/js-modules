@@ -169,8 +169,8 @@ window.webp = {
 			url: url,
 			type: 'get',
 			mimeType: 'text/plain; charset=x-user-defined',
-			complete: function (response) {
-				if (response.responseText) {
+			complete: function (response, textStatus) {
+				if (response.responseText && textStatus == 'success') {
 					var response = response.responseText.split('').map(function (e) {
 						return String.fromCharCode(e.charCodeAt(0) & 0xff);
 					}).join('');
