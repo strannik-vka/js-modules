@@ -1004,6 +1004,10 @@ window.app = {
                 data.append('_method', 'PUT');
 
                 if (typeof form === 'undefined') {
+                    if (input.attr('type') == 'checkbox') {
+                        value = input.prop('checked') ? value : '';
+                    }
+
                     if (input.attr('multiple')) {
                         var serializeArray = input.serializeArray();
 
