@@ -632,6 +632,9 @@ window.app = {
 
                 return elem;
             },
+            checkbox: function (name, default_value, value, placeholder) {
+                return $('<label class="custom-control custom-switch mb-0"><input ' + (value == default_value ? 'checked' : '') + ' name="' + name + '" value="' + default_value + '" type="checkbox" class="custom-control-input"><div class="custom-control-label">' + placeholder + '</div></label>');
+            },
             select: function (elem, name, item) {
                 var name = elem.attr('name'),
                     select = $('#formModal [name="' + elem.attr('name') + '"]');
@@ -758,6 +761,8 @@ window.app = {
                             'placeholder': placeholder,
                             'data-autosize': 'false'
                         }).addClass('blur');
+                    } else if (input.attr('type') == 'checkbox') {
+                        elem = app.item.html.checkbox(name, input.val(), value, placeholder);
                     } else {
                         elem = app.item.html.text('string', name, value).attr('placeholder', placeholder);
                     }
