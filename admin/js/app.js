@@ -349,6 +349,10 @@ window.app = {
                                 $(this)[0].selectize.setValue(json[name]);
                             }
                         }
+                    } else if ($(this).attr('type') == 'checkbox') {
+                        if (json[name]) {
+                            $(this).prop('checked', true);
+                        }
                     } else if (name != '_token') {
                         var value = json[name];
 
