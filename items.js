@@ -73,7 +73,10 @@ window.items = {
                 model.modal.name = model.modal.name ? model.modal.name : model.name;
 
                 if (!model.modal.outerHTML) {
-                    model.modal.outerHTML = $('[items-modal-' + model.modal.name + ']:eq(0)')[0].outerHTML;
+                    model.modal.outerHTML =
+                        $('[items-modal-' + model.modal.name + ']:eq(0)').length
+                            ? $('[items-modal-' + model.modal.name + ']:eq(0)')[0].outerHTML
+                            : null;
                 }
 
                 if (!model.modal.selector) {
