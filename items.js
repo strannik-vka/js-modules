@@ -447,6 +447,22 @@ window.items = {
         return html;
     },
 
+    isset: function (html, data) {
+        if (data && typeof data === 'object') {
+            html.find('[isset]').each(function () {
+                var value = items.getDataValue($(this).attr('isset'), data);
+
+                if (value) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        return html;
+    },
+
     html: function (model, data, i) {
         var html = $(model.outerHTML);
 
@@ -462,6 +478,8 @@ window.items = {
                     html.attr('items-html-' + model.name, data.id);
                 }
             }
+
+            html = items.isset(html, data);
 
             return html.show();
         }
