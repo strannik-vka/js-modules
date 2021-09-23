@@ -31,7 +31,9 @@ window.scroller = {
 
     hash: function (url) {
         url = url.split('#');
-        return url[url.length - 1];
+        url = url[url.length - 1];
+        url = url.split('?');
+        return url[0];
     },
 
     elemHash: (elem) => {
