@@ -7,7 +7,8 @@ class Select {
             option: '[data-select-option]',
             type: '[data-select-type]',
             query: '[data-select-query]',
-            count: '[data-select-count]'
+            count: '[data-select-count]',
+            sync: 'data-select-options-sync'
         };
 
         this.ajaxTimer = false;
@@ -94,6 +95,9 @@ class Select {
             .on('click', this.selector.title + ', ' + this.selector.query, (e) => {
                 this.toggleActive(e);
             })
+            .on('click', '[' + this.selector.sync + '] [data-val]', (e) => {
+                this.sync(e);
+            })
             .on('click', (e) => {
                 this.closest(e);
             });
@@ -101,6 +105,18 @@ class Select {
         document.addEventListener('DOMContentLoaded', () => {
             this.each();
         }, false);
+    }
+
+    sync(e) {
+        var option = $(e.target),
+            val = option.attr('data-val'),
+            parent_sync = option.closest('[' + this.selector.sync + ']'),
+            name = parent_sync.attr(this.selector.sync),
+            select_name = parent_sync.attr('data-select-name');
+
+        $('[data-select-name="' + select_name + '"] [name="' + name + '"][value="' + val + '"]')
+            .prop('checked', true)
+            .trigger('change');
     }
 
     closest(e) {

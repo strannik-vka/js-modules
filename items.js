@@ -56,6 +56,12 @@ window.items = {
                 items.load(model, function (response) {
                     elem.preloader.hide();
 
+                    if (items.isNextData(model)) {
+                        elem.showMore.show();
+                    } else {
+                        elem.showMore.hide();
+                    }
+
                     items.print(model, response);
                 });
             }, 1000);
