@@ -499,6 +499,12 @@ window.app = {
             }
             url = 'https://www.youtube.com/embed/' + url;
         }
+
+        if (url.indexOf('player') == -1 && url.indexOf('vimeo') > -1) {
+            var arr = url.split('/');
+            url = 'https://player.vimeo.com/video/' + arr[arr.length - 2] + '?h=' + arr[arr.length - 1];
+        }
+
         return url;
     },
 
