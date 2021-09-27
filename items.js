@@ -263,16 +263,16 @@ window.items = {
 
                 if (response.data && Object.keys(response.data).length) {
                     items.print(model, response);
-                    if (callback) callback();
+                    if (callback) callback(true);
                 } else {
-                    if (callback) callback();
+                    if (callback) callback(false);
                 }
             }, {
                 ajaxProcessTimeout: 1000,
                 page: model.items.current_page + 1
             });
         } else {
-            if (callback) callback();
+            if (callback) callback(false);
         }
     },
 
