@@ -29,13 +29,15 @@ class ZoneObject {
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
                 if (data.active == false) {
-                    this.elements[selector].run($(selector));
                     this.elements[selector].active = true;
+                    this.elements[selector].run($(selector));
                 }
             } else {
                 if (data.active == true) {
-                    this.elements[selector].stop($(selector));
-                    this.elements[selector].active = false;
+                    if (typeof this.elements[selector].stop === 'function') {
+                        this.elements[selector].stop($(selector));
+                        this.elements[selector].active = false;
+                    }
                 }
             }
         });
