@@ -20,35 +20,41 @@ class ZoneObject {
     }
 
     scroll() {
-        var wt = $(window).scrollTop(),
-            wh = $(window).height();
-
         $.each(this.elements, (selector, data) => {
-            var et = $(selector).offset().top,
-                eh = $(selector).outerHeight();
-
-            if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
-                if (data.active == false) {
-                    this.elements[selector].active = true;
-                    this.elements[selector].run($(selector));
-                }
-            } else {
-                if (data.active == true) {
-                    if (typeof this.elements[selector].stop === 'function') {
-                        this.elements[selector].stop($(selector));
-                        this.elements[selector].active = false;
-                    }
-                }
-            }
+            this.check(selector, data);
         });
     }
 
+    check(selector, data) {
+        var wt = $(window).scrollTop(),
+            wh = $(window).height();
+
+        var et = $(selector).offset().top,
+            eh = $(selector).outerHeight();
+
+        if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+            if (data.active == false) {
+                this.elements[selector].active = true;
+                this.elements[selector].run($(selector));
+            }
+        } else {
+            if (data.active == true) {
+                if (typeof this.elements[selector].stop === 'function') {
+                    this.elements[selector].stop($(selector));
+                    this.elements[selector].active = false;
+                }
+            }
+        }
+    }
+
     create(selector, obj) {
-        this.elements[selector] = $.extend(obj, {
+        var data = $.extend(obj, {
             active: false
         });
 
-        this.scroll();
+        this.elements[selector] = data;
+
+        this.check(selector, data);
     }
 
 }
