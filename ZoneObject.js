@@ -26,22 +26,24 @@ class ZoneObject {
     }
 
     check(selector, data) {
-        var wt = $(window).scrollTop(),
-            wh = $(window).height();
+        if ($(selector).length) {
+            var wt = $(window).scrollTop(),
+                wh = $(window).height();
 
-        var et = $(selector).offset().top,
-            eh = $(selector).outerHeight();
+            var et = $(selector).offset().top,
+                eh = $(selector).outerHeight();
 
-        if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
-            if (data.active == false) {
-                this.elements[selector].active = true;
-                this.elements[selector].run($(selector));
-            }
-        } else {
-            if (data.active == true) {
-                if (typeof this.elements[selector].stop === 'function') {
-                    this.elements[selector].stop($(selector));
-                    this.elements[selector].active = false;
+            if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+                if (data.active == false) {
+                    this.elements[selector].active = true;
+                    this.elements[selector].run($(selector));
+                }
+            } else {
+                if (data.active == true) {
+                    if (typeof this.elements[selector].stop === 'function') {
+                        this.elements[selector].stop($(selector));
+                        this.elements[selector].active = false;
+                    }
                 }
             }
         }
