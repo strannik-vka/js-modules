@@ -6,6 +6,21 @@ export default class Suggestions {
         this.token = obj.token;
     }
 
+    organization(elem, options) {
+        if (elem.length) {
+            elem.suggestions({
+                token: this.token,
+                type: "PARTY",
+                hint: false,
+                onSelect: (json) => {
+                    if (options.onSelect) {
+                        options.onSelect(json);
+                    }
+                }
+            });
+        }
+    }
+
     uniqValues(json, field) {
         var values = [],
             result = [];

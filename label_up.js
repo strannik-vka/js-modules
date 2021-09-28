@@ -49,6 +49,8 @@ $(document)
         if ($(this).prev().length) {
             if ($(this).prev()[0].tagName == 'LABEL' && !method.val($(this))) {
                 $(this).prev().removeClass('label-up');
+            } else {
+                $(this).prev().addClass('label-up');
             }
         }
     })
