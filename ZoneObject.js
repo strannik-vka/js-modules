@@ -44,14 +44,15 @@ class ZoneObject {
                 display = $(selector).css('display');
 
             if (display == 'none') {
-                $(selector).show();
-            }
+                if ($('[data-object="' + selector + '"]').length == 0) {
+                    $(selector).before('<div style="visibility:hidden" data-object="' + selector + '"></div>');
+                }
 
-            var et = $(selector).offset().top,
-                eh = $(selector).outerHeight();
-
-            if (display == 'none') {
-                $(selector).hide();
+                var et = $('[data-object="' + selector + '"]').offset().top,
+                    eh = $('[data-object="' + selector + '"]').outerHeight();
+            } else {
+                var et = $(selector).offset().top,
+                    eh = $(selector).outerHeight();
             }
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
