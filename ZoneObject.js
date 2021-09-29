@@ -28,19 +28,24 @@ class ZoneObject {
     check(selector, data) {
         if ($(selector).length) {
             var wt = $(window).scrollTop(),
-                wh = $(window).height();
+                wh = $(window).height(),
+                display = $(selector).css('display');
+
+            if (display == 'none') {
+                $(selector).show();
+            }
 
             var et = $(selector).offset().top,
                 eh = $(selector).outerHeight();
+
+            if (display == 'none') {
+                $(selector).hide();
+            }
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
                 if (data.active == false) {
                     this.elements[selector].active = true;
                     this.elements[selector].run($(selector));
-
-                    if (location.href.indexOf('zone_debug') > -1) {
-                        console.log(selector);
-                    }
                 }
             } else {
                 if (data.active == true) {
