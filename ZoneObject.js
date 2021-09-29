@@ -26,6 +26,12 @@ class ZoneObject {
     }
 
     check(selector, data) {
+        if (data.maxWidth) {
+            if ($(window).width() > maxWidth) {
+                return false;
+            }
+        }
+
         if ($(selector).length) {
             var wt = $(window).scrollTop(),
                 wh = $(window).height(),
@@ -46,6 +52,8 @@ class ZoneObject {
                 if (data.active == false) {
                     this.elements[selector].active = true;
                     this.elements[selector].run($(selector));
+
+                    console.log(selector, et);
                 }
             } else {
                 if (data.active == true) {
