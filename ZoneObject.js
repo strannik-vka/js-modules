@@ -37,6 +37,10 @@ class ZoneObject {
                 if (data.active == false) {
                     this.elements[selector].active = true;
                     this.elements[selector].run($(selector));
+
+                    if (location.href.indexOf('zone_debug') > -1) {
+                        console.log(selector);
+                    }
                 }
             } else {
                 if (data.active == true) {
