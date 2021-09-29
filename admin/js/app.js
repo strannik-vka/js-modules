@@ -222,7 +222,7 @@ window.app = {
                 $('[multiple-block="' + id + '"]').slice(1).remove();
             });
         },
-        fileHtml: function (url, i) {
+        fileHtml: function (url, i, filesDelete) {
             var ext = url.split('.'), ext = ext[ext.length - 1], ext = ext.toLowerCase(), ext = ext.split('?'), ext = ext[0],
                 images = ['jpg', 'png', 'jpeg', 'webp', 'gif', 'svg'],
                 html = '';
@@ -233,7 +233,7 @@ window.app = {
                 html = '<a href="' + url + '" download target="_blank">Скачать файл' + (i ? ' ' + i : '') + '</a>';
             }
 
-            return '<div class="col-lg-3 mb-2" file-item>' + html + '<br><a href="javascript://" file-delete="' + url + '">Удалить</a></div>';
+            return '<div class="col-lg-3 mb-2" file-item>' + html + (filesDelete != 'false' ? '<br><a href="javascript://" file-delete="' + url + '">Удалить</a>' : '') + '</div>';
         },
         fileDelete: function (elems, obj) {
             obj = typeof obj === 'object' && obj != null ? obj : {
@@ -302,10 +302,10 @@ window.app = {
         fillFiles: function (list, images) {
             if (typeof images === 'object' && images != null) {
                 $.each(images, function (i, item) {
-                    list.append(app.form.fileHtml(item, (i + 1)));
+                    list.append(app.form.fileHtml(item, (i + 1), list.attr('files-delete')));
                 });
             } else if (images) {
-                list.append(app.form.fileHtml(images));
+                list.append(app.form.fileHtml(images, 0, list.attr('files-delete')));
             }
         },
         fill: function (id) {
@@ -623,18 +623,18 @@ window.app = {
 
                 return $('<div class="image_wrap" edit-open="' + name + '">' + elem + '</div>');
             },
-            file: function (value) {
+            file: function (value, filename) {
                 var elem = false;
 
                 if (value) {
                     if (typeof value === 'object') {
                         var list = [];
                         $.each(value, function (i, item) {
-                            list.push('<a target="_blank" download href="' + item + '">Скачать&nbspфайл</a>');
+                            list.push('<a target="_blank" ' + (filename ? '' : 'download') + ' href="' + item + '">' + (filename ? item : 'Скачать&nbsp;файл') + '</a>');
                         });
                         elem = $(list.join('<br>'));
                     } else {
-                        elem = $('<a target="_blank" download href="' + value + '">Скачать&nbspфайл</a>');
+                        elem = $('<a target="_blank" ' + (filename ? '' : 'download') + ' href="' + value + '">' + (filename ? value : 'Скачать&nbsp;файл') + '</a>');
                     }
                 } else {
                     elem = $('<div>—</div>');
@@ -761,7 +761,7 @@ window.app = {
                     if (input.attr('thumb')) {
                         elem = app.item.html.image(value, input.attr('thumb'), name);
                     } else if (input.attr('type') == 'file') {
-                        elem = app.item.html.file(value);
+                        elem = app.item.html.file(value, (input.attr('data-view-name') == 'true' ? true : false));
                     } else if (input[0].tagName == 'SELECT') {
                         elem = app.item.html.select(input.clone(), name, item);
                     } else if (input.attr('summernote')) {
@@ -1110,13 +1110,11 @@ window.app = {
                     var placeholder = $(this).attr('label'),
                         name_original = $(this).attr('key'),
                         name = name_original.replace('[', '').replace(']', ''),
-                        readonly = $(this).attr('readonly'),
                         input = app.item.html.text('string', name);
                 } else {
                     var placeholder = $(this).find('label:eq(0)').text(),
                         input = $(this).find('[name]').clone(),
                         name_original = input.attr('name'),
-                        readonly = input.attr('readonly'),
                         name = name_original.replace('[', '').replace(']', '');
                 }
 
@@ -1135,14 +1133,6 @@ window.app = {
                 }
 
                 input.attr('placeholder', placeholder).addClass('form-control-sm');
-
-                if (readonly) {
-                    input.attr('readonly', 'readonly');
-
-                    if (input[0].tagName == 'DIV') {
-                        input.removeAttr('contenteditable');
-                    }
-                }
 
                 $('[table-items] thead th:eq(-1)').html(input);
             });
