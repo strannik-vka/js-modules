@@ -27,7 +27,13 @@ class ZoneObject {
 
     check(selector, data) {
         if (typeof data.maxWidth !== 'undefined') {
-            if ($(window).width() > maxWidth) {
+            if ($(window).width() > data.maxWidth) {
+                return false;
+            }
+        }
+
+        if (typeof data.minWidth !== 'undefined') {
+            if ($(window).width() < data.minWidth) {
                 return false;
             }
         }
