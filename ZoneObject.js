@@ -58,8 +58,6 @@ class ZoneObject {
                 if (data.active == false) {
                     this.elements[selector].active = true;
                     this.elements[selector].run($(selector));
-
-                    console.log(selector, et);
                 }
             } else {
                 if (data.active == true) {
