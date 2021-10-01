@@ -224,8 +224,7 @@ $.fn.extend({
 
 				checkVal();
 
-				if (input.val() != focusText)
-					input.change();
+				input.trigger('change');
 			}
 
 			function keydownEvent(e) {

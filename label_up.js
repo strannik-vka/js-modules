@@ -1,18 +1,54 @@
-var method = {
+class LabelUp {
 
-    each: function (form) {
-        form.find('input.form-control, input.form-type-text, textarea.form-type-text').each(function () {
-            if ($(this).prev().length) {
-                if ($(this).prev()[0].tagName == 'LABEL' && method.val($(this))) {
-                    $(this).prev().addClass('label-up');
-                } else {
-                    $(this).prev().removeClass('label-up');
-                }
+    constructor() {
+        this.selector = 'input[type="file"], input.form-control, input.form-type-text, textarea.form-type-text';
+
+        $(document)
+            .on('change', this.selector, (e) => {
+                this.check($(e.currentTarget));
+            })
+            .on('focus', this.selector, (e) => {
+                this.focus($(e.currentTarget));
+            })
+            .on('blur', this.selector, (e) => {
+                this.check($(e.currentTarget));
+            })
+            .on('reset', 'form', (e) => {
+                this.reset($(e.currentTarget));
+            });
+
+        this.each();
+    }
+
+    focus(elem) {
+        var prev = elem.prev();
+
+        if (prev.length) {
+            if (prev[0].tagName == 'LABEL') {
+                prev.addClass('label-up');
             }
-        });
-    },
+        }
+    }
 
-    val: (elem) => {
+    reset(form) {
+        setTimeout(() => {
+            this.each(form);
+        }, 500);
+    }
+
+    each(form) {
+        if (form) {
+            form.find(this.selector).each((i, elem) => {
+                this.check($(elem));
+            });
+        } else {
+            $(this.selector).each((i, elem) => {
+                this.check($(elem));
+            });
+        }
+    }
+
+    val(elem) {
         var val = $.trim(elem.val());
 
         if (val) {
@@ -22,42 +58,18 @@ var method = {
         return val;
     }
 
+    check(elem) {
+        var prev = elem.prev();
+
+        if (prev.length) {
+            if (prev[0].tagName == 'LABEL' && this.val(elem)) {
+                prev.addClass('label-up');
+            } else {
+                prev.removeClass('label-up');
+            }
+        }
+    }
+
 }
 
-setTimeout(function () {
-    method.each($('body'));
-}, 600);
-
-$(document)
-    .on('change', 'input[type="file"]', function () {
-        if ($(this).prev().length) {
-            if ($(this).prev()[0].tagName == 'LABEL' && method.val($(this))) {
-                $(this).prev().addClass('label-up');
-            } else {
-                $(this).prev().removeClass('label-up');
-            }
-        }
-    })
-    .on('focus', 'input.form-control, input.form-type-text, textarea.form-type-text', function () {
-        if ($(this).prev().length) {
-            if ($(this).prev()[0].tagName == 'LABEL') {
-                $(this).prev().addClass('label-up');
-            }
-        }
-    })
-    .on('blur', 'input.form-control, input.form-type-text, textarea.form-type-text', function () {
-        if ($(this).prev().length) {
-            if ($(this).prev()[0].tagName == 'LABEL' && !method.val($(this))) {
-                $(this).prev().removeClass('label-up');
-            } else {
-                $(this).prev().addClass('label-up');
-            }
-        }
-    })
-    .on('reset', 'form', function () {
-        var form = $(this);
-
-        setTimeout(function () {
-            method.each(form);
-        }, 500);
-    });
+new LabelUp();
