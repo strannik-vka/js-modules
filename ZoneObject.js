@@ -40,19 +40,22 @@ class ZoneObject {
 
         if ($(selector).length) {
             var wt = $(window).scrollTop(),
-                wh = $(window).height(),
-                display = $(selector).css('display');
+                wh = $(window).height();
 
-            if (display == 'none') {
+            if ($(selector).is(':visible')) {
+                var et = $(selector).offset().top,
+                    eh = $(selector).outerHeight();
+            } else {
+                if ($(selector).css('display') != 'none') {
+                    return false;
+                }
+
                 if ($('[data-object="' + selector + '"]').length == 0) {
                     $(selector).before('<div style="visibility:hidden" data-object="' + selector + '"></div>');
                 }
 
                 var et = $('[data-object="' + selector + '"]').offset().top,
                     eh = $('[data-object="' + selector + '"]').outerHeight();
-            } else {
-                var et = $(selector).offset().top,
-                    eh = $(selector).outerHeight();
             }
 
             if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
