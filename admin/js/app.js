@@ -135,16 +135,22 @@ window.app = {
         $('[table-items] thead th').css('top', $('header').css('height'));
     },
 
-    date_format: function (value, name) {
-        if ((['date_start'].indexOf(name) > -1 || name.indexOf('_at') > -1) && value) {
-            if (value.indexOf('T') > -1) {
-                value = value.split('.')[0];
-            } else {
-                value = value.replace(' ', 'T');
+    date_format: function (value) {
+        if (value) {
+            var date = new Date(value);
+
+            if (date != 'Invalid Date') {
+                var month = date.getMonth() + 1,
+                    day = date.getDate();
+
+                value = '';
+                value += date.getFullYear() + '-';
+                value += (month < 10 ? '0' + month : month) + '-';
+                value += (day < 10 ? '0' + day : day) + ' ';
+                value += date.toLocaleTimeString().slice(0, -3);
             }
-            value = value.split(':');
-            value = value[0] + ':' + value[1];
         }
+
         return value;
     },
 
@@ -356,7 +362,7 @@ window.app = {
                     } else if (name != '_token') {
                         var value = json[name];
 
-                        value = app.date_format(value, name);
+                        value = app.date_format(value);
 
                         $(this).val(value).trigger('input');
                     }
@@ -601,6 +607,7 @@ window.app = {
             },
             text: function (type, name, text) {
                 if (typeof text === 'string') {
+                    text = app.date_format(text);
                     text = app.item.html.encodeEntity(text);
                 }
 
