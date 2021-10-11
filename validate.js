@@ -207,10 +207,21 @@ window.validate = {
             result = [];
 
         currentEls.each(function () {
-            var el = $(this), offset = el.offset();
+            var el = $(this), visible = el.is(':visible');
+
+            if (!visible) {
+                el.before('<div data-tmp-visible></div>');
+                el = $('[data-tmp-visible]');
+            }
+
+            offset = el.offset();
 
             if (scrollTop <= offset.top && (el.height() + offset.top) < (scrollTop + windowHeight)) { } else {
                 result.push(this);
+            }
+
+            if (!visible) {
+                el.remove();
             }
         });
 

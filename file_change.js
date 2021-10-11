@@ -3,11 +3,18 @@
     - После нажатия на хрестик удаление файла [file-change-name] [delete]
 */
 
+var jsChange = false;
+
 $(document)
     .on('reset', 'form', (e) => {
         $(e.currentTarget).find('[file-change-name] [delete]').click();
     })
     .on('change', '[type="file"]', function () {
+        if (jsChange) {
+            jsChange = false;
+            return false;
+        }
+
         var names = [],
             parent = $(this).parents('.input-group, [file-group]'),
             name_elem = parent.length
@@ -44,7 +51,10 @@ $(document)
 
         parent.removeClass('active');
         input.replaceWith(input.clone().val(''));
-        parent.find('input[type="file"]').trigger('change');
+
+        jsChange = true;
+
+        parent.find('input[type="file"]').trigger('change').trigger('input');
 
         return false;
     });
