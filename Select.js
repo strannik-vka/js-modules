@@ -92,6 +92,9 @@ class Select {
             .on('change', this.selector.parent + ' input', (e) => {
                 this.change(e);
             })
+            .on('change.select', this.selector.parent + ' input', (e) => {
+                this.change(e);
+            })
             .on('click', this.selector.title + ', ' + this.selector.query, (e) => {
                 this.toggleActive(e);
             })
@@ -128,6 +131,10 @@ class Select {
 
     toggleActive(e) {
         var select = this.select($(e.currentTarget).parents(this.selector.parent));
+
+        if (select.elem.attr('disabled')) {
+            return false;
+        }
 
         if (select.elem.hasClass('active') && $(e.currentTarget)[0].tagName != 'INPUT') {
             select.elem.removeClass('active');
