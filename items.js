@@ -93,7 +93,7 @@ window.items = {
 
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
-            model.ajaxProcessChange = model.ajaxProcessChange ? model.ajaxProcessChange : true;
+            model.ajaxProcessChange = typeof model.ajaxProcessChange !== 'undefined' ? model.ajaxProcessChange : true;
             model.items = model.items ? model.items : {
                 current_page: 1
             };
@@ -387,7 +387,7 @@ window.items = {
             }, function (response) {
                 items.model[model.name].items = response;
 
-                if (options.ajaxProcessChange) {
+                if (model.ajaxProcessChange) {
                     if (options.ajaxProcessTimeout) {
                         setTimeout(function () {
                             items.ajaxProcess[model.name] = false;
