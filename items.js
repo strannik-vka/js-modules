@@ -26,6 +26,7 @@
         items: { data: [ список, если есть, то выведет сразу ] },
         html: function(html, data){ html - $(item), data - { данные } },
         prepend: true | false (default) - сверху или нет
+        ajaxProcessChange: true (default) | false - отключить разрешение след. подгрузки
     });
 
     items.update('name');
@@ -92,6 +93,7 @@ window.items = {
 
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
+            model.ajaxProcessChange = model.ajaxProcessChange ? model.ajaxProcessChange : true;
             model.items = model.items ? model.items : {
                 current_page: 1
             };
@@ -385,12 +387,14 @@ window.items = {
             }, function (response) {
                 items.model[model.name].items = response;
 
-                if (options.ajaxProcessTimeout) {
-                    setTimeout(function () {
+                if (options.ajaxProcessChange) {
+                    if (options.ajaxProcessTimeout) {
+                        setTimeout(function () {
+                            items.ajaxProcess[model.name] = false;
+                        }, options.ajaxProcessTimeout);
+                    } else {
                         items.ajaxProcess[model.name] = false;
-                    }, options.ajaxProcessTimeout);
-                } else {
-                    items.ajaxProcess[model.name] = false;
+                    }
                 }
 
                 if (model.onAfterLoad) {
