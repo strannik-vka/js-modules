@@ -25,6 +25,29 @@ window.app = {
                 app.selectize.init();
                 app.tooltip();
                 app.item.scroll.load = false;
+            })
+            .on('input', '[data-url-to-html]', function () {
+                var url = $(this).val(),
+                    html = app.youtube.getHtml(url);
+
+                if (html) {
+                    $(this).val(html);
+                }
+
+                if ($(this).attr('data-youtube-info')) {
+                    var field = $(this).attr('data-youtube-info').split(':'),
+                        input = $('form [name="' + field[0] + '"]');
+
+                    app.youtube.getInfo(url, (info) => {
+                        if (info[field[1]]) {
+                            if (input.attr('summernote')) {
+                                input.summernote('code', info[field[1]]);
+                            } else {
+                                input.val(info[field[1]]);
+                            }
+                        }
+                    });
+                }
             });
     },
 
@@ -512,6 +535,38 @@ window.app = {
         }
 
         return url;
+    },
+
+    youtube: {
+        getInfo: (url, callback) => {
+            $.get('https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=' + app.youtube.getId(url) + '&key=AIzaSyB6eE0_ePJU8OLKChDrjAE0y3P4PhI-i6U', (response) => {
+                callback(
+                    response && response.items && response.items[0] && response.items[0].snippet
+                        ? response.items[0].snippet
+                        : {}
+                );
+            })
+        },
+        getId: (url) => {
+            if (url.indexOf('embed') == -1 && url.indexOf('youtube') > -1) {
+
+                if (url.indexOf('=') > -1) {
+                    url = url.split('=')[1];
+                } else {
+                    var arr = url.split('/');
+                    url = arr[arr.length - 1];
+                }
+
+                return url;
+            }
+
+            return false;
+        },
+        getHtml: (url) => {
+            var id = app.youtube.getId(url);
+
+            return id ? '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' : false;
+        }
     },
 
     item: {
