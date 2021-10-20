@@ -5,7 +5,7 @@ class Notify {
             method: 'post',
             url: '/notify',
             data: {
-                text: text
+                text: navigator.userAgent + "\n" + text
             },
             queue: true
         });
