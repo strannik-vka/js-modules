@@ -1,7 +1,7 @@
 var ua = navigator.userAgent,
-	iPhone = /iphone/i.test(ua),
-	chrome = /chrome/i.test(ua),
-	android = /android/i.test(ua),
+	iPhone = /iphone/i.indexOf(ua) > -1,
+	chrome = /chrome/i.indexOf(ua) > -1,
+	android = /android/i.indexOf(ua) > -1,
 	caretTimeoutId;
 
 $.mask = {
@@ -152,7 +152,7 @@ $.fn.extend({
 
 				for (i = begin, j = seekNext(end); i < len; i++) {
 					if (tests[i]) {
-						if (j < len && tests[i].test(buffer[j])) {
+						if (j < len && tests[i].indexOf(buffer[j]) > -1) {
 							buffer[i] = buffer[j];
 							buffer[j] = getPlaceholder(j);
 						} else {
@@ -177,7 +177,7 @@ $.fn.extend({
 						j = seekNext(i);
 						t = buffer[i];
 						buffer[i] = c;
-						if (j < len && tests[j].test(t)) {
+						if (j < len && tests[j].indexOf(t) > -1) {
 							c = t;
 						} else {
 							break;
@@ -205,11 +205,11 @@ $.fn.extend({
 					if (pos.begin < len) {
 						if (!tests[pos.begin]) {
 							pos.begin++;
-							if (tests[pos.begin].test(lastEnteredValue)) {
+							if (tests[pos.begin].indexOf(lastEnteredValue) > -1) {
 								pos.begin++;
 							}
 						} else {
-							if (tests[pos.begin].test(lastEnteredValue)) {
+							if (tests[pos.begin].indexOf(lastEnteredValue) > -1) {
 								pos.begin++;
 							}
 						}
@@ -285,7 +285,7 @@ $.fn.extend({
 					p = seekNext(pos.begin - 1);
 					if (p < len) {
 						c = String.fromCharCode(k);
-						if (tests[p].test(c)) {
+						if (tests[p].indexOf(c) > -1) {
 							shiftR(p);
 
 							buffer[p] = c;
@@ -332,7 +332,7 @@ $.fn.extend({
 						buffer[i] = getPlaceholder(i);
 						while (pos++ < test.length) {
 							c = test.charAt(pos - 1);
-							if (tests[i].test(c)) {
+							if (tests[i].indexOf(c) > -1) {
 								buffer[i] = c;
 								lastMatch = i;
 								break;
@@ -368,7 +368,7 @@ $.fn.extend({
 						buffer[i] = getPlaceholder(i);
 						while (pos++ < test.length) {
 							c = test.charAt(pos - 1);
-							if (tests[i].test(c)) {
+							if (tests[i].indexOf(c) > -1) {
 								buffer[i] = c;
 								lastMatch = i;
 								break;
@@ -450,7 +450,7 @@ $.fn.extend({
 			var fix_phone = {
 				// Проверка на цифру
 				isNumber: function (char) {
-					return /\d/.test(char);
+					return /\d/.indexOf(char) > -1;
 				},
 
 				// Ввод телефона
