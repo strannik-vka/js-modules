@@ -35,20 +35,39 @@ window.app = {
                 }
 
                 if ($(this).attr('data-youtube-info')) {
-                    var field = $(this).attr('data-youtube-info').split(':'),
-                        input = $('form [name="' + field[0] + '"]');
+                    var fields = $(this).attr('data-youtube-info').split(';');
 
                     app.youtube.getInfo(url, (info) => {
-                        if (info[field[1]]) {
-                            if (input.attr('summernote')) {
-                                input.summernote('code', info[field[1]]);
-                            } else {
-                                input.val(info[field[1]]);
+                        $.each(fields, (i, item) => {
+                            var field = item.split(':'),
+                                input = $('form [name="' + field[0] + '"]'),
+                                value = app.getDataValue(field[1], info);
+
+                            if (value) {
+                                if (input.attr('summernote')) {
+                                    input.summernote('code', value);
+                                } else {
+                                    input.val(value);
+                                }
                             }
-                        }
+                        });
                     });
                 }
             });
+    },
+
+    getDataValue: function (str, data) {
+        var parts = str.split('.');
+
+        for (var i = 0; i < parts.length; i++) {
+            data = data[parts[i]];
+
+            if (!data) {
+                break;
+            }
+        }
+
+        return data ? data : null;
     },
 
     meta_parse: function () {
