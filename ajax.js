@@ -97,7 +97,9 @@ window.ajax = function (obj, callback, form) {
 
             if (response && response.errors) {
                 if (typeof validate !== 'undefined') {
-                    validate.errors(response.errors, form);
+                    if ((typeof obj.validate !== 'undefined' && obj.validate !== false) || typeof obj.validate === 'undefined') {
+                        validate.errors(response.errors, form);
+                    }
                 }
                 success = false;
             }
