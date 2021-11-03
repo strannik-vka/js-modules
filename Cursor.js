@@ -19,9 +19,11 @@ class Cursor {
     }
 
     setParams() {
-        this.bodyWidth2 = $('body').width() / 2;
+        this.bodyWidth2 = $(this.wrapSelector).width() / 2;
         this.cursorWidth = this.cursor.width() / 2;
         this.cursorHeight = this.cursor.height() / 2;
+        this.WrapOffsetLeft = $(this.wrapSelector).offset().left;
+        this.WrapCenter = this.WrapOffsetLeft + this.bodyWidth2;
     }
 
     wrapDefaultCursorOff() {
@@ -46,7 +48,7 @@ class Cursor {
         this.top = event.clientY - this.cursorHeight;
         this.left = event.clientX - this.cursorWidth;
 
-        this.isLeft = this.left < this.bodyWidth2;
+        this.isLeft = this.left < this.WrapCenter;
     }
 
     mousemove() {
