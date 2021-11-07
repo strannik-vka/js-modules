@@ -38,6 +38,10 @@ window.modalNotify = {
             $('#modalNotify').addClass(obj.type);
         }
 
+        if (obj.btnClose) {
+            $('#modalNotify [data-btn-close]').show();
+        }
+
         $('#modalNotify').modal('show');
 
         $('body').addClass('open-modal-notify');
