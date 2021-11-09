@@ -292,7 +292,9 @@ window.validate = {
     errors: function (response_errors, form) {
         if (!validate.initOn) validate.init();
 
-        validate.form.find('.is-invalid').each(function () {
+        form = typeof form !== 'undefined' ? form : $('body');
+
+        form.find('.is-invalid').each(function () {
             validate.error_remove($(this));
         });
 
@@ -309,9 +311,9 @@ window.validate = {
         }
 
         if (typeof scroller !== 'undefined') {
-            if (validate.form.find('.is-invalid').length) {
-                if (validate.notSeen(validate.form.find('.is-invalid:eq(0)')).length) {
-                    scroller.to(validate.form.find('.is-invalid:eq(0)'), false, -50);
+            if (form.find('.is-invalid').length) {
+                if (validate.notSeen(form.find('.is-invalid:eq(0)')).length) {
+                    scroller.to(form.find('.is-invalid:eq(0)'), false, -50);
                 }
             }
         }
