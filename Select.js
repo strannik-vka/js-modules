@@ -48,7 +48,7 @@ class Select {
             select.title.attr('data-select-title', select.placeholder);
 
             if (select.selected) {
-                $(item).trigger('change');
+                $(item).find('input:checked').trigger('change');
             }
 
             if (select.url) {
