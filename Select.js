@@ -129,12 +129,25 @@ class Select {
         }
     }
 
+    closeAll(select) {
+        select.elem.attr('data-active', true);
+
+        $(this.selector.parent + ':not([data-active])').each((i, item) => {
+            $(item).removeClass('active');
+            $(item).find(this.selector.query).val('').removeAttr('placeholder');
+        });
+
+        select.elem.removeAttr('data-active');
+    }
+
     toggleActive(e) {
         var select = this.select($(e.currentTarget).parents(this.selector.parent));
 
         if (select.elem.attr('disabled')) {
             return false;
         }
+
+        this.closeAll(select);
 
         if (select.elem.hasClass('active') && $(e.currentTarget)[0].tagName != 'INPUT') {
             select.elem.removeClass('active');
