@@ -63,6 +63,12 @@ window.items = {
                         elem.showMore.hide();
                     }
 
+                    if (items.isLoopReverse(model)) {
+                        items.model[model.name].loop_iteration = response.total;
+                    } else {
+                        items.model[name].loop_iteration = 1;
+                    }
+
                     items.print(model, response);
                 });
             }, 1000);
@@ -97,6 +103,7 @@ window.items = {
             model.items = model.items ? model.items : {
                 current_page: 1
             };
+            model.loop_iteration = 1;
 
             model.outerHTML = (
                 typeof model.outerHTML === 'function'
@@ -166,6 +173,12 @@ window.items = {
                         }
 
                         elem.preloader.hide();
+
+                        if (items.isLoopReverse(model)) {
+                            items.model[model.name].loop_iteration = response.total;
+                        } else {
+                            items.model[name].loop_iteration = 1;
+                        }
 
                         items.print(model, response);
 
@@ -359,6 +372,14 @@ window.items = {
         };
     },
 
+    isLoopReverse: function (model) {
+        if (typeof items.model[model.name].loop_iteration_reverse !== 'undefined') {
+            return items.model[model.name].loop_iteration_reverse;
+        }
+
+        return false;
+    },
+
     load: function (model, callback, options) {
         if (typeof options !== 'object' || options == null) {
             options = {};
@@ -477,6 +498,16 @@ window.items = {
 
     html: function (model, data, i) {
         var html = $(model.outerHTML);
+
+        if (html.find('[html="loop_iteration"]').length) {
+            if (items.model[model.name].loop_iteration_reverse) {
+                html.find('[html="loop_iteration"]').html(items.model[model.name].loop_iteration);
+                items.model[model.name].loop_iteration--;
+            } else {
+                html.find('[html="loop_iteration"]').html(items.model[model.name].loop_iteration);
+                items.model[model.name].loop_iteration++;
+            }
+        }
 
         html = items.dataInHtml(html, data);
 
