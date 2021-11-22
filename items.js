@@ -114,7 +114,10 @@ window.items = {
                             : $('[items-html-' + model.name + ']:eq(0)')[0].outerHTML
                     )
             );
-            $('[items-html-' + model.name + ']:eq(0)').remove();
+
+            if ($('[items-html-' + model.name + ']:eq(0)').parents('[items-list-' + model.name + ']').length == 0) {
+                $('[items-html-' + model.name + ']:eq(0)').remove();
+            }
 
             model.data = typeof model.data !== 'undefined' && model.data != null ? model.data : {};
 
