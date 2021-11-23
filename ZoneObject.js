@@ -42,35 +42,39 @@ class ZoneObject {
             var wt = $(window).scrollTop(),
                 wh = $(window).height();
 
-            if ($(selector).is(':visible')) {
-                var et = $(selector).offset().top,
-                    eh = $(selector).outerHeight();
-            } else {
-                if ($(selector).css('display') != 'none') {
-                    return false;
+            $(selector).each((i, item) => {
+                if ($(item).is(':visible')) {
+                    var et = $(item).offset().top,
+                        eh = $(item).outerHeight();
+                } else {
+                    if ($(item).css('display') != 'none') {
+                        return false;
+                    }
+
+                    if ($(item).prev('[data-object="' + selector + '"]').length == 0) {
+                        $(item).before('<div style="visibility:hidden" data-object="' + selector + '"></div>');
+                    }
+
+                    var prev = $(item).prev('[data-object="' + selector + '"]');
+
+                    var et = prev.offset().top,
+                        eh = prev.outerHeight();
                 }
 
-                if ($('[data-object="' + selector + '"]').length == 0) {
-                    $(selector).before('<div style="visibility:hidden" data-object="' + selector + '"></div>');
-                }
-
-                var et = $('[data-object="' + selector + '"]').offset().top,
-                    eh = $('[data-object="' + selector + '"]').outerHeight();
-            }
-
-            if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
-                if (data.active == false) {
-                    this.elements[selector].active = true;
-                    this.elements[selector].run($(selector));
-                }
-            } else {
-                if (data.active == true) {
-                    if (typeof this.elements[selector].stop === 'function') {
-                        this.elements[selector].stop($(selector));
-                        this.elements[selector].active = false;
+                if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+                    if (data.active == false) {
+                        this.elements[selector].active = true;
+                        this.elements[selector].run($(selector));
+                    }
+                } else {
+                    if (data.active == true) {
+                        if (typeof this.elements[selector].stop === 'function') {
+                            this.elements[selector].stop($(selector));
+                            this.elements[selector].active = false;
+                        }
                     }
                 }
-            }
+            });
         }
     }
 
