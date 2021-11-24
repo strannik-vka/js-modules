@@ -368,6 +368,7 @@ window.items = {
             preloader: $('[items-preloader-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
             isset: $('[items-isset-' + model.name + ']'),
+            issetOne: $('[items-isset-one-' + model.name + ']'),
             list: $('[items-list-' + model.name + ']'),
             showMore: $('[items-show-more-' + model.name + ']'),
             html: $(model.outerHTML),
@@ -554,6 +555,7 @@ window.items = {
         if (response.data && Object.keys(response.data).length) {
             elem.list.show();
             elem.isset.show();
+            elem.issetOne.show();
 
             if (model.prepend) {
                 var currentScroll = elem.scroll.scrollTop(),
