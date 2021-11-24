@@ -488,7 +488,7 @@ window.items = {
         if (data && typeof data === 'object') {
             html.find('[isset]').each(function () {
                 var value = items.getDataValue($(this).attr('isset'), data);
-                console.log(value);
+
                 if (value) {
                     $(this).show();
                 } else {
