@@ -13,10 +13,21 @@ class ZoneObject {
 
     constructor() {
         this.elements = {};
+        this.onStatus = true;
 
         $(document).on('scroll', () => {
-            this.scroll();
+            if (this.onStatus) {
+                this.scroll();
+            }
         });
+    }
+
+    on() {
+        this.onStatus = true;
+    }
+
+    off() {
+        this.onStatus = false;
     }
 
     scroll() {

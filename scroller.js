@@ -1,5 +1,6 @@
 window.scroller = {
 
+    height: false,
     first: false,
 
     init: function () {
@@ -99,6 +100,61 @@ window.scroller = {
         }
     },
 
+    isHeightChange: () => {
+        return scroller.height != $('body').height();
+    },
+
+    getScrollTop: (elem, top) => {
+        var scrollTop = elem.offset().top;
+
+        if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
+            var zoom = parseFloat($('html').css('zoom'));
+            scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
+        }
+
+        $('[scroll-fixed]').each(function () {
+            if ($(this).css('display') != 'none') {
+                scrollTop -= parseFloat($(this).css('height'));
+            }
+        });
+
+        if (top) {
+            scrollTop += top;
+        }
+
+        if (elem.attr('data-top')) {
+            scrollTop += parseInt(elem.attr('data-top'));
+        }
+
+        return scrollTop;
+    },
+
+    animate: (elem, top, callback) => {
+        scroller.height = $('body').height();
+
+        if (typeof ZoneObject !== 'undefined' && ZoneObject != null) {
+            ZoneObject.off();
+        }
+
+        $('html, body').stop().animate({
+            'scrollTop': scroller.getScrollTop(elem, top)
+        }, {
+            duration: 600,
+            easing: 'linear',
+            complete: () => {
+                scroller.replace_attr(elem, true);
+
+                elem.trigger('scroll-complete');
+
+                if (typeof ZoneObject !== 'undefined' && ZoneObject != null) {
+                    ZoneObject.on();
+                }
+
+                if (callback) callback();
+            }
+        });
+    },
+
     to: function (elem, callback, top) {
         if (elem && elem.length) {
             if ($('.modal-open').length) {
@@ -117,36 +173,9 @@ window.scroller = {
                 $('[data-toggle="dropdown"][aria-expanded="true"]').trigger('click');
             }
 
-            var scrollTop = elem.offset().top;
-
-            if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
-                var zoom = parseFloat($('html').css('zoom'));
-                scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
-            }
-
-            $('[scroll-fixed]').each(function () {
-                if ($(this).css('display') != 'none') {
-                    scrollTop -= parseFloat($(this).css('height'));
-                }
-            });
-
-            if (top) {
-                scrollTop += top;
-            }
-
-            var timeout = elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0;
-
             setTimeout(() => {
-                $('html, body').stop().animate({
-                    'scrollTop': scrollTop
-                }, 400, () => {
-                    scroller.replace_attr(elem, true);
-
-                    elem.trigger('scroll-complete');
-
-                    if (callback) callback();
-                });
-            }, timeout);
+                scroller.animate(elem, top, callback);
+            }, elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0);
         }
     },
 
