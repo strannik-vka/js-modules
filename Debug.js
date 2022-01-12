@@ -27,7 +27,24 @@ class Debug {
 
     onerror() {
         window.onerror = (msg, url, lineNo, columnNo, error) => {
-            this.send(navigator.userAgent + '\nurl: ' + url + '\nmsg: ' + msg + '\nlineNo: ' + lineNo + '\ncolumnNo: ' + columnNo + '\nerror: ' + (error.stack ? error.stack : error) + '\npage: ' + location.href + '\nuer: ' + (typeof user === 'object' && user != null ? JSON.stringify(user) : null));
+            var text = '';
+
+            text += navigator.userAgent + "\n";
+            text += 'url: ' + url + "\n";
+            text += 'msg: ' + msg + "\n";
+            text += 'lineNo: ' + lineNo + "\n";
+            text += 'columnNo: ' + columnNo + "\n";
+            text += 'page: ' + location.href + "\n";
+
+            if(typeof error === 'object' && error != null) {
+                text += 'error: ' + JSON.stringify(error.stack ? error.stack : error) + "\n";
+            }
+
+            if(typeof user === 'object' && user != null) {
+                text += 'user: ' + JSON.stringify(user) + "\n";
+            }
+
+            this.send(text);
         }
     }
 
