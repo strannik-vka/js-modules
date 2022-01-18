@@ -25,9 +25,23 @@ class Debug {
         }, time);
     }
 
+    isException(msg) {
+        var result = false;
+
+        if (msg) {
+            ['_AutofillCallbackHandler'].forEach(exception => {
+                if (msg.indexOf(exception) > -1) {
+                    result = true;
+                }
+            });
+        }
+
+        return result;
+    }
+
     onerror() {
         window.onerror = (msg, url, lineNo, columnNo, error) => {
-            if (lineNo && columnNo) {
+            if (lineNo && columnNo && this.isException(msg) == false) {
                 var text = '';
 
                 text += navigator.userAgent + "\n";
