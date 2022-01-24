@@ -38,7 +38,12 @@ class AjaxForm {
     }
 
     reset(form) {
-        form.trigger('reset').removeClass('success');
+        form.trigger('reset');
+        this.htmlReset(form);
+    }
+
+    htmlReset(form) {
+        form.removeClass('success');
 
         var key = form.attr('data-ajax-form');
 
@@ -107,6 +112,8 @@ class AjaxForm {
 
                 form.find('[data-ajax-form-show]').show();
                 form.find('[data-ajax-form-hide]').hide();
+            } else {
+                this.htmlReset(form);
             }
 
             form.trigger('ajax-response');
