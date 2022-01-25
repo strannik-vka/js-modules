@@ -2,6 +2,7 @@ window.scroller = {
 
     height: false,
     first: false,
+    duration: 600,
 
     init: function () {
         if (location.href.indexOf('#') > -1) {
@@ -139,7 +140,7 @@ window.scroller = {
         $('html, body').stop().animate({
             'scrollTop': scroller.getScrollTop(elem, top)
         }, {
-            duration: 600,
+            duration: scroller.duration,
             easing: 'linear',
             complete: () => {
                 scroller.replace_attr(elem, true);
