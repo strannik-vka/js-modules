@@ -100,19 +100,23 @@ window.validate = {
             size: function (input) {
                 var bytes = 0;
 
-                $.each(input[0].files, function (index, file) {
-                    bytes += file.size;
-                });
+                if (typeof input[0].files !== 'undefined') {
+                    $.each(input[0].files, function (index, file) {
+                        bytes += file.size;
+                    });
+                }
 
-                return parseFloat((bytes / 1024).toFixed(3));
+                return bytes ? parseFloat((bytes / 1024).toFixed(3)) : bytes;
             },
             types: function (input) {
                 var types = [];
 
-                $.each(input[0].files, function (index, file) {
-                    var arr = file.name.split('.');
-                    types.push(arr[arr.length - 1]);
-                });
+                if (typeof input[0].files !== 'undefined') {
+                    $.each(input[0].files, function (index, file) {
+                        var arr = file.name.split('.');
+                        types.push(arr[arr.length - 1]);
+                    });
+                }
 
                 return types;
             }
