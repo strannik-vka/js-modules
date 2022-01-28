@@ -7,6 +7,7 @@ class BsTab {
 
     constructor(obj) {
         this.id = obj.id;
+        this.process = false;
     }
 
     countersEventInit() {
@@ -16,6 +17,7 @@ class BsTab {
         tabElems.forEach((tabElem) => {
             tabElem.addEventListener('shown.bs.tab', (event) => {
                 this.setCurrent(event.target);
+                this.process = false;
             });
         });
 
@@ -27,9 +29,12 @@ class BsTab {
 
         nextElems.forEach((nextElem) => {
             nextElem.addEventListener('click', (event) => {
-                var getNextTab = this.getNextTab(event.target.getAttribute('data-tab-next'));
-                if (getNextTab) {
-                    new bootstrap.Tab(getNextTab).show();
+                if (this.process == false) {
+                    var getNextTab = this.getNextTab(event.target.getAttribute('data-tab-next'));
+                    if (getNextTab) {
+                        this.process = true;
+                        new bootstrap.Tab(getNextTab).show();
+                    }
                 }
             });
         });
@@ -38,9 +43,12 @@ class BsTab {
 
         prevElems.forEach((prevElem) => {
             prevElem.addEventListener('click', (event) => {
-                var getPrevTab = this.getPrevTab(event.target.getAttribute('data-tab-prev'));
-                if (getPrevTab) {
-                    new bootstrap.Tab(getPrevTab).show();
+                if (this.process == false) {
+                    var getPrevTab = this.getPrevTab(event.target.getAttribute('data-tab-prev'));
+                    if (getPrevTab) {
+                        this.process = true;
+                        new bootstrap.Tab(getPrevTab).show();
+                    }
                 }
             });
         });
