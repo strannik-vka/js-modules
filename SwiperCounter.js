@@ -1,7 +1,8 @@
 class SwiperCounter {
 
     constructor(selector, obj) {
-        this.activeIndex = 0;
+        obj = typeof obj === 'object' && obj != null ? obj : {};
+
         this.selector = selector;
         this.breakpoints = obj.breakpoints;
         this.swiper = document.querySelector(selector).swiper;
@@ -65,14 +66,20 @@ class SwiperCounter {
 
     events() {
         this.swiper.on('slideChange', (event) => {
-            var isNext = event.activeIndex > this.activeIndex;
-
-            this.activeIndex = event.activeIndex;
+            var isNext = event.activeIndex > event.previousIndex;
 
             if (isNext) {
                 this.count = this.count + this.nextCount;
             } else {
                 this.count = this.count - this.nextCount;
+            }
+
+            if (this.count > this.total) {
+                this.count = 1;
+            }
+
+            if (this.count <= 0) {
+                this.count = this.total;
             }
 
             this.setCount();
