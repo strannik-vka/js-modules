@@ -3,15 +3,18 @@ class SwiperCounter {
     constructor(selector, obj) {
         obj = typeof obj === 'object' && obj != null ? obj : {};
 
+        this.previousIndex = 0;
         this.selector = selector;
         this.breakpoints = obj.breakpoints;
         this.swiper = document.querySelector(selector).swiper;
 
         this.count = obj.count ? obj.count : 1;
         this.nextCount = obj.nextCount ? obj.nextCount : 1;
-        this.total = obj.total
-            ? obj.total
-            : document.querySelectorAll(selector + ' .swiper-slide').length;
+        this.total = obj.total;
+
+        if (!obj.total) {
+            this.total = this.getTotal();
+        }
 
         this.setBreakpoints();
         this.setTotal();
@@ -40,6 +43,13 @@ class SwiperCounter {
         }
     }
 
+    getTotal() {
+        var aria_label = document.querySelector(this.selector + ' [aria-label]').getAttribute('aria-label'),
+            aria_label_arr = aria_label.split('/');
+
+        return parseInt(aria_label_arr[1]);
+    }
+
     setCount() {
         document.querySelectorAll(this.selector).forEach(swiperElem => {
             swiperElem.querySelectorAll('[data-swiper-count]').forEach((countElem) => {
@@ -66,23 +76,27 @@ class SwiperCounter {
 
     events() {
         this.swiper.on('slideChange', (event) => {
-            var isNext = event.activeIndex > event.previousIndex;
+            var isNext = (event.realIndex == this.previousIndex + 1) || (event.realIndex == 0 && this.total == this.previousIndex + 1);
 
-            if (isNext) {
-                this.count = this.count + this.nextCount;
-            } else {
-                this.count = this.count - this.nextCount;
+            if (this.previousIndex != event.realIndex) {
+                this.previousIndex = event.realIndex;
+
+                if (isNext) {
+                    this.count = this.count + this.nextCount;
+                } else {
+                    this.count = this.count - this.nextCount;
+                }
+
+                if (this.count > this.total) {
+                    this.count = 1;
+                }
+
+                if (this.count <= 0) {
+                    this.count = this.total;
+                }
+
+                this.setCount();
             }
-
-            if (this.count > this.total) {
-                this.count = 1;
-            }
-
-            if (this.count <= 0) {
-                this.count = this.total;
-            }
-
-            this.setCount();
         });
 
         $(window).on('resize', () => {
