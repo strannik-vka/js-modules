@@ -3,11 +3,11 @@ class SwiperCounter {
     constructor(selector, obj) {
         obj = typeof obj === 'object' && obj != null ? obj : {};
 
-        this.previousIndex = 0;
         this.selector = selector;
         this.breakpoints = obj.breakpoints;
         this.swiper = document.querySelector(selector).swiper;
 
+        this.firstCount = obj.count ? obj.count : 1;
         this.count = obj.count ? obj.count : 1;
         this.nextCount = obj.nextCount ? obj.nextCount : 1;
         this.total = obj.total;
@@ -37,6 +37,10 @@ class SwiperCounter {
                     var breakpointKeys = Object.keys(this.breakpoints[key]);
                     breakpointKeys.forEach(breakpointKey => {
                         this[breakpointKey] = this.breakpoints[key][breakpointKey];
+
+                        if (breakpointKey == 'count') {
+                            this.firstCount = this[breakpointKey];
+                        }
                     });
                 }
             });
@@ -76,27 +80,8 @@ class SwiperCounter {
 
     events() {
         this.swiper.on('slideChange', (event) => {
-            var isNext = (event.realIndex == this.previousIndex + 1) || (event.realIndex == 0 && this.total == this.previousIndex + 1);
-
-            if (this.previousIndex != event.realIndex) {
-                this.previousIndex = event.realIndex;
-
-                if (isNext) {
-                    this.count = this.count + this.nextCount;
-                } else {
-                    this.count = this.count - this.nextCount;
-                }
-
-                if (this.count > this.total) {
-                    this.count = 1;
-                }
-
-                if (this.count <= 0) {
-                    this.count = this.total;
-                }
-
-                this.setCount();
-            }
+            this.count = this.firstCount + (event.realIndex * this.nextCount);
+            this.setCount();
         });
 
         $(window).on('resize', () => {
