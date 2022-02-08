@@ -21,9 +21,11 @@ $(document)
                 ? parent.find('[file-change-name="' + $(this).attr('name') + '"]')
                 : $('[file-change-name="' + $(this).attr('name') + '"]');
 
-        $.each($(this)[0].files, function (i, file) {
-            names.push(file.name);
-        });
+        if (typeof $(this)[0].files !== 'undefined') {
+            $.each($(this)[0].files, function (i, file) {
+                names.push(file.name);
+            });
+        }
 
         if (!name_elem.attr('text-original')) {
             name_elem.attr('text-original', name_elem.text());
