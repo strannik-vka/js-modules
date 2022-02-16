@@ -61,6 +61,12 @@ window.modalNotify = {
                 }
             });
         }
+
+        if (obj.btnRedirect) {
+            $('#modalNotify [data-btn]').off('click').on('click', function () {
+                location.href = obj.btnRedirect;
+            });
+        }
     }
 
 }
