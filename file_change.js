@@ -49,6 +49,10 @@ $(document)
                 ? parent.find('[name="' + name_elem.attr('file-change-name') + '"]')
                 : $('[name="' + name_elem.attr('file-change-name') + '"]');
 
+        if (input.attr('disabled')) {
+            return false;
+        }
+
         name_elem.html(name_elem.attr('text-original') ? name_elem.attr('text-original') : '');
 
         parent.removeClass('active');
