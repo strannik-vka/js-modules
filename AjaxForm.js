@@ -86,9 +86,11 @@ class AjaxForm {
                 location.href = response.redirect;
             } else if (response.success) {
                 if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
-                    modalNotify.create({
-                        text: response.success
-                    });
+                    if (!response.text) {
+                        response.text = response.success;
+                    }
+
+                    modalNotify.create(response);
                 }
 
                 if (form.attr('data-ajax-form-reload')) {
