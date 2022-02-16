@@ -49,9 +49,10 @@ $(document)
                 ? parent.find('[name="' + name_elem.attr('file-change-name') + '"]')
                 : $('[name="' + name_elem.attr('file-change-name') + '"]');
 
-        name_elem.html(name_elem.attr('text-original'));
+        name_elem.html(name_elem.attr('text-original') ? name_elem.attr('text-original') : '');
 
         parent.removeClass('active');
+        input.removeAttr('data-is-file');
         input.replaceWith(input.clone().val(''));
 
         jsChange = true;

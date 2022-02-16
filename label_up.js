@@ -55,6 +55,10 @@ class LabelUp {
             val = val.replace('__:__', '');
         }
 
+        if (elem.attr('type') == 'file' && elem.attr('data-is-file') != undefined) {
+            val = elem.attr('data-is-file');
+        }
+
         return val;
     }
 
