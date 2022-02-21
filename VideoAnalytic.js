@@ -10,6 +10,11 @@
 class VideoAnalytic {
 
     constructor(obj) {
+        this.init(obj);
+        this.initCount = 0;
+    }
+
+    init(obj) {
         this.video = document.querySelector(obj.selector);
 
         if (this.video) {
@@ -26,9 +31,13 @@ class VideoAnalytic {
             this.video.addEventListener('ended', this.ended, false);
             this.video.addEventListener('play', this.play, false);
         } else {
-            setTimeout(() => {
-                this.constructor(obj);
-            }, 1000);
+            if (this.initCount < 5) {
+                this.initCount++;
+
+                setTimeout(() => {
+                    this.init(obj);
+                }, 1000);
+            }
         }
     }
 

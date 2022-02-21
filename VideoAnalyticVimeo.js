@@ -7,6 +7,8 @@
     });
 */
 
+import Player from '@vimeo/player';
+
 class VideoAnalyticVimeo {
 
     constructor(obj) {
@@ -18,7 +20,7 @@ class VideoAnalyticVimeo {
         this.iframe = document.querySelector(obj.selector);
 
         if (this.iframe) {
-            this.video = new Vimeo.Player(iframe);
+            this.video = new Player(this.iframe);
             this.src = this.getSrc();
             this.sendData = typeof obj.sendData === 'object' && obj.sendData != null ? obj.sendData : {};
             this.sendUrl = obj.sendUrl;
@@ -64,10 +66,10 @@ class VideoAnalyticVimeo {
 
     play = () => {
         if (!this.duration) {
-            this.video.getDuration().then(function (duration) {
+            this.video.getDuration().then(duration => {
                 this.duration = duration;
-            }).catch(function (error) {
-                // an error occurred
+            }).catch(error => {
+                console.log(error);
             });
         }
 
