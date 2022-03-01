@@ -132,20 +132,20 @@ window.scroller = {
         $('html, body').stop().animate({
             'scrollTop': scroller.getScrollTop(elem, top)
         }, {
-            duration: scroller.duration,
-            easing: 'linear',
-            complete: () => {
-                scroller.replace_attr(elem, true);
-
-                elem.trigger('scroll-complete');
-
-                if (typeof ZoneObject !== 'undefined' && ZoneObject != null) {
-                    ZoneObject.on();
-                }
-
-                if (callback) callback();
-            }
+            duration: scroller.duration
         });
+
+        setTimeout(() => {
+            scroller.replace_attr(elem, true);
+
+            elem.trigger('scroll-complete');
+
+            if (typeof ZoneObject !== 'undefined' && ZoneObject != null) {
+                ZoneObject.on();
+            }
+
+            if (callback) callback();
+        }, scroller.duration * 1.5);
     },
 
     to: function (elem, callback, top) {
