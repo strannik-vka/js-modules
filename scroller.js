@@ -1,7 +1,5 @@
 window.scroller = {
 
-    height: false,
-    first: false,
     duration: 600,
 
     init: function () {
@@ -101,10 +99,6 @@ window.scroller = {
         }
     },
 
-    isHeightChange: () => {
-        return scroller.height != $('body').height();
-    },
-
     getScrollTop: (elem, top) => {
         var scrollTop = elem.offset().top;
 
@@ -131,8 +125,6 @@ window.scroller = {
     },
 
     animate: (elem, top, callback) => {
-        scroller.height = $('body').height();
-
         if (typeof ZoneObject !== 'undefined' && ZoneObject != null) {
             ZoneObject.off();
         }
