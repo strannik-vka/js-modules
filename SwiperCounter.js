@@ -1,3 +1,14 @@
+/*
+    new SwiperCounter('.swiper-mechanics', {
+        count: 2,
+        breakpoints: {
+            767: {
+                count: 4
+            }
+        }
+    });
+*/
+
 class SwiperCounter {
 
     constructor(selector, obj) {
