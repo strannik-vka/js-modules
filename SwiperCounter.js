@@ -59,13 +59,19 @@ class SwiperCounter {
     }
 
     getTotal() {
-        var aria_label = document.querySelector(this.selector + ' [aria-label]');
+        var swiperElem = document.querySelector(this.selector);
 
-        if (aria_label) {
-            aria_label = aria_label.getAttribute('aria-label');
-            aria_label = aria_label.split('/');
+        if (swiperElem) {
+            let aria_label = swiperElem.querySelector('[aria-label]');
 
-            return parseInt(aria_label[1]);
+            if (aria_label) {
+                aria_label = aria_label.getAttribute('aria-label');
+                aria_label = aria_label.split('/');
+
+                return parseInt(aria_label[1]);
+            }
+
+            return swiperElem.querySelectorAll('.swiper-slide').length;
         }
 
         return 0;
