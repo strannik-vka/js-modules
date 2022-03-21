@@ -16,7 +16,7 @@ class SwiperCounter {
 
         this.selector = selector;
         this.breakpoints = obj.breakpoints;
-        this.swiper = document.querySelector(selector).swiper;
+        this.swipers = document.querySelectorAll(selector);
 
         this.firstCount = obj.count ? obj.count : 1;
         this.count = obj.count ? obj.count : 1;
@@ -59,10 +59,16 @@ class SwiperCounter {
     }
 
     getTotal() {
-        var aria_label = document.querySelector(this.selector + ' [aria-label]').getAttribute('aria-label'),
-            aria_label_arr = aria_label.split('/');
+        var aria_label = document.querySelector(this.selector + ' [aria-label]');
 
-        return parseInt(aria_label_arr[1]);
+        if (aria_label) {
+            aria_label = aria_label.getAttribute('aria-label');
+            aria_label = aria_label.split('/');
+
+            return parseInt(aria_label[1]);
+        }
+
+        return 0;
     }
 
     setCount() {
@@ -90,9 +96,11 @@ class SwiperCounter {
     }
 
     events() {
-        this.swiper.on('slideChange', (event) => {
-            this.count = this.firstCount + (event.realIndex * this.nextCount);
-            this.setCount();
+        this.swipers.forEach(swiperElement => {
+            swiperElement.swiper.on('slideChange', (event) => {
+                this.count = this.firstCount + (event.realIndex * this.nextCount);
+                this.setCount();
+            });
         });
 
         $(window).on('resize', () => {
