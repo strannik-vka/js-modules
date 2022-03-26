@@ -7,7 +7,6 @@ window.scroller = {
             let elem = scroller.elem(scroller.hash(location.href));
             scroller.replace_attr(elem);
             window.onload = () => {
-                scroller.replace_attr(elem, true);
                 scroller.to(elem);
             }
         }
@@ -172,6 +171,8 @@ window.scroller = {
             setTimeout(() => {
                 scroller.animate(elem, top, callback);
             }, elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0);
+        } else {
+            scroller.replace_attr(elem, true);
         }
     },
 
