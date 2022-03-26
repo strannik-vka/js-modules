@@ -13,13 +13,13 @@ class ZoneObject {
 
     constructor() {
         this.elements = {};
-        this.onStatus = false;
-        this.onInit = false;
+        this.onStatus = true;
+        this.onInit = true;
         this.onInitTimer = false;
 
         if (location.hash) {
-            this.onStatus = true;
-            this.onInit = true;
+            this.onStatus = false;
+            this.onInit = false;
         }
 
         $(document).on('scroll', () => {
