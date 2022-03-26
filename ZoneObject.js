@@ -24,6 +24,7 @@ class ZoneObject {
 
     on() {
         this.onStatus = true;
+        this.scroll();
     }
 
     off() {
