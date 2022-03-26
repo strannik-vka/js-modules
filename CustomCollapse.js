@@ -15,34 +15,6 @@ class CustomCollapse {
         this.events();
     }
 
-    clear() {
-        let items = document.querySelectorAll(this.selector);
-
-        items.forEach(item => {
-            let isShow = item.classList.contains(this.itemActiveClass);
-
-            if (isShow) {
-                item.classList.remove(this.itemActiveClass);
-
-                let btns = document.querySelectorAll('[data-cc-btn]');
-
-                btns.forEach(btn => {
-                    btn.classList.remove(this.btnActiveClass);
-                });
-            }
-
-            item.removeAttribute('style');
-        });
-
-        if (this.animate) {
-            let heights = document.querySelectorAll('[data-source-height]');
-
-            heights.forEach(height => {
-                height.removeAttribute('data-source-height');
-            });
-        }
-    }
-
     events() {
         let btns = document.querySelectorAll('[data-cc-btn]');
 
@@ -50,10 +22,6 @@ class CustomCollapse {
             btn.addEventListener('click', () => {
                 this.toggle(btn);
             });
-        });
-
-        window.addEventListener('resize', () => {
-            this.clear();
         });
     }
 
