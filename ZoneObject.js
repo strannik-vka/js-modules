@@ -13,7 +13,7 @@ class ZoneObject {
 
     constructor() {
         this.elements = {};
-        this.onStatus = true;
+        this.onStatus = location.href.indexOf('#') > -1 ? false : true;
 
         $(document).on('scroll', () => {
             if (this.onStatus) {
