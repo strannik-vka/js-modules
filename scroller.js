@@ -4,8 +4,11 @@ window.scroller = {
 
     init: function () {
         if (location.href.indexOf('#') > -1) {
+            let elem = scroller.elem(scroller.hash(location.href));
+            scroller.replace_attr(elem);
             window.onload = () => {
-                scroller.to(scroller.elem(scroller.hash(location.href)));
+                scroller.replace_attr(elem, true);
+                scroller.to(elem);
             }
         }
 
