@@ -13,11 +13,24 @@ class ZoneObject {
 
     constructor() {
         this.elements = {};
-        this.onStatus = location.href.indexOf('#') > -1 ? false : true;
+        this.onStatus = false;
+        this.onInit = false;
+        this.onInitTimer = false;
+
+        if (location.hash) {
+            this.onStatus = true;
+            this.onInit = true;
+        }
 
         $(document).on('scroll', () => {
             if (this.onStatus) {
                 this.scroll();
+            } else if (this.onInit == false) {
+                if (this.onInitTimer) clearTimeout(this.onInitTimer);
+                this.onInitTimer = setTimeout(() => {
+                    this.onInit = true;
+                    this.on();
+                }, 1000);
             }
         });
     }
