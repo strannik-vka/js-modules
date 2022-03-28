@@ -12,6 +12,9 @@ class CustomCollapse {
         this.btnActiveClass = options && options.btnActiveClass ? options.btnActiveClass : 'active';
         this.animate = options && options.animate ? options.animate : false;
 
+        var ua = navigator.userAgent.toLowerCase();
+        this.isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') == -1;
+
         this.events();
     }
 
@@ -60,12 +63,18 @@ class CustomCollapse {
         } else {
             $(item).addClass('open');
             $(item).css('height', 'auto');
-
-            setTimeout(() => {
+            alert(this.isSafari);
+            if (this.isSafari) {
+                setTimeout(() => {
+                    height = parseFloat($(item).css('height'));
+                    $(item).removeAttr('style');
+                    this.elemAnimate(item, height);
+                }, 100);
+            } else {
                 height = parseFloat($(item).css('height'));
                 $(item).removeAttr('style');
                 this.elemAnimate(item, height);
-            }, 100);
+            }
         }
     }
 
