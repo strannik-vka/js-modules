@@ -63,7 +63,7 @@ class CustomCollapse {
         } else {
             $(item).addClass('open');
             $(item).css('height', 'auto');
-            alert(this.isSafari);
+
             if (this.isSafari) {
                 setTimeout(() => {
                     height = parseFloat($(item).css('height'));
