@@ -3,11 +3,9 @@ window.scroller = {
     duration: 600,
     setTimeout: false,
 
-    init: function () {
+    init: () => {
         if (location.hash) {
-            window.onload = () => {
-                scroller.onloadScroll();
-            }
+            scroller.onloadScroll();
         }
 
         $(document)
@@ -18,15 +16,50 @@ window.scroller = {
 
                     if (elem && elem.length) {
                         e.preventDefault();
-                        scroller.to(elem);
-                        location.hash = hash;
+                        scroller.to(elem, () => {
+                            scroller.setLocationHash(hash, elem);
+                        });
                         return false;
                     }
                 }
             });
     },
 
-    onloadScroll() {
+    setLocationHash: (hash, elem) => {
+        scroller.replaceAttr(elem);
+        location.hash = hash;
+        scroller.replaceAttr(elem);
+    },
+
+    replaceAttr: (elem) => {
+        if (elem.attr('name') || elem.attr('id')) {
+            if (elem.attr('name')) {
+                elem
+                    .attr('data-name', elem.attr('name'))
+                    .removeAttr('name');
+            }
+
+            if (elem.attr('id')) {
+                elem
+                    .attr('data-id', elem.attr('id'))
+                    .removeAttr('id');
+            }
+        } else {
+            if (elem.attr('data-id')) {
+                elem
+                    .attr('id', elem.attr('data-id'))
+                    .removeAttr('data-id');
+            }
+
+            if (elem.attr('data-name')) {
+                elem
+                    .attr('name', elem.attr('data-name'))
+                    .removeAttr('data-name');
+            }
+        }
+    },
+
+    onloadScroll: () => {
         var hash = scroller.hash(location.href), elem = scroller.elem(hash);
         if (elem && elem.length) {
             scroller.to(elem);
@@ -37,7 +70,7 @@ window.scroller = {
         return ['collapse', 'tab', 'pill'].indexOf(elem.attr('data-toggle')) == -1;
     },
 
-    hash: function (url) {
+    hash: (url) => {
         url = url.split('#');
         url = url[url.length - 1];
         url = url.split('?');
@@ -52,7 +85,7 @@ window.scroller = {
         );
     },
 
-    elem: function (str) {
+    elem: (str) => {
         if (str && str.indexOf('://') == -1) {
             var isElem = $('*').is('#' + str);
 
@@ -130,7 +163,7 @@ window.scroller = {
         }, scroller.duration * 1.5);
     },
 
-    to: function (elem, callback, top) {
+    to: (elem, callback, top) => {
         if (elem && elem.length) {
             if ($('.modal-open').length) {
                 if ($('.modal').find(elem).length) {
@@ -152,7 +185,7 @@ window.scroller = {
         }
     },
 
-    toTop: function () {
+    toTop: () => {
         scroller.to($('body'));
     }
 
