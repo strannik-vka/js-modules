@@ -1,8 +1,20 @@
+/*
+    AjaxForm(selector, {
+        beforeSubmit: (callback) => {}, // до отправки формы
+        afterSubmit: (response) => {}, // ответ от сервера
+        editMode: true // сначала нажимаем кнопку "редактировать" => появляется возможность сохранить 
+    })
+*/
+
 class AjaxForm {
 
-    constructor(selector, callback) {
+    constructor(selector, afterSubmit) {
+        this.options = typeof afterSubmit === 'object' && afterSubmit != null ? afterSubmit : {
+            afterSubmit: afterSubmit
+        };
+
         this.selector = selector;
-        this.callback = callback;
+        this.isEditMode = false;
 
         this.events();
     }
@@ -15,12 +27,60 @@ class AjaxForm {
             .on('submit', this.selector, (e) => {
                 e.preventDefault();
 
-                if (this.isErrors($(e.currentTarget))) {
-                    this.scrollToError();
+                let form = $(e.currentTarget);
+
+                if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
+                    if (this.isEditMode == false) {
+                        this.editModeOn(form);
+                        return false;
+                    }
+                }
+
+                if (this.options.beforeSubmit) {
+                    this.options.beforeSubmit(submitAllow => {
+                        if (submitAllow) {
+                            this.submit($(e.currentTarget));
+                        }
+                    });
                 } else {
                     this.submit($(e.currentTarget));
                 }
             });
+    }
+
+    editModeOn(form) {
+        this.isEditMode = true;
+
+        form.find('[disabled]').each((i, input) => {
+            if (!input.getAttribute('data-edit-mode-disabled')) {
+                input.removeAttribute('disabled');
+                input.dataEditModeEnabled = 'true';
+            }
+        });
+
+        let focusElem = form.find('[name][type="text"]');
+
+        if (focusElem.length == 0) {
+            focusElem = form.find('textarea[name]');
+        }
+
+        if (focusElem.length) {
+            focusElem = focusElem[0];
+            focusElem.focus();
+            focusElem.setSelectionRange(focusElem.value.length, focusElem.value.length);
+        }
+
+        form.find('button').html('Сохранить');
+    }
+
+    editModeOff(form) {
+        this.isEditMode = false;
+
+        form.find('[data-edit-mode-enabled]').each((i, input) => {
+            input.disabled = 'disabled';
+        });
+
+        form.find('button').html('Редактировать');
     }
 
     scrollToError() {
@@ -67,61 +127,67 @@ class AjaxForm {
     }
 
     submit(form) {
-        var formData = this.formData(form);
+        if (this.isErrors(form)) {
+            this.scrollToError();
+        } else {
+            var formData = this.formData(form);
 
-        ajax(formData, response => {
-            if (this.callback) {
-                this.callback(response);
-            }
+            ajax(formData, response => {
+                if (this.options.afterSubmit) {
+                    this.options.afterSubmit(response);
+                }
 
-            if (typeof response !== 'object') {
-                if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
-                    var response = {
-                        success: true
+                if (typeof response !== 'object') {
+                    if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
+                        var response = {
+                            success: true
+                        }
                     }
                 }
-            }
 
-            if (response.redirect) {
-                location.href = response.redirect;
-            } else if (response.success) {
-                if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
-                    if (!response.text) {
-                        response.text = response.success;
+                if (response.redirect) {
+                    location.href = response.redirect;
+                } else if (response.success) {
+                    if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
+                        if (!response.text) {
+                            response.text = response.success;
+                        }
+
+                        modalNotify.create(response);
                     }
 
-                    modalNotify.create(response);
+                    if (form.attr('data-ajax-form-reload')) {
+                        location.reload();
+                    }
+
+                    if (form.attr('data-ajax-form-redirect')) {
+                        location.href = form.attr('data-ajax-form-redirect');
+                    }
+
+                    form.addClass('success');
+
+                    if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
+                        form.trigger('reset');
+                    }
+
+                    var key = form.attr('data-ajax-form');
+
+                    if (key) {
+                        $('[data-ajax-form-show="' + key + '"]').show();
+                        $('[data-ajax-form-hide="' + key + '"]').hide();
+                    }
+
+                    form.find('[data-ajax-form-show]').show();
+                    form.find('[data-ajax-form-hide]').hide();
+
+                    this.editModeOff(form);
+                } else {
+                    this.htmlReset(form);
                 }
 
-                if (form.attr('data-ajax-form-reload')) {
-                    location.reload();
-                }
-
-                if (form.attr('data-ajax-form-redirect')) {
-                    location.href = form.attr('data-ajax-form-redirect');
-                }
-
-                form.addClass('success');
-
-                if (form.find('[data-ajax-form-reset]').length == 0) {
-                    form.trigger('reset');
-                }
-
-                var key = form.attr('data-ajax-form');
-
-                if (key) {
-                    $('[data-ajax-form-show="' + key + '"]').show();
-                    $('[data-ajax-form-hide="' + key + '"]').hide();
-                }
-
-                form.find('[data-ajax-form-show]').show();
-                form.find('[data-ajax-form-hide]').hide();
-            } else {
-                this.htmlReset(form);
-            }
-
-            form.trigger('ajax-response');
-        }, form);
+                form.trigger('ajax-response');
+            }, form);
+        }
     }
 
 }
