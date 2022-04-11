@@ -27,7 +27,12 @@ class AjaxForm {
             .on('submit', this.selector, (e) => {
                 e.preventDefault();
 
-                let form = $(e.currentTarget);
+                let form = $(e.currentTarget),
+                    btn = form.find('[type="submit"]');
+
+                if (btn.attr('class').indexOf('deactive') > -1) {
+                    return false;
+                }
 
                 if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
                     if (this.isEditMode == false) {
