@@ -28,10 +28,13 @@ class AjaxForm {
                 e.preventDefault();
 
                 let form = $(e.currentTarget),
-                    btn = form.find('[type="submit"]');
+                    btn = form.find('[type="submit"]'),
+                    btnClass = btn.attr('class');
 
-                if (btn.attr('class').indexOf('deactive') > -1) {
-                    return false;
+                if (btnClass) {
+                    if (btn.attr('class').indexOf('deactive') > -1) {
+                        return false;
+                    }
                 }
 
                 if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
