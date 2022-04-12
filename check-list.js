@@ -1,8 +1,16 @@
 $(document)
     .on('mousedown', '[data-bs-toggle="dropdown"]', (e) => {
+        let labelledbyElem = $('[aria-labelledby="' + $(e.currentTarget).attr('id') + '"]');
+
         if ($(e.currentTarget).find('[disabled]').length) {
             $(e.currentTarget).dropdown('toggle');
-            $('[aria-labelledby="' + $(e.currentTarget).attr('id') + '"]').hide();
+            labelledbyElem.hide();
+        } else {
+            if (labelledbyElem.attr('style')) {
+                if (labelledbyElem.attr('style').indexOf('display: none') > -1) {
+                    labelledbyElem.removeAttr('style');
+                }
+            }
         }
     })
     .on('change', '[data-check-list] [name]', (e) => {
