@@ -66,10 +66,10 @@ class AjaxForm {
             }
         });
 
-        let focusElem = form.find('[name][type="text"]');
+        let focusElem = form.find('[name][type="text"]:eq(0)');
 
         if (focusElem.length == 0) {
-            focusElem = form.find('textarea[name]');
+            focusElem = form.find('textarea[name]:eq(0)');
         }
 
         if (focusElem.length) {
