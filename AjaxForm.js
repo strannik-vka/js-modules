@@ -62,7 +62,7 @@ class AjaxForm {
         form.find('[disabled]').each((i, input) => {
             if (!input.getAttribute('data-edit-mode-disabled')) {
                 input.removeAttribute('disabled');
-                input.dataEditModeEnabled = 'true';
+                input.setAttribute('data-edit-mode-enabled', 'true');
             }
         });
 
