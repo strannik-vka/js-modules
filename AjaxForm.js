@@ -188,7 +188,11 @@ class AjaxForm {
                     form.find('[data-ajax-form-show]').show();
                     form.find('[data-ajax-form-hide]').hide();
 
-                    this.editModeOff(form);
+                    if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
+                        if (this.isEditMode == true) {
+                            this.editModeOff(form);
+                        }
+                    }
                 } else {
                     this.htmlReset(form);
                 }
