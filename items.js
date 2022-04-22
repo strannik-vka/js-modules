@@ -549,6 +549,46 @@ window.items = {
         elem.list.append(new_item);
     },
 
+    orderBy: (name, key, sort) => {
+        let model = items.model[name];
+
+        if (model.items && model.items.data && Object.keys(model.items.data).length) {
+            model.items.data.sort((a, b) => {
+                if (sort == 'asc') {
+                    if (a[key] < b[key]) {
+                        return -1;
+                    }
+
+                    if (a[key] > b[key]) {
+                        return 1;
+                    }
+                } else if (sort == 'desc') {
+                    if (a[key] > b[key]) {
+                        return -1;
+                    }
+
+                    if (a[key] < b[key]) {
+                        return 1;
+                    }
+                }
+
+                return 0;
+            });
+
+            let elem = items.elem(model);
+
+            elem.list.html('');
+
+            if (items.isLoopReverse(model)) {
+                items.model[name].loop_iteration = model.items.total;
+            } else {
+                items.model[name].loop_iteration = 1;
+            }
+
+            items.print(model, model.items);
+        }
+    },
+
     print: function (model, response) {
         var elem = items.elem(model);
 
