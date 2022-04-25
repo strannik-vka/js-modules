@@ -5,6 +5,7 @@
     items-preloader-NAME - прелоадер
     items-empty-NAME - пусто
     items-show-more-NAME - Кнопка показать ещё
+    items-total-NAME - Общее кол-во записей
 
     items.create({
         modal: {
@@ -45,6 +46,7 @@ window.items = {
             var model = items.model[name],
                 elem = items.elem(model);
 
+            elem.total.html('0');
             elem.list.hide().find('[items-html-' + model.name + ']').remove();
             elem.empty.hide();
             elem.preloader.show();
@@ -365,6 +367,7 @@ window.items = {
 
     elem: function (model) {
         return {
+            total: $('[items-total-' + model.name + ']'),
             preloader: $('[items-preloader-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
             isset: $('[items-isset-' + model.name + ']'),
@@ -591,6 +594,10 @@ window.items = {
 
     print: function (model, response) {
         var elem = items.elem(model);
+
+        if (response.total) {
+            elem.total.html(response.total);
+        }
 
         if (response.data && Object.keys(response.data).length) {
             elem.list.show();
