@@ -1,3 +1,5 @@
+const soundWave = require('./soundWave').default;
+
 window.audio = {
 
     elem: new Audio(),
@@ -51,6 +53,27 @@ window.audio = {
                 audio.play($(this).attr('audio-play'));
             }
         });
+
+        $('[time-load]').each((i, item) => {
+            let parent = $(item).parents('[audio-item]'),
+                audioUrl = parent.find('[audio-play]').attr('audio-play'),
+                elem = new Audio(audioUrl);
+
+            elem.onloadedmetadata = () => {
+                $(item).html(audio.time.full(elem));
+            }
+        });
+
+        $('[audio-wave-load]').each((i, item) => {
+            let parent = $(item).parents('[audio-item]'),
+                audioUrl = parent.find('[audio-play]').attr('audio-play');
+
+            soundWave.url(audioUrl, (wave) => {
+                audio.data[audioUrl] = { wave: JSON.stringify(wave) };
+                parent.removeAttr('wave-init');
+                audio.wave();
+            });
+        });
     },
 
     wave: function () {
@@ -86,7 +109,7 @@ window.audio = {
     },
 
     src: function () {
-        return audio.elem.src ? new URL(audio.elem.src).pathname : false;
+        return audio.elem.src ? decodeURIComponent(new URL(audio.elem.src).pathname) : false;
     },
 
     play: function (url) {
@@ -102,10 +125,25 @@ window.audio = {
     sliders: function () {
         if ($.fn.slider) {
             if ($('[audio-volume]:not([slider-init])').length) {
-                $('[audio-volume]:not([slider-init])').attr('slider-init', true).slider({
-                    slide: function (event, ui) {
-                        audio.volume(ui.value / 100);
+                const getOrientation = (elem) => {
+                    let result = 'horizontal';
+
+                    if (elem.width() < elem.height()) {
+                        result = 'vertical';
                     }
+
+                    return result;
+                }
+
+                $('[audio-volume]:not([slider-init])').each((i, elem) => {
+                    let orientation = getOrientation($(elem));
+
+                    $(elem).attr('slider-init', true).slider({
+                        orientation: orientation,
+                        slide: function (event, ui) {
+                            audio.volume(ui.value / 100, orientation);
+                        }
+                    });
                 });
             }
 
@@ -158,7 +196,7 @@ window.audio = {
         }
     },
 
-    volume: function (percent) {
+    volume: function (percent, orientation) {
         if (percent) {
             var date = new Date();
             date.setMonth(date.getMonth() + 3);
@@ -173,7 +211,17 @@ window.audio = {
             }
         }
 
-        $('[audio-line]').css('width', (audio.elem.volume * 100) + '%');
+        if (orientation == 'vertical') {
+            $('[audio-line]').css({
+                height: (audio.elem.volume * 100) + '%',
+                width: 'var(--volume-size)'
+            });
+        } else {
+            $('[audio-line]').css({
+                width: (audio.elem.volume * 100) + '%',
+                height: 'var(--volume-size)'
+            });
+        }
     },
 
     progress: {
@@ -181,8 +229,8 @@ window.audio = {
             $('[audio-play="' + audio.src() + '"]').each(function () {
                 $(this).parents('[audio-item]').find('[progress-load]').css('width', audio.progress.load() + '%');
                 $(this).parents('[audio-item]').find('[progress-time]').css('width', audio.progress.time() + '%');
-                $(this).parents('[audio-item]').find('[time-current]').html(audio.time.current());
-                $(this).parents('[audio-item]').find('[time-full]').html(audio.time.full());
+                $(this).parents('[audio-item]').find('[time-current]').html(audio.time.current(audio.elem));
+                $(this).parents('[audio-item]').find('[time-full]').html(audio.time.full(audio.elem));
             });
         },
         time: function () {
@@ -212,13 +260,13 @@ window.audio = {
         format: function (audio_time) {
             var minutes = Math.floor(audio_time / 60) || 0,
                 seconds = (audio_time - minutes * 60) || 0;
-            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         },
-        full: function () {
-            return audio.time.format(Math.round(audio.elem.duration))
+        full: function (elem) {
+            return audio.time.format(Math.round(elem.duration))
         },
-        current: function () {
-            return audio.time.format(Math.round(audio.elem.currentTime));
+        current: function (elem) {
+            return audio.time.format(Math.round(elem.currentTime));
         }
     }
 
