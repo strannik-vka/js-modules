@@ -9,7 +9,7 @@
 
     items.create({
         modal: {
-            selector: '',
+            selector: '', // куда кликать чтобы открыть
             data: '',
             html: '',
         },
