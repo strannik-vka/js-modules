@@ -154,8 +154,11 @@ class AjaxForm {
                 }
 
                 if (response.redirect) {
+                    form.trigger('ajax-response-redirect');
                     location.href = response.redirect;
                 } else if (response.success) {
+                    form.trigger('ajax-response-success');
+
                     if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
                         if (!response.text) {
                             response.text = response.success;
@@ -175,7 +178,7 @@ class AjaxForm {
                     form.addClass('success');
 
                     if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
-                        form.trigger('reset');
+                        this.reset(form);
                     }
 
                     var key = form.attr('data-ajax-form');
