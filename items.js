@@ -6,12 +6,14 @@
     items-empty-NAME - пусто
     items-show-more-NAME - Кнопка показать ещё
     items-total-NAME - Общее кол-во записей
+    items-scroll-window-NAME - подгрузка по скроллу на window
 
     items.create({
         modal: {
-            selector: '', // куда кликать чтобы открыть
-            data: '',
-            html: '',
+            name: '', // NAME моалки
+            data: (id, callback), // в callback возвращаем объект с данными для вывода
+            html: (html, data), // изменить html перед рендером,
+            onRender: () => {} // запускается после рендера
         },
         name: 'название списка'
         url: 'ссылка на список',
@@ -32,6 +34,7 @@
 
     items.update('name');
     items.htmlUpdate(name, item, data);
+    items.modal();
 */
 
 window.items = {
@@ -78,25 +81,25 @@ window.items = {
     },
 
     create: function (model) {
+        model.modal = model.modal ? model.modal : null;
+        if (model.modal != null) {
+            model.modal.name = model.modal.name ? model.modal.name : model.name;
+
+            if (!model.modal.outerHTML) {
+                model.modal.outerHTML =
+                    $('[items-modal-' + model.modal.name + ']:eq(0)').length
+                        ? $('[items-modal-' + model.modal.name + ']:eq(0)')[0].outerHTML
+                        : null;
+            }
+
+            if (!model.modal.selector) {
+                model.modal.selector = '[items-html-' + model.name + ']';
+            }
+        }
+
         if ($('[items-list-' + model.name + ']').length) {
             if (!model.url) {
                 model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
-            }
-
-            model.modal = model.modal ? model.modal : null;
-            if (model.modal != null) {
-                model.modal.name = model.modal.name ? model.modal.name : model.name;
-
-                if (!model.modal.outerHTML) {
-                    model.modal.outerHTML =
-                        $('[items-modal-' + model.modal.name + ']:eq(0)').length
-                            ? $('[items-modal-' + model.modal.name + ']:eq(0)')[0].outerHTML
-                            : null;
-                }
-
-                if (!model.modal.selector) {
-                    model.modal.selector = '[items-html-' + model.name + ']';
-                }
             }
 
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
@@ -131,10 +134,14 @@ window.items = {
                 }
             }
 
-            items.model[model.name] = model;
-
-            setTimeout(items.init, 0);
+            if ($('[items-scroll-window-' + model.name + ']').length) {
+                model.scroll_window = true;
+            }
         }
+
+        items.model[model.name] = model;
+
+        setTimeout(items.init, 0);
     },
 
     init: function () {
@@ -189,7 +196,7 @@ window.items = {
 
                         initEnd(model);
                     });
-                } else if (model.items.data) {
+                } else if (model.items && model.items.data) {
                     items.print(model, model.items);
 
                     initEnd(model);
@@ -237,6 +244,10 @@ window.items = {
                 $('[items-modal-' + model.modal.name + ']').remove();
 
                 $('body').append(html);
+
+                if (typeof model.modal.onRender === 'function') {
+                    model.modal.onRender(data);
+                }
 
                 $('[items-modal-' + model.modal.name + ']').modal('show');
             });
@@ -303,7 +314,7 @@ window.items = {
             if (model.modal != null) {
                 $(document)
                     .on('click', model.modal.selector, (e) => {
-                        items.modal.open(model, $(e.currentTarget).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name));
+                        items.modal.open(model, $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').attr('items-html-' + model.modal.name));
                     })
                     .on('hide.bs.modal', '[entry-modal]', () => {
                         items.modal.close();
@@ -495,7 +506,7 @@ window.items = {
                 if (value) {
                     $(this).show();
                 } else {
-                    $(this).hide();
+                    $(this).remove();
                 }
             });
         }
