@@ -257,6 +257,8 @@ window.validate = {
 
         if ($('[data-valid-input="' + key + '"]').length) {
             error_elem = $('[data-valid-input="' + key + '"]');
+        } else if ($('[data-valid-input^="' + key + '["]').length) {
+            error_elem = $('[data-valid-input^="' + key + '["]');
         }
 
         if (error_elem.length) {
@@ -277,20 +279,36 @@ window.validate = {
         }
     },
 
+    errorInputElem: (input) => {
+        let elem = $('[data-error-input="' + input.attr('name') + '"]');
+
+        if (elem.length == 0) {
+            elem = input.next('[data-error-input]');
+
+            if (elem.length == 0) {
+                elem = input.parents('[data-valid-group]').find('[data-error-input]');
+            }
+        }
+
+        return elem;
+    },
+
     error_remove: function (input) {
         input.removeClass('is-invalid');
 
-        $('[data-error-input="' + input.attr('name') + '"]')
+        const errorInputElem = validate.errorInputElem(input);
+
+        errorInputElem
             .parents('.is-invalid')
             .removeClass('is-invalid');
 
-        var formGroup = validate.helper.formGroup($('[data-error-input="' + input.attr('name') + '"]'));
+        var formGroup = validate.helper.formGroup(errorInputElem);
 
         if (formGroup.length) {
             formGroup.find('.invalid-label').removeClass('invalid-label');
         }
 
-        $('[data-error-input="' + input.attr('name') + '"]').remove();
+        errorInputElem.remove();
     },
 
     errors: function (response_errors, form) {
