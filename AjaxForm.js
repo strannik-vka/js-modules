@@ -2,7 +2,9 @@
     AjaxForm(selector, {
         beforeSubmit: (callback) => {}, // до отправки формы
         afterSubmit: (response) => {}, // ответ от сервера
-        editMode: true // сначала нажимаем кнопку "редактировать" => появляется возможность сохранить 
+        editMode: true // сначала нажимаем кнопку "редактировать" => появляется возможность сохранить,
+        modalConfirm: selector // модалка подтверждения,
+        beforeModalConfirm: function => {} // функция до вывода модалки подтверждения
     })
 */
 
@@ -11,10 +13,21 @@ class AjaxForm {
     constructor(selector, afterSubmit) {
         this.options = typeof afterSubmit === 'object' && afterSubmit != null ? afterSubmit : {
             afterSubmit: afterSubmit
-        };
+        }
+
+        if (!this.options.modalConfirm && $(selector).attr('data-modal-confirm')) {
+            this.options.modalConfirm = $(selector).attr('data-modal-confirm');
+        }
 
         this.selector = selector;
         this.isEditMode = false;
+
+        if (this.options.modalConfirm) {
+            $(this.options.modalConfirm + ' form').on('submit', (e) => {
+                e.preventDefault();
+                this.submit($(this.selector));
+            });
+        }
 
         this.events();
     }
@@ -44,12 +57,12 @@ class AjaxForm {
                     }
                 }
 
-                if (this.options.beforeSubmit) {
-                    this.options.beforeSubmit(submitAllow => {
-                        if (submitAllow) {
-                            this.submit($(e.currentTarget));
-                        }
-                    });
+                if (this.options.modalConfirm) {
+                    if (this.options.beforeModalConfirm) {
+                        this.options.beforeModalConfirm();
+                    }
+
+                    $(this.options.modalConfirm).modal('show');
                 } else {
                     this.submit($(e.currentTarget));
                 }
@@ -135,6 +148,18 @@ class AjaxForm {
     }
 
     submit(form) {
+        if (this.options.modalConfirm) {
+            $(this.options.modalConfirm).modal('hide');
+        }
+
+        if (this.options.beforeSubmit) {
+            this.options.beforeSubmit(submitAllow => {
+                if (!submitAllow) {
+                    return false;
+                }
+            });
+        }
+
         if (this.isErrors(form)) {
             this.scrollToError();
         } else {
