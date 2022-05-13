@@ -454,6 +454,16 @@ window.items = {
         }
     },
 
+    attrAppend: (elem, data) => {
+        if (elem.attr('attr-append')) {
+            let attrArr = elem.attr('attr-append').split(':'),
+                attrName = attrArr[0].replace(/_/g, '-'),
+                attrValue = items.getDataValue(attrArr[1], data);
+
+            elem.attr(attrName, elem.attr(attrName) + ' ' + attrValue);
+        }
+    },
+
     getDataValue: function (str, data) {
         var parts = str.split('.');
 
@@ -475,6 +485,12 @@ window.items = {
                     html.find('[html-' + name.replace(/_/g, '-') + ']').html(value);
                 }
             });
+
+            html.find('[attr-append]').each(function () {
+                items.attrAppend($(this), data);
+            });
+
+            items.attrAppend(html, data);
 
             html.find('[attr]').each(function () {
                 items.attr($(this), data);
