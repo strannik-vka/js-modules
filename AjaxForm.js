@@ -184,6 +184,12 @@ class AjaxForm {
                 } else if (response.success) {
                     form.trigger('ajax-response-success');
 
+                    if (form.attr('data-goal-success')) {
+                        if (typeof ym !== 'undefined') {
+                            ym(66740038, 'reachGoal', form.attr('data-goal-success'));
+                        }
+                    }
+
                     if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
                         if (!response.text) {
                             response.text = response.success;
