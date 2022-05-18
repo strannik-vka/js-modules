@@ -41,6 +41,7 @@ window.items = {
 
     ajaxProcess: {},
     updateTimeout: {},
+    updates: {},
 
     model: {},
 
@@ -48,6 +49,8 @@ window.items = {
         if ($('[items-list-' + name + ']').length) {
             var model = items.model[name],
                 elem = items.elem(model);
+
+            items.updates[name] = true;
 
             elem.total.html('0');
             elem.list.hide().find('[items-html-' + model.name + ']').remove();
@@ -75,6 +78,8 @@ window.items = {
                     }
 
                     items.print(model, response);
+
+                    items.updates[name] = false;
                 });
             }, 1000);
         }
@@ -282,7 +287,7 @@ window.items = {
     loadNextData: function (model, callback) {
         model = items.model[model.name];
 
-        if (!items.ajaxProcess[model.name] && items.isNextData(model)) {
+        if (!items.ajaxProcess[model.name] && items.isNextData(model) && !items.updates[model.name]) {
             var elem = items.elem(model);
 
             elem.preloader.show();
