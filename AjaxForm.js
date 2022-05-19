@@ -36,10 +36,9 @@ class AjaxForm {
         let action = $(this.selector).attr('action');
 
         if (action) {
-            if (action.indexOf('/update/') > -1) {
-                let actionArr = action.split('/update/');
-
-                return actionArr[1];
+            if (action.indexOf('/') > -1) {
+                let actionArr = action.split('/');
+                return actionArr[actionArr.length - 1];
             }
         }
 
