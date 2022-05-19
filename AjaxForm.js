@@ -239,7 +239,15 @@ class AjaxForm {
 }
 
 $(() => {
-    new AjaxForm('[data-ajax-form]');
+    $('[data-ajax-form]').each((index, form) => {
+        let name = $(form).attr('data-ajax-form');
+
+        if (name) {
+            new AjaxForm('[data-ajax-form="' + name + '"]');
+        } else {
+            new AjaxForm('[data-ajax-form]:eq(' + index + ')');
+        }
+    });
 });
 
 export default AjaxForm;
