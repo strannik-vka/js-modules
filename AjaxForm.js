@@ -32,6 +32,36 @@ class AjaxForm {
         this.events();
     }
 
+    getActionId() {
+        let action = $(this.selector).attr('action');
+
+        if (action) {
+            if (action.indexOf('/update/') > -1) {
+                let actionArr = action.split('/update/');
+
+                return actionArr[1];
+            }
+        }
+
+        return null;
+    }
+
+    itemsHtmlUpdate(data) {
+        let itemId = this.getActionId();
+
+        if (typeof items !== 'undefined' && itemId) {
+            let name = $(this.selector).attr('items-form');
+
+            if (name) {
+                items.htmlUpdate(
+                    name,
+                    $('[items-html-' + name + '="' + itemId + '"]'),
+                    data
+                );
+            }
+        }
+    }
+
     events() {
         $(document)
             .on('click', '[data-ajax-form-reset]', (e) => {
@@ -226,6 +256,10 @@ class AjaxForm {
                         if (this.isEditMode == true) {
                             this.editModeOff(form);
                         }
+                    }
+
+                    if (response && typeof response.data !== 'undefined') {
+                        this.itemsHtmlUpdate(response.data);
                     }
                 } else {
                     this.htmlReset(form);

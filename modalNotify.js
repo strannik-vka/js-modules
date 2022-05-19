@@ -1,9 +1,16 @@
 window.modalNotify = {
 
+    modal: false,
+
     init: function () {
         $(document).on('hidden.bs.modal', '#modalNotify', function () {
             $('body').removeClass('open-modal-notify');
             modalNotify.clear();
+
+            if (modalNotify.modal) {
+                modalNotify.modal = false;
+                $('body').addClass('modal-open').css('padding-right', '8px');
+            }
         });
 
         $('body').append('<style>#modalNotify {z-index: 2050;} .open-modal-notify .modal-backdrop:last-child {z-index: 2000;} </style>');
@@ -40,6 +47,12 @@ window.modalNotify = {
 
         if (obj.btnClose) {
             $('#modalNotify [data-btn-close]').show();
+        }
+
+        if ($('body').attr('class')) {
+            if ($('body').attr('class').indexOf('modal') > -1) {
+                modalNotify.modal = true;
+            }
         }
 
         $('#modalNotify').modal('show');
