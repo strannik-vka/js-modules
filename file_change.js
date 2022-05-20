@@ -10,16 +10,22 @@ $(document)
         $(e.currentTarget).find('[file-change-name] [delete]').click();
     })
     .on('change', '[type="file"]', function () {
-        if (jsChange) {
-            jsChange = false;
-            return false;
-        }
-
         var names = [],
             parent = $(this).parents('.input-group, [file-group]'),
             name_elem = parent.length
                 ? parent.find('[file-change-name="' + $(this).attr('name') + '"]')
                 : $('[file-change-name="' + $(this).attr('name') + '"]');
+
+        if (name_elem.find('[data-storage-file]').length) {
+            parent.find('label').addClass('label-up');
+            parent.addClass('active');
+            return false;
+        }
+
+        if (jsChange) {
+            jsChange = false;
+            return false;
+        }
 
         if (typeof $(this)[0].files !== 'undefined') {
             $.each($(this)[0].files, function (i, file) {
