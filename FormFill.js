@@ -10,11 +10,11 @@ class FormFill {
     }
 
     getFileName({ url, storageName }) {
-        if (storageName) {
-            return storageName;
-        }
-
         if (url) {
+            if (storageName) {
+                return storageName;
+            }
+
             let urlArr = url.split('/');
             return urlArr[urlArr.length - 1];
         }
