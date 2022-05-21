@@ -37,9 +37,9 @@ $(document)
             name_elem.attr('text-original', name_elem.text());
         }
 
-        name_elem.html('<span class="file-delete" delete></span>' + names.join(', '));
-
         if (names.length) {
+            name_elem.html('<span class="file-delete" delete></span><span class="file-names" data-storage-file>' + names.join(', ') + '</span>');
+
             parent.addClass('active');
         } else {
             parent.removeClass('active');

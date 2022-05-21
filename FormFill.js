@@ -38,11 +38,13 @@ class FormFill {
                 } else if (input.attr('type') == 'file') {
                     let nameElem = $('[file-change-name="' + name + '"]'),
                         fileName = this.getFileName({
-                            name: this.data[name],
+                            url: this.data[name],
                             storageName: nameElem.attr('data-storage-name')
                         });
 
-                    nameElem.html('<a target="_blank" data-storage-file href="' + this.data[name] + '"><span class="file-delete" delete></span>' + fileName + '</a>');
+                    if (this.data[name]) {
+                        nameElem.html('<span class="file-delete" delete></span><a target="_blank" class="file-names" data-storage-file href="' + this.data[name] + '">' + fileName + '</a>');
+                    }
                 } else {
                     input.val(this.data[name]);
                 }
