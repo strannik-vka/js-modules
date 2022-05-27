@@ -7,6 +7,10 @@ var ua = navigator.userAgent,
 $.mask = {
 	//Predefined character definitions
 	definitions: {
+		'H': "[0-2]",
+		'h': "[0-9]",
+		'M': "[0-5]",
+		'm': "[0-9]",
 		'9': "[0-9]",
 		'a': "[A-Za-z]",
 		'*': "[A-Za-z0-9]"
