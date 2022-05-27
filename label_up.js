@@ -59,7 +59,14 @@ class LabelUp {
             val = elem.attr('data-is-file');
         }
 
-        return val;
+        if (elem.attr('type') == 'file') {
+            let storageFile = elem.next().find('[data-storage-file]');
+            if (storageFile.length && storageFile[0].tagName == 'A') {
+                val = storageFile.attr('href');
+            }
+        }
+
+        return $.trim(val);
     }
 
     check(elem) {

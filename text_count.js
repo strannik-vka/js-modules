@@ -1,12 +1,12 @@
 var text_count = {
 
-    init: function() {
-        $(document).on('input', '[data-input-count]', text_count.change);
+    init: function () {
+        $(document).on('input change', '[data-input-count]', text_count.change);
         text_count.fill();
     },
 
-    fill: function() {
-        $('[data-input-count]').each(function() {
+    fill: function () {
+        $('[data-input-count]').each(function () {
             text_count.set(
                 $('[data-output-count="' + $(this).attr('name') + '"]'),
                 text_count.count($(this))
@@ -14,14 +14,14 @@ var text_count = {
         });
     },
 
-    change: function() {
+    change: function () {
         text_count.set(
             $('[data-output-count="' + $(this).attr('name') + '"]'),
             text_count.count($(this))
         );
     },
 
-    set: function(elem, count) {
+    set: function (elem, count) {
         elem.text(count);
 
         var max = parseFloat(elem.attr('data-max-count'));
@@ -33,7 +33,7 @@ var text_count = {
         }
     },
 
-    count: function(elem) {
+    count: function (elem) {
         return $.trim(elem.val()).replace(/\n/g, '\n\r').length;
     }
 

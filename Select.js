@@ -13,29 +13,59 @@ class Select {
 
         this.ajaxTimer = false;
 
-        this.events();
+        $(document)
+            .on('input', this.selector.query, this.search)
+            .on('click', this.selector.parent + ' label', this.onClickLabel)
+            .on('change', this.selector.parent + ' input', this.change)
+            .on('change.select', this.selector.parent + ' input', this.change)
+            .on('click', this.selector.title + ', ' + this.selector.query, this.toggleActive)
+            .on('click', '[' + this.selector.sync + '] [data-val]', this.sync)
+            .on('click', this.closest)
+            .on('reset', 'form', this.reset);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            this.each();
+        }, false);
+    }
+
+    reset = (e) => {
+        let form = $(e.currentTarget);
+
+        form.find(this.selector.options + ' :checked').each((i, option) => {
+            $(option).removeAttr('checked').prop('checked', false).trigger('change');
+        });
+
+        form.find(this.selector.options + ' [checked]').each((i, option) => {
+            $(option).removeAttr('checked').prop('checked', false).trigger('change');
+        });
     }
 
     select(select) {
         var options = select.find(this.selector.options),
             title = select.find(this.selector.title);
 
+        let selected = select.find('input:checked').length;
+
+        if (selected == 0 && select.find('[checked]').length) {
+            selected = select.find('[checked]').length;
+        }
+
         return {
             title: title,
             options: options,
             elem: select,
-            type: options.attr('data-select-type') ? options.attr('data-select-type') : options.find('input').attr('type'),
-            selected: select.find('input:checked').length,
+            type: options.attr('data-select-type') && options.attr('data-select-type') != 'true' ? options.attr('data-select-type') : options.find('input').attr('type'),
+            selected: selected,
             query: select.find(this.selector.query).length
                 ? $.trim(select.find(this.selector.query).val())
                 : null,
-            url: select.attr('data-select')
+            url: select.attr('data-select') && select.attr('data-select') != 'true'
                 ? select.attr('data-select')
                 : null,
-            name: options.attr('data-select-options')
+            name: options.attr('data-select-options') && options.attr('data-select-options') != 'true'
                 ? options.attr('data-select-options')
                 : select.find('[name]:eq(-1)').attr('name'),
-            placeholder: title.attr('data-select-title')
+            placeholder: title.attr('data-select-title') && title.attr('data-select-title') != 'true'
                 ? title.attr('data-select-title')
                 : $.trim(title.text())
         };
@@ -48,11 +78,15 @@ class Select {
             select.title.attr('data-select-title', select.placeholder);
 
             if (select.selected) {
-                $(item).find('input:checked').trigger('change');
+                if ($(item).find('input:checked').length) {
+                    $(item).find('input:checked').trigger('change');
+                } else if ($(item).find('[checked]').length) {
+                    $(item).find('[checked]').trigger('change');
+                }
             }
 
             if (select.url) {
-                this.ajax($(item), i);
+                this.ajax($(item));
             }
 
             if (select.type == 'checkbox') {
@@ -71,7 +105,7 @@ class Select {
         });
     }
 
-    search(e) {
+    search = (e) => {
         var select = $(e.currentTarget).parents(this.selector.parent);
 
         if (this.ajaxTimer) clearTimeout(this.ajaxTimer);
@@ -81,36 +115,13 @@ class Select {
         }, 1000);
     }
 
-    events() {
-        $(document)
-            .on('input', this.selector.query, (e) => {
-                this.search(e);
-            })
-            .on('click', this.selector.parent + ' label', (e) => {
-                $(e.currentTarget).parent().find('input').trigger('change');
-            })
-            .on('change', this.selector.parent + ' input', (e) => {
-                this.change(e);
-            })
-            .on('change.select', this.selector.parent + ' input', (e) => {
-                this.change(e);
-            })
-            .on('click', this.selector.title + ', ' + this.selector.query, (e) => {
-                this.toggleActive(e);
-            })
-            .on('click', '[' + this.selector.sync + '] [data-val]', (e) => {
-                this.sync(e);
-            })
-            .on('click', (e) => {
-                this.closest(e);
-            });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            this.each();
-        }, false);
+    onClickLabel = (e) => {
+        if ($(e.currentTarget).find('input').length == 0) {
+            $(e.currentTarget).parent().find('input').trigger('change');
+        }
     }
 
-    sync(e) {
+    sync = (e) => {
         var option = $(e.target),
             val = option.attr('data-val'),
             parent_sync = option.closest('[' + this.selector.sync + ']'),
@@ -122,7 +133,7 @@ class Select {
             .trigger('change');
     }
 
-    closest(e) {
+    closest = (e) => {
         if (!$(e.target).closest(this.selector.parent).length) {
             $(this.selector.parent).removeClass('active');
             $(this.selector.query).val('').removeAttr('placeholder');
@@ -140,7 +151,7 @@ class Select {
         select.elem.removeAttr('data-active');
     }
 
-    toggleActive(e) {
+    toggleActive = (e) => {
         var select = this.select($(e.currentTarget).parents(this.selector.parent));
 
         if (select.elem.attr('disabled')) {
@@ -153,6 +164,10 @@ class Select {
             select.elem.removeClass('active');
         } else {
             select.elem.addClass('active');
+
+            if (select.options.find('[name]').length == 0) {
+                this.ajax(select.elem);
+            }
 
             if (select.type == 'checkbox') {
                 setTimeout(() => {
@@ -178,13 +193,22 @@ class Select {
         }
     }
 
-    change(e) {
+    change = (e) => {
         var select = this.select($(e.currentTarget).parents(this.selector.parent)),
             text_arr = [];
 
-        select.options.find('input:checked').each((i, item) => {
-            text_arr.push(this.getTextLabel($(item)));
-        });
+        if (select.selected) {
+            if (select.options.find('input:checked').length) {
+                select.options.find('input:checked').each((i, item) => {
+                    text_arr.push(this.getTextLabel($(item)));
+                });
+            } else {
+                select.options.find('[checked]').each((i, item) => {
+                    text_arr.push(this.getTextLabel($(item)));
+                    $(item).prop('checked', true);
+                });
+            }
+        }
 
         if (select.selected) {
             select.elem.addClass('selected');

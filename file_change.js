@@ -45,6 +45,13 @@ $(document)
             parent.removeClass('active');
         }
     })
+    .on('click', '[file-change-name]', function () {
+        let parent = $(this).parents('.input-group, [file-group]');
+
+        if (!parent.hasClass('active')) {
+            parent.find('input').trigger('click');
+        }
+    })
     .on('click', '[file-change-name] [delete]', function (e) {
         e.preventDefault();
 
