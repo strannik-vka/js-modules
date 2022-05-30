@@ -3,7 +3,8 @@
     - После нажатия на хрестик удаление файла [file-change-name] [delete]
 */
 
-var jsChange = false;
+var jsChange = false,
+    jsClick = false;
 
 $(document)
     .on('reset', 'form', (e) => {
@@ -56,7 +57,8 @@ $(document)
         setTimeout(() => {
             let parent = $(this).parents('.input-group, [file-group]');
 
-            if (!parent.hasClass('active') && !parent.attr('data-focus')) {
+            if ((!parent.hasClass('active') && !parent.attr('data-focus')) || jsClick) {
+                jsClick = true;
                 parent.find('input').trigger('click');
             }
         }, 500);
