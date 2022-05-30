@@ -45,12 +45,21 @@ $(document)
             parent.removeClass('active');
         }
     })
-    .on('click', '[file-change-name]', function () {
+    .on('click', '[type="file"]', function () {
         let parent = $(this).parents('.input-group, [file-group]');
 
-        if (!parent.hasClass('active')) {
-            parent.find('input').trigger('click');
+        if (parent.length) {
+            parent.attr('data-focus', 'true');
         }
+    })
+    .on('click', '[file-change-name]', function () {
+        setTimeout(() => {
+            let parent = $(this).parents('.input-group, [file-group]');
+
+            if (!parent.hasClass('active') && !parent.attr('data-focus')) {
+                parent.find('input').trigger('click');
+            }
+        }, 500);
     })
     .on('click', '[file-change-name] [delete]', function (e) {
         e.preventDefault();
