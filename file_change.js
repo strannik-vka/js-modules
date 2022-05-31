@@ -73,7 +73,7 @@ $(document)
                 ? parent.find('[name="' + name_elem.attr('file-change-name') + '"]')
                 : $('[name="' + name_elem.attr('file-change-name') + '"]');
 
-        if (input.attr('disabled')) {
+        if (typeof input.attr('disabled') !== 'undefined') {
             return false;
         }
 
