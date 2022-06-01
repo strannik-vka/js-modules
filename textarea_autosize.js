@@ -3,7 +3,7 @@ window.textarea_autosize = {
     init: function () {
         textarea_autosize.resize($('textarea[data-autosize]'));
 
-        $(document).on('input', 'textarea[data-autosize]', function () {
+        $(document).on('input change', 'textarea[data-autosize]', function () {
             textarea_autosize.resize($(this));
         });
 
