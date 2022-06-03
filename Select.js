@@ -40,15 +40,23 @@ class Select {
         });
     }
 
+    selectedCount(select) {
+        let result = 0;
+
+        select.find('input').each((i, input) => {
+            if ($(input).prop('checked')) {
+                result++;
+            }
+        });
+
+        return result;
+    }
+
     select(select) {
         var options = select.find(this.selector.options),
             title = select.find(this.selector.title);
 
-        let selected = select.find('input:checked').length;
-
-        if (selected == 0 && select.find('[checked]').length) {
-            selected = select.find('[checked]').length;
-        }
+        let selected = this.selectedCount(select);
 
         return {
             title: title,
@@ -198,7 +206,7 @@ class Select {
             text_arr = [];
 
         if (select.selected) {
-            if (select.options.find('input:checked').length) {
+            if (select.options.find('input').length) {
                 select.options.find('input:checked').each((i, item) => {
                     text_arr.push(this.getTextLabel($(item)));
                 });
