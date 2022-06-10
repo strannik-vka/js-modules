@@ -251,14 +251,24 @@ window.validate = {
             : form.find('[name^="' + key + '["]:eq(0)');
 
         if (!error_elem.length && key.indexOf('.') > -1) {
-            var str_arr = key.split('.');
-            error_elem = form.find('[name="' + str_arr[0] + '[' + str_arr[1] + ']"]:eq(0)');
-        }
+            let strArr = key.split('.'),
+                selector = strArr.map((str, index) => {
+                    return index ? '[' + str + ']' : str;
+                });
 
-        if ($('[data-valid-input="' + key + '"]').length) {
-            error_elem = $('[data-valid-input="' + key + '"]');
-        } else if ($('[data-valid-input^="' + key + '["]').length) {
-            error_elem = $('[data-valid-input^="' + key + '["]');
+            selector = selector.join('');
+
+            error_elem = form.find('[name="' + selector + ']"]:eq(0)');
+
+            if ($('[data-valid-input="' + selector + '"]').length) {
+                error_elem = $('[data-valid-input="' + selector + '"]');
+            }
+        } else {
+            if ($('[data-valid-input="' + key + '"]').length) {
+                error_elem = $('[data-valid-input="' + key + '"]');
+            } else if ($('[data-valid-input^="' + key + '["]').length) {
+                error_elem = $('[data-valid-input^="' + key + '["]');
+            }
         }
 
         if (error_elem.length) {
