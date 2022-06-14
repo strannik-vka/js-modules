@@ -44,7 +44,7 @@ class Select {
         let result = 0;
 
         select.find('input').each((i, input) => {
-            if ($(input).prop('checked')) {
+            if ($(input).prop('checked') || $(input).attr('checked')) {
                 result++;
             }
         });
@@ -183,6 +183,10 @@ class Select {
                 }, 200);
             }
         }
+
+        if (select.type == 'checkbox') {
+            select.elem.addClass('multiple');
+        }
     }
 
     getTextLabel(input) {
@@ -206,7 +210,7 @@ class Select {
             text_arr = [];
 
         if (select.selected) {
-            if (select.options.find('input').length) {
+            if (select.options.find('input:checked').length) {
                 select.options.find('input:checked').each((i, item) => {
                     text_arr.push(this.getTextLabel($(item)));
                 });
