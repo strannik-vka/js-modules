@@ -249,7 +249,7 @@ window.validate = {
         var error_elem = form.find('[name="' + key + '"]:eq(0)').length
             ? form.find('[name="' + key + '"]:eq(0)')
             : form.find('[name^="' + key + '["]:eq(0)');
-
+        console.log(error_elem, key);
         if (!error_elem.length && key.indexOf('.') > -1) {
             let strArr = key.split('.'),
                 selector = strArr.map((str, index) => {
@@ -342,6 +342,10 @@ window.validate = {
             alert(errors.join(', '));
         }
 
+        scroller.scrollToError(form);
+    },
+
+    scrollToError: (form) => {
         if (typeof scroller !== 'undefined') {
             if (form.find('.is-invalid').length) {
                 if (validate.notSeen(form.find('.is-invalid:eq(0)')).length) {
