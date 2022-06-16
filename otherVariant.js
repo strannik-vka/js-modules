@@ -23,5 +23,5 @@ $(document)
         $('[data-ov-input="' + $(e.currentTarget).attr('data-ov-text') + '"]').prop('checked', true);
     })
     .on('input', '[data-ov-text]', (e) => {
-        $('[data-ov-input="' + $(e.currentTarget).attr('data-ov-text') + '"]').val($(e.currentTarget).val());
+        $('[data-ov-input="' + $(e.currentTarget).attr('data-ov-text') + '"]').val('other:' + $(e.currentTarget).val());
     });
