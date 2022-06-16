@@ -10,11 +10,7 @@ const videoReplace = (video) => {
 }
 
 $(document).on('hidden.bs.modal', '.modal', function () {
-    $(this).find('iframe').each(function () {
-        videoReplace($(this));
-    });
-
-    $(this).find('video').each(function () {
+    $(this).find('iframe, video').each(function () {
         videoReplace($(this));
     });
 });
