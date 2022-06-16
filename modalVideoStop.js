@@ -1,9 +1,12 @@
 $(document).on('hidden.bs.modal', '.modal', function () {
-    $(this).find('iframe').each(function () {
-        $(this).after($(this).removeClass('lazyloaded').clone()).remove();
-    });
+    $(this).find('iframe video').each(function () {
+        let clone = $(this).clone();
 
-    $(this).find('video').each(function () {
-        $(this).after($(this).removeClass('lazyloaded').clone()).remove();
+        if (clone.hasClass('lazyloaded')) {
+            clone.removeClass('lazyloaded');
+            clone.attr('src', clone.attr('data-src'));
+        }
+
+        $(this).after(clone).remove();
     });
 });
