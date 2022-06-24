@@ -15,7 +15,8 @@
             html: (html, data), // изменить html перед рендером,
             onRender: data => {} // запускается после рендера
         },
-        name: 'название списка'
+        name: 'название списка',
+        glueUnions: true, - склеить союзы
         url: 'ссылка на список',
         data: { данные при ajax запросе к списку },
         scroll: true - подгрузка по скроллу (на родителе списка)
@@ -107,6 +108,7 @@ window.items = {
                 model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
             }
 
+            model.glueUnions = typeof model.glueUnions !== 'undefined' ? glueUnions : false;
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
             model.ajaxProcessChange = typeof model.ajaxProcessChange !== 'undefined' ? model.ajaxProcessChange : true;
@@ -483,6 +485,23 @@ window.items = {
         return data ? data : null;
     },
 
+    glueUnions: (str) => {
+        let afterList = ['и', 'а', 'но'],
+            beforeList = ['же', 'бы'];
+
+        if (str) {
+            afterList.forEach(item => {
+                str = str.replace(new RegExp(item + ' ', "g"), item + '&nbsp;');
+            });
+
+            beforeList.forEach(item => {
+                str = str.replace(new RegExp(' ' + item, "g"), '&nbsp;' + item);
+            });
+        }
+
+        return str;
+    },
+
     dataInHtml: function (html, data) {
         if (data && typeof data === 'object') {
             $.each(data, function (name, value) {
@@ -507,7 +526,7 @@ window.items = {
                 var value = items.getDataValue($(this).attr('html'), data);
 
                 if (value) {
-                    $(this).html(value);
+                    $(this).html(items.glueUnions(value));
 
                     if ($(this).css('display') == 'none') {
                         $(this).show();
