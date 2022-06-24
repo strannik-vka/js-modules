@@ -108,7 +108,7 @@ window.items = {
                 model.url = $('[items-list-' + model.name + ']').attr('items-list-' + model.name);
             }
 
-            model.glueUnions = typeof model.glueUnions !== 'undefined' ? glueUnions : false;
+            model.glueUnions = typeof model.glueUnions !== 'undefined' ? model.glueUnions : false;
             model.scroll_elem = model.scroll_elem ? model.scroll_elem : false;
             model.prepend = model.prepend ? model.prepend : false;
             model.ajaxProcessChange = typeof model.ajaxProcessChange !== 'undefined' ? model.ajaxProcessChange : true;
@@ -146,9 +146,38 @@ window.items = {
             }
         }
 
+        if (model.glueUnions) {
+            items.glueUnionsElements($('[items-list-' + model.name + '] [html]'));
+        }
+
         items.model[model.name] = model;
 
         setTimeout(items.init, 0);
+    },
+
+    glueUnionsElements: (elements) => {
+        $.each(elements, (i, element) => {
+            $(element).html(items.glueUnions($(element).html()));
+        });
+    },
+
+    glueUnions: (str) => {
+        let afterList = [' и', ' а', ' но', ' с', ' со', ' в', ' во', ' для', ' как', ' не', ' без', ' безо', ' близ', ' вместо', ' вне', ' до', ' за', ' из', ' изо', ' из-за', ' из-под', ' к', ' ко', ' кроме', ' меж', ' на', ' над', ' о', ' об', ' обо', ' от', ' ото', ' пред', ' передо', ' предо', ' по', ' под', ' подо', ' при', ' про', ' ради', ' сквозь', ' среди', ' у', ' через', ' чрез', ' это'],
+            beforeList = ['же ', 'бы ', 'ли '];
+
+        if (str) {
+            afterList.forEach(item => {
+                str = str.replace(new RegExp(item + ' ', "g"), item + '&nbsp;');
+            });
+
+            beforeList.forEach(item => {
+                str = str.replace(new RegExp(' ' + item, "g"), '&nbsp;' + item);
+            });
+        }
+
+        console.log(str);
+
+        return str;
     },
 
     init: function () {
@@ -485,24 +514,7 @@ window.items = {
         return data ? data : null;
     },
 
-    glueUnions: (str) => {
-        let afterList = ['и', 'а', 'но'],
-            beforeList = ['же', 'бы'];
-
-        if (str) {
-            afterList.forEach(item => {
-                str = str.replace(new RegExp(item + ' ', "g"), item + '&nbsp;');
-            });
-
-            beforeList.forEach(item => {
-                str = str.replace(new RegExp(' ' + item, "g"), '&nbsp;' + item);
-            });
-        }
-
-        return str;
-    },
-
-    dataInHtml: function (html, data) {
+    dataInHtml: function (html, data, model) {
         if (data && typeof data === 'object') {
             $.each(data, function (name, value) {
                 if (name.indexOf('[') == -1) {
@@ -526,7 +538,11 @@ window.items = {
                 var value = items.getDataValue($(this).attr('html'), data);
 
                 if (value) {
-                    $(this).html(items.glueUnions(value));
+                    if (model.glueUnions) {
+                        value = items.glueUnions(value);
+                    }
+
+                    $(this).html(value);
 
                     if ($(this).css('display') == 'none') {
                         $(this).show();
@@ -567,7 +583,7 @@ window.items = {
             }
         }
 
-        html = items.dataInHtml(html, data);
+        html = items.dataInHtml(html, data, model);
 
         if (typeof model.html === 'function') {
             html = model.html(html, data, i);
