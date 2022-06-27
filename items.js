@@ -538,7 +538,7 @@ window.items = {
                 var value = items.getDataValue($(this).attr('html'), data);
 
                 if (value) {
-                    if (typeof model.glueUnions !== 'undefined') {
+                    if (typeof model !== 'undefined') {
                         if (model.glueUnions) {
                             value = items.glueUnions(value);
                         }
