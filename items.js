@@ -538,8 +538,10 @@ window.items = {
                 var value = items.getDataValue($(this).attr('html'), data);
 
                 if (value) {
-                    if (model.glueUnions) {
-                        value = items.glueUnions(value);
+                    if (typeof model.glueUnions !== 'undefined') {
+                        if (model.glueUnions) {
+                            value = items.glueUnions(value);
+                        }
                     }
 
                     $(this).html(value);
