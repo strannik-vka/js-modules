@@ -24,6 +24,7 @@
         scroll_window: true - подгрузка по скроллу на window
         first_load: true - первоначально подгрузит список из ссылки
         onBeforeLoad: function(){ запуск до ajax запроса },
+        onBeforePrint: function(){ запуск до вывода списка },
         onPrint: function(){ запуск после вывода списка },
         onBeforeScrollOriginal : () => { запуск до прокрутки скролла в исходное состояние }
         onInit : () => { запуск после инициализации }
@@ -621,11 +622,11 @@ window.items = {
         elem.list.append(new_item);
     },
 
-    orderBy: (name, key, sort) => {
+    dataOrderBy: (name, key, sort) => {
         let model = items.model[name];
 
         if (model.items && model.items.data && Object.keys(model.items.data).length) {
-            model.items.data.sort((a, b) => {
+            items.model[name].items.data = model.items.data.sort((a, b) => {
                 if (sort == 'asc') {
                     if (a[key] < b[key]) {
                         return -1;
@@ -647,21 +648,39 @@ window.items = {
                 return 0;
             });
 
-            let elem = items.elem(model);
+            return true;
+        }
 
-            elem.list.html('');
+        return false;
+    },
 
-            if (items.isLoopReverse(model)) {
-                items.model[name].loop_iteration = model.items.total;
-            } else {
-                items.model[name].loop_iteration = 1;
+    orderBy: (name, key, sort) => {
+        let dataOrderBy = items.dataOrderBy(name, key, sort);
+
+        if (dataOrderBy) {
+            let model = items.model[name];
+
+            if (model.items && model.items.data && Object.keys(model.items.data).length) {
+                let elem = items.elem(model);
+
+                elem.list.html('');
+
+                if (items.isLoopReverse(model)) {
+                    items.model[name].loop_iteration = model.items.total;
+                } else {
+                    items.model[name].loop_iteration = 1;
+                }
+
+                items.print(model, model.items);
             }
-
-            items.print(model, model.items);
         }
     },
 
     print: function (model, response) {
+        if (model.onBeforePrint) {
+            model.onBeforePrint(response);
+        }
+
         var elem = items.elem(model);
 
         if (response.total) {
