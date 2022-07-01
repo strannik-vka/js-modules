@@ -3,6 +3,7 @@
         beforeSubmit: (callback) => {}, // до отправки формы
         afterSubmit: (response) => {}, // ответ от сервера
         editMode: true // сначала нажимаем кнопку "редактировать" => появляется возможность сохранить,
+        onChangeSubmit: true // после изменения в форме отправлять форму
         modalConfirm: selector // модалка подтверждения,
         beforeModalConfirm: function => {} // функция до вывода модалки подтверждения
     })
@@ -12,11 +13,16 @@ class AjaxForm {
 
     constructor(selector, afterSubmit) {
         this.options = typeof afterSubmit === 'object' && afterSubmit != null ? afterSubmit : {
-            afterSubmit: afterSubmit
+            afterSubmit: afterSubmit,
+            onChangeSubmit: false
         }
 
         if (!this.options.modalConfirm && $(selector).attr('data-modal-confirm')) {
             this.options.modalConfirm = $(selector).attr('data-modal-confirm');
+        }
+
+        if ($(selector).attr('data-onchange-submit') == 'true') {
+            this.options.onChangeSubmit = true;
         }
 
         this.selector = selector;
@@ -65,6 +71,11 @@ class AjaxForm {
         $(document)
             .on('click', '[data-ajax-form-reset]', (e) => {
                 this.reset($(e.currentTarget).parents('[data-ajax-form]'));
+            })
+            .on('change', '[data-onchange-submit] [name]', () => {
+                if (this.options.onChangeSubmit) {
+                    $(this.selector).trigger('submit');
+                }
             })
             .on('submit', this.selector, (e) => {
                 e.preventDefault();
