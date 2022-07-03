@@ -27,6 +27,7 @@
         onBeforePrint: function(){ запуск до вывода списка },
         onPrint: function(){ запуск после вывода списка },
         onBeforeScrollOriginal : () => { запуск до прокрутки скролла в исходное состояние }
+        onScrollAllEnd : () => { запуск после прокрутки всех подгруженных записей }
         onInit : () => { запуск после инициализации }
         items: { data: [ список, если есть, то выведет сразу ] },
         html: function(html, data){ html - $(item), data - { данные } },
@@ -41,6 +42,7 @@
 
 window.items = {
 
+    onScrollAllEndTimeout: false,
     ajaxProcess: {},
     updateTimeout: {},
     updates: {},
@@ -175,8 +177,6 @@ window.items = {
                 str = str.replace(new RegExp(' ' + item, "g"), '&nbsp;' + item);
             });
         }
-
-        console.log(str);
 
         return str;
     },
@@ -319,7 +319,7 @@ window.items = {
     loadNextData: function (model, callback) {
         model = items.model[model.name];
 
-        if (!items.ajaxProcess[model.name] && items.isNextData(model) && !items.updates[model.name]) {
+        if (!items.ajaxProcess[model.name] && !items.updates[model.name]) {
             var elem = items.elem(model);
 
             elem.preloader.show();
@@ -331,11 +331,13 @@ window.items = {
                     elem.showMore.hide();
                 }
 
-                if (response.data && Object.keys(response.data).length) {
+                let itemsLength = Object.keys(response.data).length;
+
+                if (response.data && itemsLength) {
                     items.print(model, response);
-                    if (callback) callback(true);
+                    if (callback) callback(itemsLength);
                 } else {
-                    if (callback) callback(false);
+                    if (callback) callback(0);
                 }
             }, {
                 ajaxProcessTimeout: 1000,
@@ -343,6 +345,12 @@ window.items = {
             });
         } else {
             if (callback) callback(false);
+        }
+    },
+
+    onScrollAllEnd: (model) => {
+        if (typeof model.onScrollAllEnd === 'function') {
+            model.onScrollAllEnd();
         }
     },
 
@@ -362,7 +370,11 @@ window.items = {
             var elem = items.elem(model);
 
             elem.showMore.on('click', function () {
-                items.loadNextData(model);
+                if (items.isNextData(model)) {
+                    items.loadNextData(model);
+                } else {
+                    items.onScrollAllEnd(model);
+                }
             });
         },
         update: function (model) {
@@ -389,24 +401,31 @@ window.items = {
                     }
 
                     return scroll_elem.height() + scroll_elem.scrollTop() >= scroll_elem[0].scrollHeight - 300;
+                },
+                onScrollEnd = () => {
+                    if (items.isNextData(model)) {
+                        items.loadNextData(model);
+                    } else {
+                        items.onScrollAllEnd(model);
+                    }
                 };
 
             if (model.scroll_window) {
                 $(window).on('scroll', function () {
                     if (isScrollEnd('window')) {
-                        items.loadNextData(model);
+                        onScrollEnd();
                     }
                 });
             } else if (model.scroll_elem) {
                 model.scroll_elem.on('scroll', function () {
                     if (isScrollEnd(model.scroll_elem)) {
-                        items.loadNextData(model);
+                        onScrollEnd();
                     }
                 });
             } else {
                 elem.list.on('scroll', function () {
                     if (isScrollEnd(elem.list)) {
-                        items.loadNextData(model);
+                        onScrollEnd();
                     }
                 });
             }
