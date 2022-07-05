@@ -6,7 +6,9 @@ class FixedElement {
         this.onScrollSections = {};
         this.scrollTopLast = $(window).scrollTop();
 
-        this.onScroll();
+        if ($(selector).length) {
+            this.onScroll();
+        }
     }
 
     onScroll() {
