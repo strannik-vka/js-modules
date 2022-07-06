@@ -351,7 +351,9 @@ window.items = {
             if (model.modal != null) {
                 $(document)
                     .on('click', model.modal.selector, (e) => {
-                        items.modal.open(model, $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').attr('items-html-' + model.modal.name));
+                        let itemId = $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').length ? $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').attr('items-html-' + model.modal.name) : $(e.currentTarget).closest('[items-html-' + model.name + ']').length ? $(e.currentTarget).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name) : null;
+
+                        items.modal.open(model, itemId);
                     })
                     .on('hide.bs.modal', '[entry-modal]', () => {
                         items.modal.close();
