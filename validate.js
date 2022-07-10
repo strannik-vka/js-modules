@@ -249,7 +249,7 @@ window.validate = {
         var error_elem = form.find('[name="' + key + '"]:eq(0)').length
             ? form.find('[name="' + key + '"]:eq(0)')
             : form.find('[name^="' + key + '["]:eq(0)');
-        console.log(error_elem, key);
+
         if (!error_elem.length && key.indexOf('.') > -1) {
             let strArr = key.split('.'),
                 selector = strArr.map((str, index) => {
