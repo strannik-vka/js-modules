@@ -342,7 +342,7 @@ window.validate = {
             alert(errors.join(', '));
         }
 
-        scroller.scrollToError(form);
+        validate.scrollToError(form);
     },
 
     scrollToError: (form) => {
