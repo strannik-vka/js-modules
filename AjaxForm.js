@@ -222,6 +222,10 @@ class AjaxForm {
                     form.trigger('ajax-response-redirect');
                     location.href = response.redirect;
                 } else if (response.success) {
+                    if (response.data) {
+                        window.AjaxFormData = response.data;
+                    }
+
                     form.trigger('ajax-response-success');
 
                     if (form.attr('data-goal-success')) {
