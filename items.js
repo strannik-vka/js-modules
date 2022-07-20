@@ -471,10 +471,12 @@ window.items = {
                 data.page = options.page;
             }
 
-            if (model.url.indexOf('?') > -1) {
-                model.url += '&ajax=true';
-            } else {
-                model.url += '?ajax=true';
+            if (model.url.indexOf('ajax=true') == -1) {
+                if (model.url.indexOf('?') > -1) {
+                    model.url += '&ajax=true';
+                } else {
+                    model.url += '?ajax=true';
+                }
             }
 
             ajax({
