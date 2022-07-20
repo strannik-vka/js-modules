@@ -471,6 +471,12 @@ window.items = {
                 data.page = options.page;
             }
 
+            if (model.url.indexOf('?') > -1) {
+                model.url += '&ajax=true';
+            } else {
+                model.url += '?ajax=true';
+            }
+
             ajax({
                 url: model.url,
                 data: data,
