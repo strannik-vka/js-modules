@@ -113,18 +113,34 @@ window.scroller = {
     },
 
     getScrollTop: (elem, top) => {
-        var scrollTop = elem.offset().top;
+        let scrollTop = elem.offset().top,
+            scrollCenter = elem.attr('data-scroll-center') != undefined;
 
         if ($('html').attr('style') && $('html').attr('style').indexOf('zoom') > -1) {
             var zoom = parseFloat($('html').css('zoom'));
             scrollTop = ($(elem).offset().top - $(".header").height()) * zoom + $(window).scrollTop() * (1 - zoom);
         }
 
-        $('[scroll-fixed]').each(function () {
-            if ($(this).css('display') != 'none') {
-                scrollTop -= parseFloat($(this).css('height'));
+        if (scrollCenter) {
+            let windowHeight = $(window).height(),
+                elemHeight = elem.height();
+
+            if (windowHeight > elemHeight) {
+                scrollTop -= (windowHeight - elemHeight) / 2;
             }
-        });
+        } else {
+            let fixedElemsHeight = 0;
+
+            $('[scroll-fixed]').each(function () {
+                if ($(this).css('display') != 'none') {
+                    fixedElemsHeight += parseFloat($(this).css('height'));
+                }
+            });
+
+            if (fixedElemsHeight) {
+                scrollTop -= fixedElemsHeight;
+            }
+        }
 
         if (top) {
             scrollTop += top;
