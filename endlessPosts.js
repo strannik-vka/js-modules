@@ -15,7 +15,7 @@ const loadNextPost = () => {
             htmls.push($(this).clone());
         });
 
-        $('[data-clone-elem]:eq(-1)').append(htmls);
+        $('[data-clone-elem]:eq(-1)').after(htmls);
 
         nextUrl = $('[rel="next"]', html).attr('href');
 
