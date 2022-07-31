@@ -49,7 +49,7 @@ window.items = {
 
     model: {},
 
-    update: function (name) {
+    update: function (name, data) {
         if ($('[items-list-' + name + ']').length) {
             var model = items.model[name],
                 elem = items.elem(model);
@@ -84,6 +84,8 @@ window.items = {
                     items.print(model, response);
 
                     items.updates[name] = false;
+                }, {
+                    data: data
                 });
             }, 1000);
         }
@@ -201,6 +203,7 @@ window.items = {
                 items.events.update(model);
                 items.events.showMore(model);
                 items.events.modal(model);
+                items.events.filter(model);
 
                 var elem = items.elem(model);
 
@@ -424,12 +427,46 @@ window.items = {
                 });
             }
         },
+        filter: (model) => {
+            let elem = items.elem(model),
+                getFilterData = () => {
+                    let data = {};
+
+                    let formArray = elem.filter.serializeArray();
+
+                    formArray.forEach(item => {
+                        if (item.value) {
+                            if (typeof data[item.name] !== 'undefined') {
+                                if (!Array.isArray(data[item.name])) {
+                                    data[item.name] = [data[item.name]];
+                                }
+
+                                data[item.name].push(item.value);
+                            } else {
+                                data[item.name] = item.value;
+                            }
+                        }
+                    });
+
+                    return data;
+                };
+
+            elem.filter.find('[name]').on('change input', () => {
+                let data = getFilterData(),
+                    urlParams = $.param(data);
+
+                history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
+
+                items.update(model.name, data);
+            });
+        }
     },
 
     elem: function (model) {
         return {
             total: $('[items-total-' + model.name + ']'),
             preloader: $('[items-preloader-' + model.name + ']'),
+            filter: $('[items-filter-' + model.name + ']'),
             empty: $('[items-empty-' + model.name + ']'),
             isset: $('[items-isset-' + model.name + ']'),
             issetOne: $('[items-isset-one-' + model.name + ']'),
@@ -462,6 +499,10 @@ window.items = {
 
             var elem = items.elem(model),
                 data = typeof model.data === 'function' ? model.data() : model.data;
+
+            if (typeof options.data === 'object' && options.data != null) {
+                data = options.data;
+            }
 
             if (typeof data.paginate === 'undefined' && elem.list.attr('items-paginate')) {
                 data.paginate = elem.list.attr('items-paginate');
