@@ -27,43 +27,51 @@ window.audio = {
         audio.elem.addEventListener('ended', audio.next);
         audio.elem.addEventListener('timeupdate', audio.progress.update);
 
-        $(document).on('mouseenter', '[audio-item]', audio.sliders);
-
         var mouseleaveTime = false;
-        $(document).on('mouseenter', '.volume-btn', function () {
-            if (mouseleaveTime) {
-                clearTimeout(mouseleaveTime);
-            }
-            $(this).find('.volume-wrap').show();
-        });
-        $(document).on('mouseleave', '.volume-btn', function () {
-            mouseleaveTime = setTimeout(function () {
-                $('.volume-wrap').hide();
-            }, 3000);
-        });
 
-        $(document).on('click', '[audio-play]', function () {
-            if ($(this).attr('audio-active')) {
-                $('[audio-active]').removeAttr('audio-active');
-                audio.pause();
-            } else {
-                $('[audio-active]').removeAttr('audio-active');
-                $(this).attr('audio-active', 'true');
-                $(this).parents('[audio-item]').attr('audio-active', 'true');
-                audio.play($(this).attr('audio-play'));
-            }
-        });
+        $(document)
+            .on('mouseenter', '[audio-item]', audio.sliders)
+            .on('mouseenter', '.volume-btn', function () {
+                if (mouseleaveTime) {
+                    clearTimeout(mouseleaveTime);
+                }
+                $(this).find('.volume-wrap').show();
+            })
+            .on('mouseleave', '.volume-btn', function () {
+                mouseleaveTime = setTimeout(function () {
+                    $('.volume-wrap').hide();
+                }, 3000);
+            })
+            .on('click', '[audio-play]', function () {
+                if ($(this).attr('audio-active')) {
+                    $('[audio-active]').removeAttr('audio-active');
+                    audio.pause();
+                } else {
+                    $('[audio-active]').removeAttr('audio-active');
+                    $(this).attr('audio-active', 'true');
+                    $(this).parents('[audio-item]').attr('audio-active', 'true');
+                    audio.play($(this).attr('audio-play'));
+                }
+            });
 
+        audio.setFullTime();
+        audio.setWaveLoad();
+    },
+
+    setFullTime: () => {
         $('[time-load]').each((i, item) => {
             let parent = $(item).parents('[audio-item]'),
                 audioUrl = parent.find('[audio-play]').attr('audio-play'),
                 elem = new Audio(audioUrl);
 
             elem.onloadedmetadata = () => {
-                $(item).html(audio.time.full(elem));
+                let timeFull = audio.time.full(elem);
+                $(item).html(timeFull).removeAttr('time-load');
             }
         });
+    },
 
+    setWaveLoad: () => {
         $('[audio-wave-load]').each((i, item) => {
             let parent = $(item).parents('[audio-item]'),
                 audioUrl = parent.find('[audio-play]').attr('audio-play');
@@ -73,6 +81,8 @@ window.audio = {
                 parent.removeAttr('wave-init');
                 audio.wave();
             });
+
+            $(item).removeAttr('audio-wave-load');
         });
     },
 

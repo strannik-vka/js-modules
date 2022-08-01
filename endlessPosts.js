@@ -21,6 +21,8 @@ const loadNextPost = () => {
 
         count++;
 
+        $(document).trigger('afterLoadNextPost');
+
         ajaxProcess = false;
     });
 }
