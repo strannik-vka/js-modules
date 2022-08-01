@@ -6,6 +6,8 @@ let ajaxProcess = false,
 const loadNextPost = () => {
     ajaxProcess = true;
 
+    $('[data-ep-preloader]').show();
+
     $.get(nextUrl, html => {
         let htmls = [];
 
@@ -20,6 +22,8 @@ const loadNextPost = () => {
         nextUrl = $('[rel="next"]', html).attr('href');
 
         count++;
+
+        $('[data-ep-preloader]').hide();
 
         $(document).trigger('afterLoadNextPost');
 
