@@ -1,9 +1,3 @@
-let hrefs = document.querySelectorAll('[data-href]');
-
-if (hrefs) {
-    hrefs.forEach(element => {
-        element.addEventListener('click', () => {
-            location.href = element.getAttribute('data-href');
-        });
-    });
-}
+$(document).on('click', '[data-href]', function () {
+    location.href = $(this).attr('data-href');
+});
