@@ -1,10 +1,14 @@
 var soundWave = {
 
-    context: new window.AudioContext(),
+    context: false,
     width: 400,
     height: 40,
 
     url: function (url, callback) {
+        if (soundWave.context === false) {
+            soundWave.context = new window.AudioContext();
+        }
+
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
@@ -25,6 +29,10 @@ var soundWave = {
     },
 
     file: function (file, callback) {
+        if (soundWave.context === false) {
+            soundWave.context = new window.AudioContext();
+        }
+
         var reader = new FileReader();
         reader.onload = function (e) {
             soundWave.context.decodeAudioData(e.target.result,
