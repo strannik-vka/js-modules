@@ -1,4 +1,4 @@
-const soundWave = require('./soundWave').default;
+import soundWave from './soundWave';
 
 window.audio = {
 
@@ -76,11 +76,13 @@ window.audio = {
             let parent = $(item).parents('[audio-item]'),
                 audioUrl = parent.find('[audio-play]').attr('audio-play');
 
-            soundWave.url(audioUrl, (wave) => {
-                audio.data[audioUrl] = { wave: JSON.stringify(wave) };
-                parent.removeAttr('wave-init');
-                audio.wave();
-            });
+            if (typeof soundWave !== 'undefined') {
+                soundWave.url(audioUrl, (wave) => {
+                    audio.data[audioUrl] = { wave: JSON.stringify(wave) };
+                    parent.removeAttr('wave-init');
+                    audio.wave();
+                });
+            }
 
             $(item).removeAttr('audio-wave-load');
         });
