@@ -188,8 +188,6 @@ window.items = {
 
         $.each(items.model, function (name, model) {
             if (!model.init) {
-                init = true;
-
                 items.model[name].init = true;
 
                 if (model.clear) {
