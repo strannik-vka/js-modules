@@ -15,6 +15,7 @@
             html: (html, data), // изменить html перед рендером,
             onRender: data => {} // запускается после рендера
         },
+        filterPushState: true, // false - отключить pushState
         name: 'название списка',
         glueUnions: true, - склеить союзы
         url: 'ссылка на список',
@@ -121,6 +122,7 @@ window.items = {
                 current_page: 1
             };
             model.loop_iteration = 1;
+            model.filterPushState = typeof model.filterPushState !== 'undefined' ? model.filterPushState : true;
 
             model.outerHTML = (
                 typeof model.outerHTML === 'function'
@@ -427,10 +429,10 @@ window.items = {
         },
         filter: (model) => {
             let elem = items.elem(model),
-                getFilterData = () => {
+                getFilterData = (form) => {
                     let data = {};
 
-                    let formArray = elem.filter.serializeArray();
+                    let formArray = form.serializeArray();
 
                     formArray.forEach(item => {
                         if (item.value) {
@@ -447,13 +449,15 @@ window.items = {
                     });
 
                     return data;
-                };
+                }
 
-            elem.filter.find('[name]').on('change input', () => {
-                let data = getFilterData(),
+            elem.filter.find('[name]').on('change input', (e) => {
+                let data = getFilterData($(e.currentTarget).parents('[items-filter-' + model.name + ']')),
                     urlParams = $.param(data);
 
-                history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
+                if (model.filterPushState) {
+                    history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
+                }
 
                 items.update(model.name, data);
             });
