@@ -14,7 +14,7 @@ window.textarea_autosize = {
 
     resize: function (elem) {
         if (elem && elem.length) {
-            elem.css('height', 'auto').css('height', elem[0].scrollHeight + 'px');
+            elem.css('height', 'auto').css('height', (elem[0].scrollHeight - 8) + 'px');
             if (elem.attr('data-autosize') != 'true') {
                 elem.attr('data-autosize', 'true');
             }

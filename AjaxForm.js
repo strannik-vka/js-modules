@@ -178,13 +178,19 @@ class AjaxForm {
     }
 
     formData(form) {
-        return {
+        let data = {
             url: form.attr('action') ? form.attr('action') : location.href,
             type: form.attr('method') ? form.attr('method') : 'post',
             data: new FormData(form[0]),
             processData: false,
             contentType: false
         }
+
+        if (typeof ajaxFormPreloader !== 'undefined') {
+            data.preloader_html = ajaxFormPreloader;
+        }
+
+        return data;
     }
 
     submit(form) {
@@ -230,7 +236,7 @@ class AjaxForm {
 
                     if (form.attr('data-goal-success')) {
                         if (typeof ym !== 'undefined') {
-                            ym(66740038, 'reachGoal', form.attr('data-goal-success'));
+                            ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
                         }
                     }
 

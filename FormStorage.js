@@ -4,6 +4,7 @@ class FormStorage {
         $(document)
             .on('input', '[data-form-storage] [name]', this.onChange)
             .on('keydown', '[data-form-storage] [class*="mask-"][name]', this.onChange)
+            .on('keydown', '[data-form-storage] [data-is-mask][name]', this.onChange)
             .on('change', '[data-form-storage] select[name]', this.onChange)
             .on('ajax-response-success', '[data-form-storage]', this.clearInputs);
 
@@ -26,9 +27,11 @@ class FormStorage {
             var input = form.find('[name="' + name + '"]');
 
             if (input.length) {
-                if (input.attr('type') == 'checkbox') {
+                if (input[0].tagName == 'select') {
                     input.find('option').prop('selected', false);
                     input.find('option[value="' + val + '"]').prop('selected', true);
+                } else if (input.attr('type') == 'checkbox') {
+                    form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
                 } else if (input.attr('type') == 'radio') {
                     form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
                 } else {
@@ -36,6 +39,10 @@ class FormStorage {
                 }
             }
         });
+
+        setTimeout(() => {
+            form.trigger('form-storage-fill');
+        }, 1000);
     }
 
     onChange = (e) => {
@@ -46,7 +53,17 @@ class FormStorage {
         let name = $(e.currentTarget).attr('name'),
             val = $(e.currentTarget).val();
 
-        inputs[name] = val;
+        if ($(e.currentTarget).attr('type') == 'checkbox') {
+            if ($(e.currentTarget).prop('checked')) {
+                inputs[name] = val;
+            } else {
+                if (typeof inputs[name] !== 'undefined') {
+                    delete inputs[name];
+                }
+            }
+        } else {
+            inputs[name] = val;
+        }
 
         localStorage.setItem('form_' + formId, JSON.stringify(inputs));
     }
