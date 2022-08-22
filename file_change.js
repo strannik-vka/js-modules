@@ -28,10 +28,14 @@ $(document)
             return false;
         }
 
-        if (typeof $(this)[0].files !== 'undefined') {
-            $.each($(this)[0].files, function (i, file) {
-                names.push(file.name);
-            });
+        if (name_elem.attr('file-name')) {
+            names.push(name_elem.attr('file-name'));
+        } else {
+            if (typeof $(this)[0].files !== 'undefined') {
+                $.each($(this)[0].files, function (i, file) {
+                    names.push(file.name);
+                });
+            }
         }
 
         if (!name_elem.attr('text-original')) {
