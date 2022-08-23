@@ -40,9 +40,15 @@ class FormStorage {
             }
         });
 
-        setTimeout(() => {
-            form.trigger('form-storage-fill');
-        }, 1000);
+        if (Object.keys(inputs).length) {
+            setTimeout(() => {
+                form.trigger('form-storage-fill');
+            }, 1000);
+        } else {
+            setTimeout(() => {
+                form.trigger('form-storage-empty');
+            }, 1000);
+        }
     }
 
     onChange = (e) => {
