@@ -3,9 +3,7 @@ window.validate = {
     initOn: false,
     name: false, // текущий проверяемый name поля
     form: false, // текущая проверяемая форма
-    options: {
-        delimiter: {}
-    },
+    options: {},
 
     list: {},
 
@@ -34,8 +32,10 @@ window.validate = {
         url: (input) => {
             let val = $.trim(validate.helper.value(input));
 
-            if (validate.options.delimiter[validate.name]) {
-                val = val.split(validate.options.delimiter[validate.name]);
+            if (typeof validate.options.delimiter === 'object' && validate.options.delimiter != null) {
+                if (validate.options.delimiter[validate.name]) {
+                    val = val.split(validate.options.delimiter[validate.name]);
+                }
             }
 
             val = Array.isArray(val) ? val : [val];
@@ -406,7 +406,9 @@ window.validate = {
 
                 obj[name] = valid;
 
-                validate.options = options;
+                if (typeof options === 'object' && options != null) {
+                    validate.options = options;
+                }
 
                 if (validate.checkTimeout) clearTimeout(validate.checkTimeout);
                 validate.checkTimeout = setTimeout(() => {
