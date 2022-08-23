@@ -33,5 +33,7 @@ export default (form) => {
         all++;
     });
 
-    return success && all ? Math.ceil(100 / (all / success)) : 0;
+    return {
+        all: success && all ? Math.ceil(100 / (all / success)) : 0
+    }
 }

@@ -198,95 +198,99 @@ class AjaxForm {
             $(this.options.modalConfirm).modal('hide');
         }
 
-        if (this.options.beforeSubmit) {
-            this.options.beforeSubmit(submitAllow => {
-                if (!submitAllow) {
-                    return false;
-                }
-            });
+        const submit = () => {
+            if (this.isErrors(form)) {
+                this.scrollToError();
+            } else {
+                var formData = this.formData(form);
+
+                ajax(formData, response => {
+                    if (this.options.afterSubmit) {
+                        this.options.afterSubmit(response);
+                    }
+
+                    if (typeof response !== 'object') {
+                        if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
+                            var response = {
+                                success: true
+                            }
+                        }
+                    }
+
+                    if (response.redirect) {
+                        form.trigger('ajax-response-redirect');
+                        location.href = response.redirect;
+                    } else if (response.success) {
+                        if (response.data) {
+                            window.AjaxFormData = response.data;
+                        }
+
+                        form.trigger('ajax-response-success');
+
+                        if (form.attr('data-goal-success')) {
+                            if (typeof ym !== 'undefined') {
+                                ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
+                            }
+                        }
+
+                        if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
+                            if (!response.text) {
+                                response.text = response.success;
+                            }
+
+                            modalNotify.create(response);
+                        }
+
+                        if (form.attr('data-ajax-form-reload')) {
+                            location.reload();
+                        }
+
+                        if (form.attr('data-ajax-form-redirect')) {
+                            location.href = form.attr('data-ajax-form-redirect');
+                        }
+
+                        form.addClass('success');
+
+                        if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
+                            this.reset(form);
+                        }
+
+                        var key = form.attr('data-ajax-form');
+
+                        if (key) {
+                            $('[data-ajax-form-show="' + key + '"]').show();
+                            $('[data-ajax-form-hide="' + key + '"]').hide();
+                        }
+
+                        form.find('[data-ajax-form-show]').show();
+                        form.find('[data-ajax-form-hide]').hide();
+
+                        if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
+                            if (this.isEditMode == true) {
+                                this.editModeOff(form);
+                            }
+                        }
+
+                        if (response && typeof response.data !== 'undefined') {
+                            this.itemsHtmlUpdate(response.data);
+                        }
+                    } else {
+                        this.htmlReset(form);
+                    }
+
+                    form.trigger('ajax-response');
+                }, form);
+            }
         }
 
-        if (this.isErrors(form)) {
-            this.scrollToError();
+        if (this.options.beforeSubmit) {
+            this.options.beforeSubmit(submitAllow => {
+                if (submitAllow) {
+                    submit();
+                }
+            });
         } else {
-            var formData = this.formData(form);
-
-            ajax(formData, response => {
-                if (this.options.afterSubmit) {
-                    this.options.afterSubmit(response);
-                }
-
-                if (typeof response !== 'object') {
-                    if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
-                        var response = {
-                            success: true
-                        }
-                    }
-                }
-
-                if (response.redirect) {
-                    form.trigger('ajax-response-redirect');
-                    location.href = response.redirect;
-                } else if (response.success) {
-                    if (response.data) {
-                        window.AjaxFormData = response.data;
-                    }
-
-                    form.trigger('ajax-response-success');
-
-                    if (form.attr('data-goal-success')) {
-                        if (typeof ym !== 'undefined') {
-                            ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
-                        }
-                    }
-
-                    if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
-                        if (!response.text) {
-                            response.text = response.success;
-                        }
-
-                        modalNotify.create(response);
-                    }
-
-                    if (form.attr('data-ajax-form-reload')) {
-                        location.reload();
-                    }
-
-                    if (form.attr('data-ajax-form-redirect')) {
-                        location.href = form.attr('data-ajax-form-redirect');
-                    }
-
-                    form.addClass('success');
-
-                    if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
-                        this.reset(form);
-                    }
-
-                    var key = form.attr('data-ajax-form');
-
-                    if (key) {
-                        $('[data-ajax-form-show="' + key + '"]').show();
-                        $('[data-ajax-form-hide="' + key + '"]').hide();
-                    }
-
-                    form.find('[data-ajax-form-show]').show();
-                    form.find('[data-ajax-form-hide]').hide();
-
-                    if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
-                        if (this.isEditMode == true) {
-                            this.editModeOff(form);
-                        }
-                    }
-
-                    if (response && typeof response.data !== 'undefined') {
-                        this.itemsHtmlUpdate(response.data);
-                    }
-                } else {
-                    this.htmlReset(form);
-                }
-
-                form.trigger('ajax-response');
-            }, form);
+            submit();
         }
     }
 
