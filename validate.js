@@ -22,10 +22,26 @@ window.validate = {
         },
         email: 'Введите корректный электронный адрес',
         confirmed: 'Не совпадает с подтверждением',
-        mimes: 'Неподдерживаемый тип файла'
+        mimes: 'Неподдерживаемый тип файла',
+        url: 'Введите корректную ссылку',
+        domain: 'Введите корректный домен'
     },
 
     valid: {
+        url: (input) => {
+            let url;
+            try {
+                url = new URL($.trim(validate.helper.value(input)));
+            } catch (_) {
+                return false;
+            }
+            return url.protocol === "http:" || url.protocol === "https:";
+        },
+        domain: (input) => {
+            let val = $.trim(validate.helper.value(input)),
+                re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
+            return val.match(re);
+        },
         required: function (input) {
             return $.trim(validate.helper.value(input));
         },
@@ -170,7 +186,12 @@ window.validate = {
 
             var input = form.find('[name="' + name + '"]'),
                 type = validate.helper.type(input),
-                methods = methods.split('|');
+                methods = methods.split('|'),
+                val = $.trim(validate.helper.value(input));
+
+            if (methods.indexOf('required') == -1 && !val) {
+                return true;
+            }
 
             $.each(methods, function (i, method) {
                 var args = method.split(':'),
@@ -353,6 +374,22 @@ window.validate = {
                 }
             }
         }
+    },
+
+    createTimeout: false,
+    create: (formSelector, validObj) => {
+        $.each(validObj, (name, valid) => {
+            $(document).on('input blur', formSelector + ' [name="' + name + '"]', () => {
+                let obj = {};
+
+                obj[name] = valid;
+
+                if (validate.checkTimeout) clearTimeout(validate.checkTimeout);
+                validate.checkTimeout = setTimeout(() => {
+                    validate.check($(formSelector), obj, true);
+                }, 600);
+            });
+        });
     }
 
 }
