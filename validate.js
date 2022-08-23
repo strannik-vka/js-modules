@@ -3,7 +3,9 @@ window.validate = {
     initOn: false,
     name: false, // текущий проверяемый name поля
     form: false, // текущая проверяемая форма
-    options: {},
+    options: {
+        delimiter: {}
+    },
 
     list: {},
 
@@ -32,7 +34,7 @@ window.validate = {
         url: (input) => {
             let val = $.trim(validate.helper.value(input));
 
-            if (validate.options.delimiter && validate.options.delimiter[validate.name]) {
+            if (validate.options.delimiter[validate.name]) {
                 val = val.split(validate.options.delimiter[validate.name]);
             }
 
