@@ -25,67 +25,49 @@ window.validate = {
         confirmed: 'Не совпадает с подтверждением',
         mimes: 'Неподдерживаемый тип файла',
         url: 'Введите корректную ссылку',
-        domain: 'Введите корректный домен'
+        domain: 'Введите корректный домен',
+        source: 'Введите корректную ссылку',
+        urlLight: 'Введите корректную ссылку',
     },
 
     valid: {
-        url: (input) => {
-            let val = $.trim(validate.helper.value(input));
+        source: (val) => {
+            let valArr = val.split('/'),
+                lastVal = $.trim(valArr[valArr.length - 1]);
 
-            if (typeof validate.options.delimiter === 'object' && validate.options.delimiter != null) {
-                if (validate.options.delimiter[validate.name]) {
-                    val = val.split(validate.options.delimiter[validate.name]);
-                }
+            return val.indexOf('.') > -1 && val.indexOf('/') > -1 && lastVal;
+        },
+        urlLight: (val) => {
+            return val.indexOf('.') > -1;
+        },
+        url: (val) => {
+            try {
+                new URL(val[i]);
+                return val[i].indexOf('http://') > -1 || val[i].indexOf('https://') > -1;
+            } catch (_) {
+                return false;
             }
-
-            val = Array.isArray(val) ? val : [val];
-
-            let result = true;
-
-            for (let i = 0; i < val.length; i++) {
-                let url;
-
-                try {
-                    url = new URL(val[i]);
-                    result = val[i].indexOf('http://') > -1 || val[i].indexOf('https://') > -1;
-                } catch (_) {
-                    result = false;
-                }
-
-                if (result == false) {
-                    break;
-                }
-            }
-
-            return result;
         },
-        domain: (input) => {
-            let val = $.trim(validate.helper.value(input)),
-                re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-            return val.match(re);
+        domain: (val) => {
+            return val.match(new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/));
         },
-        required: function (input) {
-            return $.trim(validate.helper.value(input));
+        required: function (val) {
+            return val;
         },
-        email: function (input) {
+        email: function (val) {
             var pattern = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
-            return pattern.exec(validate.helper.value(input));
+            return pattern.exec(val);
         },
-        max: function (input, max) {
-            var length = validate.helper.length(input);
-            return parseFloat(max) >= length;
+        max: function (val, input, max) {
+            return parseFloat(max) >= validate.helper.length(input);
         },
-        min: function (input, min) {
-            var length = validate.helper.length(input);
-            return parseFloat(min) <= length;
+        min: function (val, input, min) {
+            return parseFloat(min) <= validate.helper.length(input);
         },
-        confirmed: function (input) {
-            var val1 = validate.helper.value(input),
-                val2 = validate.helper.value(validate.form.find('[name="' + validate.name.replace('_confirmation', '') + '"]'));
-
-            return val1 == val2;
+        confirmed: function (val) {
+            return val == validate.helper.value(validate.form.find('[name="' + validate.name.replace('_confirmation', '') + '"]'));
         },
-        mimes: function (input, mimes) {
+        mimes: function (val, input, mimes) {
             var types = validate.helper.file.types(input),
                 result = false;
 
@@ -215,26 +197,38 @@ window.validate = {
                 return true;
             }
 
-            $.each(methods, function (i, method) {
-                var args = method.split(':'),
-                    method = args.splice(0, 1);
+            let valArr = null;
 
-                var result = args.length
-                    ? validate.valid[method](input, args[0])
-                    : validate.valid[method](input);
-
-                if (!result) {
-                    if (!errors[name]) {
-                        errors[name] = [];
-                    }
-
-                    var valid_text = validate.valid.getText(method, args, text, type, name);
-
-                    if (valid_text) {
-                        errors[name].push(valid_text);
-                    }
+            if (typeof validate.options.delimiter === 'object' && validate.options.delimiter != null) {
+                if (validate.options.delimiter[validate.name]) {
+                    valArr = val.split(validate.options.delimiter[validate.name]);
                 }
-            });
+            }
+
+            valArr = Array.isArray(valArr) ? valArr : [valArr];
+
+            for (let i = 0; i < valArr.length; i++) {
+                $.each(methods, function (i, method) {
+                    var args = method.split(':'),
+                        method = args.splice(0, 1);
+
+                    var result = args.length
+                        ? validate.valid[method]($.trim(valArr[i]), input, args[0])
+                        : validate.valid[method]($.trim(valArr[i]), input);
+
+                    if (!result) {
+                        if (!errors[name]) {
+                            errors[name] = [];
+                        }
+
+                        var valid_text = validate.valid.getText(method, args, text, type, name);
+
+                        if (valid_text) {
+                            errors[name].push(valid_text);
+                        }
+                    }
+                });
+            }
         });
 
         if (errorsView) {
