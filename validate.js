@@ -3,6 +3,7 @@ window.validate = {
     initOn: false,
     name: false, // текущий проверяемый name поля
     form: false, // текущая проверяемая форма
+    options: {},
 
     list: {},
 
@@ -29,13 +30,32 @@ window.validate = {
 
     valid: {
         url: (input) => {
-            let url;
-            try {
-                url = new URL($.trim(validate.helper.value(input)));
-            } catch (_) {
-                return false;
+            let val = $.trim(validate.helper.value(input));
+
+            if (validate.options.delimiter && validate.options.delimiter[validate.name]) {
+                val = val.split(validate.options.delimiter[validate.name]);
             }
-            return url.protocol === "http:" || url.protocol === "https:";
+
+            val = Array.isArray(val) ? val : [val];
+
+            let result = true;
+
+            for (let i = 0; i < val.length; i++) {
+                let url;
+
+                try {
+                    url = new URL(val[i]);
+                    result = val[i].indexOf('http://') > -1 || val[i].indexOf('https://') > -1;
+                } catch (_) {
+                    result = false;
+                }
+
+                if (result == false) {
+                    break;
+                }
+            }
+
+            return result;
         },
         domain: (input) => {
             let val = $.trim(validate.helper.value(input)),
@@ -377,12 +397,14 @@ window.validate = {
     },
 
     createTimeout: false,
-    create: (formSelector, validObj) => {
+    create: (formSelector, validObj, options) => {
         $.each(validObj, (name, valid) => {
             $(document).on('input blur', formSelector + ' [name="' + name + '"]', () => {
                 let obj = {};
 
                 obj[name] = valid;
+
+                validate.options = options;
 
                 if (validate.checkTimeout) clearTimeout(validate.checkTimeout);
                 validate.checkTimeout = setTimeout(() => {
