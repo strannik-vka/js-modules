@@ -11,6 +11,29 @@ window.queue = {
     }
 }
 
+window.delAjaxPreloader = (form) => {
+    let button = form.find('button:eq(-1)');
+
+    if (button.length && button.attr('text')) {
+        button.html(button.attr('text'));
+        button.removeAttr('style');
+    }
+}
+
+window.setAjaxPreloader = (form, preloader) => {
+    let button = form.find('button:eq(-1)');
+
+    if (button.length && preloader) {
+        if (!button.attr('text')) {
+            button.attr('text', button.html());
+        }
+
+        button
+            .css('min-width', parseFloat(button.css('width')) + 'px')
+            .html(preloader);
+    }
+}
+
 window.ajax = function (obj, callback, form) {
     if (ajaxProcess) {
         if (typeof obj === 'object') {
@@ -61,25 +84,12 @@ window.ajax = function (obj, callback, form) {
     }
 
     if (form) {
-        var button = form.find('button:eq(-1)');
-
-        if (button.length && preloader) {
-            if (!button.attr('text')) {
-                button.attr('text', button.html());
-            }
-
-            button
-                .css('min-width', parseFloat(button.css('width')) + 'px')
-                .html(preloader);
-        }
+        setAjaxPreloader(form, preloader);
     }
 
     $.ajax(settings).always(function (response, textStatus, xhr) {
         if (form) {
-            if (button.length && preloader) {
-                button.html(button.attr('text'));
-                button.removeAttr('style');
-            }
+            delAjaxPreloader(form);
         }
 
         if (typeof obj === 'object') {

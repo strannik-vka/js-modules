@@ -5,7 +5,16 @@
         editMode: true // сначала нажимаем кнопку "редактировать" => появляется возможность сохранить,
         onChangeSubmit: true // после изменения в форме отправлять форму
         modalConfirm: selector // модалка подтверждения,
-        beforeModalConfirm: function => {} // функция до вывода модалки подтверждения
+        beforeModalConfirm: function => {} // функция до вывода модалки подтверждения,
+        childForms: [ // дочерние формы
+            {
+                elem: $(elem),
+                validUrl: $(form).attr('data-valid-url'),
+                actionUrl: $(form).attr('action'),
+                target: $(form).attr('data-target'),
+                callback: () => {}
+            }
+        ]
     })
 */
 
@@ -23,6 +32,18 @@ class AjaxForm {
 
         if ($(selector).attr('data-onchange-submit') == 'true') {
             this.options.onChangeSubmit = true;
+        }
+
+        if (typeof this.options.childForms === 'undefined') {
+            this.options.childForms = [];
+            $(selector).find('[data-child-form]').each((i, form) => {
+                this.options.childForms.push({
+                    elem: $(form),
+                    validUrl: $(form).attr('data-valid-url'),
+                    actionUrl: $(form).attr('action'),
+                    target: $(form).attr('data-target')
+                });
+            });
         }
 
         this.selector = selector;
@@ -193,6 +214,108 @@ class AjaxForm {
         return data;
     }
 
+    validChldrens(callback) {
+        if (this.options.childForms.length) {
+            setAjaxPreloader($(this.selector), '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only"></span></div>');
+
+            let results = [], error = false, errors = false, serverError = false, isCallback = false;
+
+            this.options.childForms.forEach(form => {
+                let options = {
+                    url: form.validUrl,
+                    type: 'post',
+                    data: new FormData(form.elem[0]),
+                    processData: false,
+                    contentType: false
+                }
+
+                options.success = response => {
+                    if (response.error) {
+                        error = response.error;
+                    } else if (response.errors) {
+                        errors = response.errors;
+                    } else {
+                        results.push(response);
+                    }
+
+                    if (form.callback) {
+                        isCallback = true;
+                        form.callback(response);
+                    }
+                }
+
+                options.error = () => {
+                    serverError = true;
+
+                    if (form.callback) {
+                        isCallback = true;
+                        form.callback({
+                            serverError: true
+                        });
+                    }
+                }
+
+                $.ajax(options);
+            });
+
+            this.validChldrensInterval = setInterval(() => {
+                if (errors !== false || error !== false || serverError !== false) {
+                    clearInterval(this.validChldrensInterval);
+                    callback({
+                        isCallback: isCallback,
+                        error: error,
+                        errors: errors,
+                        serverError: serverError
+                    });
+
+                    delAjaxPreloader($(this.selector));
+                } else if (results.length == this.options.childForms.length) {
+                    clearInterval(this.validChldrensInterval);
+                    callback(true);
+                }
+            }, 1000);
+        } else {
+            callback(true);
+        }
+    }
+
+    submitChildrens(response, callback) {
+        if (this.options.childForms.length && (response.redirect || response.success)) {
+            setAjaxPreloader($(this.selector), '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only"></span></div>');
+
+            let results = [];
+
+            this.options.childForms.forEach(form => {
+                $.ajax({
+                    url: form.actionUrl,
+                    type: 'post',
+                    data: new FormData(form.elem[0]),
+                    processData: false,
+                    contentType: false
+                }).always(() => {
+                    results.push(true);
+                });
+            });
+
+            this.validChldrensInterval = setInterval(() => {
+                if (results.length == this.options.childForms.length) {
+                    clearInterval(this.validChldrensInterval);
+                    callback();
+                }
+            }, 1000);
+        } else {
+            callback();
+        }
+    }
+
+    resetChildrens() {
+        if (this.options.childForms.length) {
+            this.options.childForms.forEach(form => {
+                form.elem.trigger('reset').trigger('ajax-response-success');
+            });
+        }
+    }
+
     submit(form) {
         if (this.options.modalConfirm) {
             $(this.options.modalConfirm).modal('hide');
@@ -200,6 +323,7 @@ class AjaxForm {
 
         const submit = () => {
             if (this.isErrors(form)) {
+                delAjaxPreloader(form);
                 this.scrollToError();
             } else {
                 var formData = this.formData(form);
@@ -217,81 +341,101 @@ class AjaxForm {
                         }
                     }
 
-                    if (response.redirect) {
-                        form.trigger('ajax-response-redirect');
-                        location.href = response.redirect;
-                    } else if (response.success) {
-                        if (response.data) {
-                            window.AjaxFormData = response.data;
-                        }
+                    this.submitChildrens(response, () => {
+                        delAjaxPreloader(form);
 
-                        form.trigger('ajax-response-success');
-
-                        if (form.attr('data-goal-success')) {
-                            if (typeof ym !== 'undefined') {
-                                ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
-                            }
-                        }
-
-                        if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
-                            if (!response.text) {
-                                response.text = response.success;
+                        if (response.redirect) {
+                            form.trigger('ajax-response-redirect');
+                            location.href = response.redirect;
+                        } else if (response.success) {
+                            if (response.data) {
+                                window.AjaxFormData = response.data;
                             }
 
-                            modalNotify.create(response);
-                        }
+                            form.trigger('ajax-response-success');
 
-                        if (form.attr('data-ajax-form-reload')) {
-                            location.reload();
-                        }
-
-                        if (form.attr('data-ajax-form-redirect')) {
-                            location.href = form.attr('data-ajax-form-redirect');
-                        }
-
-                        form.addClass('success');
-
-                        if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
-                            this.reset(form);
-                        }
-
-                        var key = form.attr('data-ajax-form');
-
-                        if (key) {
-                            $('[data-ajax-form-show="' + key + '"]').show();
-                            $('[data-ajax-form-hide="' + key + '"]').hide();
-                        }
-
-                        form.find('[data-ajax-form-show]').show();
-                        form.find('[data-ajax-form-hide]').hide();
-
-                        if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
-                            if (this.isEditMode == true) {
-                                this.editModeOff(form);
+                            if (form.attr('data-goal-success')) {
+                                if (typeof ym !== 'undefined') {
+                                    ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
+                                }
                             }
+
+                            if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
+                                if (!response.text) {
+                                    response.text = response.success;
+                                }
+
+                                modalNotify.create(response);
+                            }
+
+                            if (form.attr('data-ajax-form-reload')) {
+                                location.reload();
+                            }
+
+                            if (form.attr('data-ajax-form-redirect')) {
+                                location.href = form.attr('data-ajax-form-redirect');
+                            }
+
+                            form.addClass('success');
+
+                            if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
+                                this.reset(form);
+                            }
+
+                            var key = form.attr('data-ajax-form');
+
+                            if (key) {
+                                $('[data-ajax-form-show="' + key + '"]').show();
+                                $('[data-ajax-form-hide="' + key + '"]').hide();
+                            }
+
+                            form.find('[data-ajax-form-show]').show();
+                            form.find('[data-ajax-form-hide]').hide();
+
+                            if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
+                                if (this.isEditMode == true) {
+                                    this.editModeOff(form);
+                                }
+                            }
+
+                            if (response && typeof response.data !== 'undefined') {
+                                this.itemsHtmlUpdate(response.data);
+                            }
+                        } else {
+                            this.htmlReset(form);
                         }
 
-                        if (response && typeof response.data !== 'undefined') {
-                            this.itemsHtmlUpdate(response.data);
-                        }
-                    } else {
-                        this.htmlReset(form);
-                    }
+                        this.resetChildrens();
 
-                    form.trigger('ajax-response');
+                        form.trigger('ajax-response');
+                    });
                 }, form);
             }
         }
 
-        if (this.options.beforeSubmit) {
-            this.options.beforeSubmit(submitAllow => {
-                if (submitAllow) {
+        this.validChldrens(result => {
+            if (result === true) {
+                if (this.options.beforeSubmit) {
+                    this.options.beforeSubmit(submitAllow => {
+                        if (submitAllow) {
+                            submit();
+                        }
+                    });
+                } else {
                     submit();
                 }
-            });
-        } else {
-            submit();
-        }
+            } else {
+                if (typeof result.isCallback == false) {
+                    if (result.error !== false) {
+                        alert(result.error);
+                    } else if (result.errors !== false) {
+                        alert(JSON.stringify(result.errors));
+                    } else {
+                        alert('Оошибка сервера, попробуйте позже');
+                    }
+                }
+            }
+        });
     }
 
 }
