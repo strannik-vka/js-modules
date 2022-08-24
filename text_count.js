@@ -34,7 +34,17 @@ var text_count = {
     },
 
     count: function (elem) {
-        return $.trim(elem.val()).replace(/\n/g, '\n\r').length;
+        let result = 0;
+
+        if (elem.attr('data-split-count')) {
+            let val = $.trim(elem.val());
+            result = val.split(elem.attr('data-split-count'));
+            result = result.length;
+        } else {
+            result = $.trim(elem.val()).replace(/\n/g, '\n\r').length;
+        }
+
+        return result;
     }
 
 }
