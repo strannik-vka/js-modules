@@ -1,8 +1,16 @@
 var text_count = {
 
     init: function () {
-        $(document).on('input change', '[data-input-count]', text_count.change);
+        $(document)
+            .on('reset', 'form', text_count.formReset)
+            .on('input change', '[data-input-count]', text_count.change);
         text_count.fill();
+    },
+
+    formReset: function () {
+        setTimeout(() => {
+            $(this).find('[data-input-count]').trigger('change');
+        }, 500);
     },
 
     fill: function () {

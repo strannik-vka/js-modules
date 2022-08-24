@@ -308,8 +308,8 @@ class AjaxForm {
         }
     }
 
-    resetChildrens() {
-        if (this.options.childForms.length) {
+    resetChildrens(response) {
+        if (this.options.childForms.length && (response.redirect || response.success)) {
             this.options.childForms.forEach(form => {
                 form.elem.trigger('reset').trigger('ajax-response-success');
             });
@@ -407,7 +407,7 @@ class AjaxForm {
                                     this.htmlReset(form);
                                 }
 
-                                this.resetChildrens();
+                                this.resetChildrens(response);
 
                                 form.trigger('ajax-response');
                             });
