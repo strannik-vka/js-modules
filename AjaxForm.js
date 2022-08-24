@@ -322,120 +322,120 @@ class AjaxForm {
         }
 
         const submit = () => {
-            if (this.isErrors(form)) {
-                delAjaxPreloader(form);
-                this.scrollToError();
-            } else {
-                var formData = this.formData(form);
-
-                ajax(formData, response => {
-                    if (this.options.afterSubmit) {
-                        this.options.afterSubmit(response);
-                    }
-
-                    if (typeof response !== 'object') {
-                        if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
-                            var response = {
-                                success: true
-                            }
-                        }
-                    }
-
-                    this.submitChildrens(response, () => {
+            this.validChldrens(result => {
+                if (result === true) {
+                    if (this.isErrors(form)) {
                         delAjaxPreloader(form);
+                        this.scrollToError();
+                    } else {
+                        var formData = this.formData(form);
 
-                        if (response.redirect) {
-                            form.trigger('ajax-response-redirect');
-                            location.href = response.redirect;
-                        } else if (response.success) {
-                            if (response.data) {
-                                window.AjaxFormData = response.data;
+                        ajax(formData, response => {
+                            if (this.options.afterSubmit) {
+                                this.options.afterSubmit(response);
                             }
 
-                            form.trigger('ajax-response-success');
-
-                            if (form.attr('data-goal-success')) {
-                                if (typeof ym !== 'undefined') {
-                                    ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
+                            if (typeof response !== 'object') {
+                                if (formData.url.indexOf('login') > -1 || formData.url.indexOf('register') > -1 || formData.url.indexOf('forgot') > -1 || formData.url.indexOf('reset-password') > -1) {
+                                    var response = {
+                                        success: true
+                                    }
                                 }
                             }
 
-                            if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
-                                if (!response.text) {
-                                    response.text = response.success;
+                            this.submitChildrens(response, () => {
+                                delAjaxPreloader(form);
+
+                                if (response.redirect) {
+                                    form.trigger('ajax-response-redirect');
+                                    location.href = response.redirect;
+                                } else if (response.success) {
+                                    if (response.data) {
+                                        window.AjaxFormData = response.data;
+                                    }
+
+                                    form.trigger('ajax-response-success');
+
+                                    if (form.attr('data-goal-success')) {
+                                        if (typeof ym !== 'undefined') {
+                                            ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
+                                        }
+                                    }
+
+                                    if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
+                                        if (!response.text) {
+                                            response.text = response.success;
+                                        }
+
+                                        modalNotify.create(response);
+                                    }
+
+                                    if (form.attr('data-ajax-form-reload')) {
+                                        location.reload();
+                                    }
+
+                                    if (form.attr('data-ajax-form-redirect')) {
+                                        location.href = form.attr('data-ajax-form-redirect');
+                                    }
+
+                                    form.addClass('success');
+
+                                    if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
+                                        this.reset(form);
+                                    }
+
+                                    var key = form.attr('data-ajax-form');
+
+                                    if (key) {
+                                        $('[data-ajax-form-show="' + key + '"]').show();
+                                        $('[data-ajax-form-hide="' + key + '"]').hide();
+                                    }
+
+                                    form.find('[data-ajax-form-show]').show();
+                                    form.find('[data-ajax-form-hide]').hide();
+
+                                    if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
+                                        if (this.isEditMode == true) {
+                                            this.editModeOff(form);
+                                        }
+                                    }
+
+                                    if (response && typeof response.data !== 'undefined') {
+                                        this.itemsHtmlUpdate(response.data);
+                                    }
+                                } else {
+                                    this.htmlReset(form);
                                 }
 
-                                modalNotify.create(response);
-                            }
+                                this.resetChildrens();
 
-                            if (form.attr('data-ajax-form-reload')) {
-                                location.reload();
-                            }
-
-                            if (form.attr('data-ajax-form-redirect')) {
-                                location.href = form.attr('data-ajax-form-redirect');
-                            }
-
-                            form.addClass('success');
-
-                            if (form.find('[data-ajax-form-reset]').length == 0 && form.attr('data-reset') !== 'false') {
-                                this.reset(form);
-                            }
-
-                            var key = form.attr('data-ajax-form');
-
-                            if (key) {
-                                $('[data-ajax-form-show="' + key + '"]').show();
-                                $('[data-ajax-form-hide="' + key + '"]').hide();
-                            }
-
-                            form.find('[data-ajax-form-show]').show();
-                            form.find('[data-ajax-form-hide]').hide();
-
-                            if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
-                                if (this.isEditMode == true) {
-                                    this.editModeOff(form);
-                                }
-                            }
-
-                            if (response && typeof response.data !== 'undefined') {
-                                this.itemsHtmlUpdate(response.data);
-                            }
+                                form.trigger('ajax-response');
+                            });
+                        }, form);
+                    }
+                } else {
+                    if (typeof result.isCallback == false) {
+                        if (result.error !== false) {
+                            alert(result.error);
+                        } else if (result.errors !== false) {
+                            alert(JSON.stringify(result.errors));
                         } else {
-                            this.htmlReset(form);
+                            alert('Оошибка сервера, попробуйте позже');
                         }
-
-                        this.resetChildrens();
-
-                        form.trigger('ajax-response');
-                    });
-                }, form);
-            }
+                    }
+                }
+            });
         }
 
-        this.validChldrens(result => {
-            if (result === true) {
-                if (this.options.beforeSubmit) {
-                    this.options.beforeSubmit(submitAllow => {
-                        if (submitAllow) {
-                            submit();
-                        }
-                    });
-                } else {
+        if (this.options.beforeSubmit) {
+            this.options.beforeSubmit(submitAllow => {
+                if (submitAllow) {
                     submit();
                 }
-            } else {
-                if (typeof result.isCallback == false) {
-                    if (result.error !== false) {
-                        alert(result.error);
-                    } else if (result.errors !== false) {
-                        alert(JSON.stringify(result.errors));
-                    } else {
-                        alert('Оошибка сервера, попробуйте позже');
-                    }
-                }
-            }
-        });
+            });
+        } else {
+            submit();
+        }
     }
 
 }
