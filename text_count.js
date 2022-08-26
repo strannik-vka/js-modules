@@ -47,6 +47,7 @@ var text_count = {
         if (elem.attr('data-split-count')) {
             let val = $.trim(elem.val());
             result = val.split(elem.attr('data-split-count'));
+            result = result.filter(item => item);
             result = result.length;
         } else {
             result = $.trim(elem.val()).replace(/\n/g, '\n\r').length;
