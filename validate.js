@@ -382,11 +382,23 @@ window.validate = {
         validate.scrollToError(form);
     },
 
+    dropdownShow: (elem) => {
+        let parent = elem.parents('[aria-labelledby]');
+
+        if (parent.length) {
+            $('#' + parent.attr('aria-labelledby')).dropdown('show');
+        }
+    },
+
     scrollToError: (form) => {
         if (typeof scroller !== 'undefined') {
             if (form.find('.is-invalid').length) {
-                if (validate.notSeen(form.find('.is-invalid:eq(0)')).length) {
-                    scroller.to(form.find('.is-invalid:eq(0)'), false, -50);
+                let elem = form.find('.is-invalid:eq(0)');
+
+                validate.dropdownShow(elem);
+
+                if (validate.notSeen(elem).length) {
+                    scroller.to(elem, false, -50);
                 }
             }
         }
