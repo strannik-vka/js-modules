@@ -205,12 +205,14 @@ window.validate = {
                 }
             }
 
-            valArr = Array.isArray(valArr) ? valArr : [valArr];
+            valArr = Array.isArray(valArr) ? valArr : [val];
 
             for (let i = 0; i < valArr.length; i++) {
                 $.each(methods, function (i, method) {
                     var args = method.split(':'),
                         method = args.splice(0, 1);
+
+                    console.log($.trim(valArr[i]), input);
 
                     var result = args.length
                         ? validate.valid[method]($.trim(valArr[i]), input, args[0])
