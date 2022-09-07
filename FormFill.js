@@ -1,11 +1,33 @@
 class FormFill {
 
-    constructor(form, data) {
+    constructor(form, data, options) {
         this.form = form;
         this.data = data;
+        this.options = typeof options === 'object' && options != null ? options : {};
 
         if (form.length && typeof data === 'object' && data != null) {
+            this.getData();
+
+            if (typeof this.options.beforeFillData === 'function') {
+                this.data = this.options.beforeFillData(this.data);
+            }
+
             this.fill();
+        }
+    }
+
+    getData() {
+        if (typeof this.options.fields === 'object' && this.options.fields != null) {
+            let ObjectKeys = Object.keys(this.data),
+                newData = {};
+
+            ObjectKeys.forEach(name => {
+                if (this.options.fields.indexOf(name) > -1) {
+                    newData[name] = this.data[name];
+                }
+            });
+
+            this.data = newData;
         }
     }
 
