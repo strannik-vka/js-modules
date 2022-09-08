@@ -208,7 +208,7 @@ window.validate = {
             valArr = Array.isArray(valArr) ? valArr : [val];
 
             for (let i = 0; i < valArr.length; i++) {
-                $.each(methods, function (i, method) {
+                methods.forEach(method => {
                     var args = method.split(':'),
                         method = args.splice(0, 1);
 
