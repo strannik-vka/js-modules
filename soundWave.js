@@ -6,48 +6,64 @@ var soundWave = {
 
     url: function (url, callback) {
         if (soundWave.context === false) {
-            soundWave.context = new window.AudioContext();
+            soundWave.setContext();
         }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function () {
-            soundWave.context.decodeAudioData(this.response,
-                function (buffer) {
-                    callback(soundWave.wave(
-                        soundWave.channels(buffer, 1),
-                        soundWave.width,
-                        soundWave.height
-                    ));
-                }, function () {
-                    callback(false);
-                }
-            );
-        };
-        xhr.send();
+        if (soundWave.context) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                soundWave.context.decodeAudioData(this.response,
+                    function (buffer) {
+                        callback(soundWave.wave(
+                            soundWave.channels(buffer, 1),
+                            soundWave.width,
+                            soundWave.height
+                        ));
+                    }, function () {
+                        callback(false);
+                    }
+                );
+            };
+            xhr.send();
+        }
+    },
+
+    setContext: () => {
+        if (soundWave.context === false) {
+            soundWave.AudioContext = window.AudioContext // Default
+                || window.webkitAudioContext // Safari and old versions of Chrome
+                || false;
+
+            if (soundWave.AudioContext) {
+                soundWave.setContext();
+            }
+        }
     },
 
     file: function (file, callback) {
         if (soundWave.context === false) {
-            soundWave.context = new window.AudioContext();
+            soundWave.setContext();
         }
 
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            soundWave.context.decodeAudioData(e.target.result,
-                function (buffer) {
-                    callback(soundWave.wave(
-                        soundWave.channels(buffer, 1),
-                        soundWave.width,
-                        soundWave.height
-                    ));
-                }, function () {
-                    callback(false);
-                }
-            );
+        if (soundWave.context) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                soundWave.context.decodeAudioData(e.target.result,
+                    function (buffer) {
+                        callback(soundWave.wave(
+                            soundWave.channels(buffer, 1),
+                            soundWave.width,
+                            soundWave.height
+                        ));
+                    }, function () {
+                        callback(false);
+                    }
+                );
+            }
+            reader.readAsArrayBuffer(file);
         }
-        reader.readAsArrayBuffer(file);
     },
 
     wave: function (channel, elemWidth, elemHeight) {
