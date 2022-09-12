@@ -37,7 +37,7 @@ var soundWave = {
                 || false;
 
             if (soundWave.AudioContext) {
-                soundWave.setContext();
+                soundWave.context = new soundWave.AudioContext();
             }
         }
     },
