@@ -3,6 +3,7 @@ class RutubeIframeVideo {
     constructor(options) {
         options = typeof options === 'object' && options != null ? options : {};
 
+        this.response = options.response;
         this.sendUrl = options.sendUrl;
         this.sendData = typeof options.sendData === 'object' && options.sendData != null
             ? options.sendData : {};
@@ -30,7 +31,11 @@ class RutubeIframeVideo {
         data.duration = this.duration;
         data.viewedSegments = this.viewedSegments;
 
-        $.post(this.sendUrl, data);
+        $.post(this.sendUrl, data, response => {
+            if (typeof this.response === 'function') {
+                this.response(response);
+            }
+        });
     }
 
     addCurrentTime(time) {
