@@ -125,6 +125,12 @@ class AjaxForm {
 
                     $(this.options.modalConfirm).modal('show');
                 } else {
+                    if (form.attr('data-ajax-process')) {
+                        return false;
+                    }
+
+                    form.attr('data-ajax-process', true);
+
                     this.submit($(e.currentTarget));
                 }
             });
@@ -325,6 +331,7 @@ class AjaxForm {
             this.validChldrens(result => {
                 if (result === true) {
                     if (this.isErrors(form)) {
+                        form.removeAttr('data-ajax-process');
                         delAjaxPreloader(form);
                         this.scrollToError();
                     } else {
@@ -344,6 +351,7 @@ class AjaxForm {
                             }
 
                             this.submitChildrens(response, () => {
+                                form.removeAttr('data-ajax-process');
                                 delAjaxPreloader(form);
 
                                 if (response.redirect) {
@@ -414,6 +422,8 @@ class AjaxForm {
                         }, form);
                     }
                 } else {
+                    form.removeAttr('data-ajax-process');
+
                     if (typeof result.isCallback == false) {
                         if (result.error !== false) {
                             alert(result.error);
