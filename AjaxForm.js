@@ -125,12 +125,6 @@ class AjaxForm {
 
                     $(this.options.modalConfirm).modal('show');
                 } else {
-                    if (form.attr('data-ajax-process')) {
-                        return false;
-                    }
-
-                    form.attr('data-ajax-process', true);
-
                     this.submit($(e.currentTarget));
                 }
             });
@@ -328,6 +322,12 @@ class AjaxForm {
         }
 
         const submit = () => {
+            if (form.attr('data-ajax-process')) {
+                return false;
+            }
+
+            form.attr('data-ajax-process', true);
+
             this.validChldrens(result => {
                 if (result === true) {
                     if (this.isErrors(form)) {
