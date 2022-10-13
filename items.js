@@ -326,9 +326,9 @@ window.items = {
                     elem.showMore.hide();
                 }
 
-                let itemsLength = Object.keys(response.data).length;
+                let itemsLength = response.data ? Object.keys(response.data).length : 0;
 
-                if (response.data && itemsLength) {
+                if (itemsLength) {
                     items.print(model, response);
                     if (callback) callback(itemsLength);
                 } else {
