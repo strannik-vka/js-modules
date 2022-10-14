@@ -45,9 +45,30 @@ class Debug {
                     text += 'user: ' + JSON.stringify(user) + "\n";
                 }
 
+                text += 'clientWidth: ' + this.getClientWidth() + "\n";
+                text += 'scrollTop: ' + this.getScrollTop() + "\n";
+
                 this.send(text);
             }
         }
+    }
+
+    getScrollTop() {
+        if (typeof window.pageYOffset != 'undefined') {
+            return window.pageYOffset;
+        }
+        else {
+            var B = document.body;
+            var D = document.documentElement;
+            D = (D.clientHeight) ? D : B;
+            return D.scrollTop;
+        }
+    }
+
+    getClientWidth() {
+        return window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
     }
 
 }
