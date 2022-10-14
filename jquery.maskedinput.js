@@ -236,13 +236,16 @@ $.fn.extend({
 					return;
 				}
 
-				var k = e.which || e.keyCode,
+				var keyCode = e.which || e.keyCode,
 					pos,
 					begin,
 					end;
+
 				oldVal = input.val();
-				//backspace, delete, and escape get special treatment
-				if (k === 8 || k === 46 || (iPhone && k === 127)) {
+
+				if ([38, 39, 40].indexOf(keyCode) > -1) {
+					setCursorMaskAnd();
+				} else if (isDelteKeys(keyCode)) {
 					pos = input.caret();
 
 					if (typeof pos !== 'undefined') {
@@ -250,17 +253,17 @@ $.fn.extend({
 						end = pos.end;
 
 						if (end - begin === 0) {
-							begin = k !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
-							end = k === 46 ? seekNext(end) : end;
+							begin = keyCode !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
+							end = keyCode === 46 ? seekNext(end) : end;
 						}
 						clearBuffer(begin, end);
 						shiftL(begin, end - 1);
 
 						e.preventDefault();
 					}
-				} else if (k === 13) { // enter
+				} else if (keyCode === 13) { // enter
 					blurEvent.call(this, e);
-				} else if (k === 27) { // escape
+				} else if (keyCode === 27) { // escape
 					input.val(focusText);
 					input.caret(0, checkVal());
 					e.preventDefault();
@@ -272,15 +275,15 @@ $.fn.extend({
 					return;
 				}
 
-				var k = e.which || e.keyCode,
+				var keyCode = e.which || e.keyCode,
 					pos = input.caret(),
 					p,
 					c,
 					next;
 
-				if (e.ctrlKey || e.altKey || e.metaKey || k < 32 || typeof pos === 'undefined') {//Ignore
+				if (e.ctrlKey || e.altKey || e.metaKey || keyCode < 32 || typeof pos === 'undefined') {//Ignore
 					return;
-				} else if (k && k !== 13) {
+				} else if (keyCode && keyCode !== 13) {
 					if (pos.end - pos.begin !== 0) {
 						clearBuffer(pos.begin, pos.end);
 						shiftL(pos.begin, pos.end - 1);
@@ -288,7 +291,7 @@ $.fn.extend({
 
 					p = seekNext(pos.begin - 1);
 					if (p < len) {
-						c = String.fromCharCode(k);
+						c = String.fromCharCode(keyCode);
 						if (tests[p].test(c)) {
 							shiftR(p);
 
@@ -329,7 +332,7 @@ $.fn.extend({
 			}
 
 			function getPositionMask() {
-				var test = input.val(), lastMatch = -1, i, c, pos;
+				let test = input.val(), lastMatch = -1, i, c, pos;
 
 				for (i = 0, pos = 0; i < len; i++) {
 					if (tests[i]) {
@@ -418,8 +421,9 @@ $.fn.extend({
 				return position;
 			}
 
-			function isPhone(elem) {
-				return elem.attr('data-type-phone') !== undefined || elem.attr('data-mask-phone') !== undefined;
+			function isPhoneInput(elem) {
+				return elem.attr('data-type-phone') !== undefined ||
+					elem.attr('data-mask-phone') !== undefined;
 			}
 
 			function getCursorPos(elem) {
@@ -450,6 +454,23 @@ $.fn.extend({
 				return pos;
 			}
 
+			function isArrowKeys(keyCode) {
+				return [37, 38, 39, 40].indexOf(keyCode) > -1;
+			}
+
+			function isDelteKeys(keyCode) {
+				return keyCode === 8 || keyCode === 46 || (iPhone && keyCode === 127);
+			}
+
+			function setCursorMaskAnd() {
+				setTimeout(function () {
+					var cursorPos = getCursorPos(input), pos = getPositionMask();
+					if (cursorPos > pos) {
+						if (input.caret) input.caret(pos);
+					}
+				}, 110);
+			}
+
 			// Ввод телефона
 			var fix_phone = {
 				// Проверка на цифру
@@ -459,40 +480,49 @@ $.fn.extend({
 
 				// Ввод телефона
 				key: function (e) {
-					if (isPhone($(e.currentTarget))) {
+					let keyCode = e.keyCode || e.which;
+
+					if (keyCode >= 96 && keyCode <= 105) {
+						keyCode -= 48;
+					}
+
+					if (isDelteKeys(keyCode)) {
+						fix_phone.two_click = 0;
+					}
+
+					if (
+						isPhoneInput($(e.currentTarget)) &&
+						isArrowKeys(keyCode) == false &&
+						isDelteKeys(keyCode) == false
+					) {
 						fix_phone.val = $(e.currentTarget).val();
-						var test_del = fix_phone.del();
-
-						let keyCode = e.keyCode || e.which;
-
-						if (keyCode >= 96 && keyCode <= 105) {
-							keyCode -= 48;
-						}
 
 						let keyCodeString = String.fromCharCode(keyCode);
 
 						if (fix_phone.isNumber(keyCodeString)) {
-							if (test_del) {
+							if (fix_phone.allowDelete()) {
 								var firstNonMask = input.val().substr(0, firstNonMaskPos);
 								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + keyCodeString);
-								checkVal();
 								fix_phone.two_click = 1;
+								checkVal();
 							}
 						}
 					}
 				},
 
 				// Удаление второй цифры, если больше 11 цифр
-				del: function () {
-					if (checkVal(true) == len) {
-						if (fix_phone.two_click == 1) {
+				allowDelete: function () {
+					if (getPositionMask() == len) {
+						if (fix_phone.two_click == 1 && fix_phone.val == oldVal) {
 							fix_phone.val = fix_phone.val.slice(firstNonMaskPos + 1);
+
 							return true;
 						}
 						fix_phone.two_click = 1;
 					} else {
 						fix_phone.two_click = 0;
 					}
+
 					return false;
 				}
 			}
@@ -539,13 +569,8 @@ $.fn.extend({
 					}, 100);
 				})
 				.on('mousedown', function () {
-					if (isPhone(input) && isFocus) {
-						setTimeout(function () {
-							var cursorPos = getCursorPos(input), pos = getPositionMask();
-							if (cursorPos > pos) {
-								if (input.caret) input.caret(pos);
-							}
-						}, 110);
+					if (isPhoneInput(input) && isFocus) {
+						setCursorMaskAnd();
 					}
 				})
 				.on("blur.mask", blurEvent)
@@ -557,9 +582,11 @@ $.fn.extend({
 						return;
 					}
 
-					setTimeout(function () {
-						var pos = checkVal(true);
-						if (input.caret) input.caret(pos);
+					setTimeout(() => {
+						if (input.caret) {
+							checkVal(true);
+						}
+
 						tryFireCompleted();
 					}, 0);
 				});
