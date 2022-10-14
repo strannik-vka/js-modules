@@ -462,10 +462,19 @@ $.fn.extend({
 					if (isPhone($(e.currentTarget))) {
 						fix_phone.val = $(e.currentTarget).val();
 						var test_del = fix_phone.del();
-						if (fix_phone.isNumber(String.fromCharCode(e.which))) {
+
+						let keyCode = e.keyCode || e.which;
+
+						if (keyCode >= 96 && keyCode <= 105) {
+							keyCode -= 48;
+						}
+
+						let keyCodeString = String.fromCharCode(keyCode);
+
+						if (fix_phone.isNumber(keyCodeString)) {
 							if (test_del) {
 								var firstNonMask = input.val().substr(0, firstNonMaskPos);
-								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + String.fromCharCode(e.which));
+								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + keyCodeString);
 								checkVal();
 								fix_phone.two_click = 1;
 							}
