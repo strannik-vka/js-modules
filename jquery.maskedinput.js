@@ -65,7 +65,8 @@ $.fn.extend({
 			firstNonMaskPos,
 			lastRequiredNonMaskPos,
 			len,
-			oldVal;
+			oldVal,
+			onInputVal;
 
 		if (!mask && this.length > 0) {
 			input = $(this[0]);
@@ -190,36 +191,8 @@ $.fn.extend({
 				}
 			}
 
-			function androidInputEvent(e) {
-				var curVal = input.val();
-				var pos = input.caret();
-				if (oldVal && oldVal.length && oldVal.length > curVal.length) {
-					// a deletion or backspace happened
-					checkVal(true);
-					while (pos.begin > 0 && !tests[pos.begin - 1])
-						pos.begin--;
-					if (pos.begin === 0) {
-						while (pos.begin < firstNonMaskPos && !tests[pos.begin])
-							pos.begin++;
-					}
-					input.caret(pos.begin, pos.begin);
-				} else {
-					var pos2 = checkVal(true);
-					var lastEnteredValue = curVal.charAt(pos.begin);
-					if (pos.begin < len) {
-						if (!tests[pos.begin]) {
-							pos.begin++;
-							if (lastEnteredValue.indexOf(tests[pos.begin]) > -1) {
-								pos.begin++;
-							}
-						} else {
-							if (lastEnteredValue.indexOf(tests[pos.begin]) > -1) {
-								pos.begin++;
-							}
-						}
-					}
-					input.caret(pos.begin, pos.begin);
-				}
+			function androidInputEvent() {
+				checkVal(true);
 				tryFireCompleted();
 			}
 
@@ -296,25 +269,15 @@ $.fn.extend({
 							shiftR(p);
 
 							buffer[p] = c;
-							writeBuffer();
+							// writeBuffer();
 							next = seekNext(p);
 
-							if (android) {
-								//Path for CSP Violation on FireFox OS 1.1
-								var proxy = function () {
-									$.proxy($.fn.caret, input, next)();
-								};
-
-								setTimeout(proxy, 0);
-							} else {
-								input.caret(next);
-							}
 							if (pos.begin <= lastRequiredNonMaskPos) {
 								tryFireCompleted();
 							}
 						}
 					}
-					e.preventDefault();
+					// e.preventDefault();
 				}
 			}
 
@@ -369,6 +332,8 @@ $.fn.extend({
 					i,
 					c,
 					pos;
+
+				onInputVal = input.val();
 
 				for (i = 0, pos = 0; i < len; i++) {
 					if (tests[i]) {
@@ -454,10 +419,6 @@ $.fn.extend({
 				return pos;
 			}
 
-			function isArrowKeys(keyCode) {
-				return [37, 38, 39, 40].indexOf(keyCode) > -1;
-			}
-
 			function isDelteKeys(keyCode) {
 				return keyCode === 8 || keyCode === 46 || (iPhone && keyCode === 127);
 			}
@@ -480,34 +441,34 @@ $.fn.extend({
 
 				// Ввод телефона
 				key: function (e) {
-					let keyCode = e.keyCode || e.which;
+					var oldNumber = new String(oldVal.match(/\d+/g)),
+						newNumber = new String(onInputVal.match(/\d+/g)),
+						isDelete = newNumber.length < oldNumber.length,
+						isAdd = newNumber.length > oldNumber.length;
 
-					if (keyCode >= 96 && keyCode <= 105) {
-						keyCode -= 48;
-					}
-
-					if (isDelteKeys(keyCode)) {
+					if (isDelete) {
 						fix_phone.two_click = 0;
 					}
 
 					if (
 						isPhoneInput($(e.currentTarget)) &&
-						isArrowKeys(keyCode) == false &&
-						isDelteKeys(keyCode) == false
+						isAdd && isDelete == false && newNumber
 					) {
 						fix_phone.val = $(e.currentTarget).val();
 
-						let keyCodeString = String.fromCharCode(keyCode);
+						let char = newNumber[newNumber.length - 1];
 
-						if (fix_phone.isNumber(keyCodeString)) {
+						if (fix_phone.isNumber(char)) {
 							if (fix_phone.allowDelete()) {
 								var firstNonMask = input.val().substr(0, firstNonMaskPos);
-								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + keyCodeString);
+								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + char);
 								fix_phone.two_click = 1;
 								checkVal();
 							}
 						}
 					}
+
+					onInputVal = '';
 				},
 
 				// Удаление второй цифры, если больше 11 цифр
