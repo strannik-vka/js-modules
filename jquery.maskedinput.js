@@ -1,11 +1,7 @@
-var ua = navigator.userAgent,
-	iPhone = /iphone/i.test(ua),
-	chrome = /chrome/i.test(ua),
-	android = /android/i.test(ua),
+var iPhone = /iphone/i.test(navigator.userAgent),
 	caretTimeoutId;
 
 $.mask = {
-	//Predefined character definitions
 	definitions: {
 		'H': "[0-2]",
 		'h': "[0-9]",
@@ -21,7 +17,6 @@ $.mask = {
 };
 
 $.fn.extend({
-	//Helper Function for Caret positioning
 	caret: function (begin, end) {
 		var range;
 
@@ -118,17 +113,16 @@ $.fn.extend({
 				focusText = input.val(),
 				isFocus = false;
 
-			function tryFireCompleted() {
-				if (!settings.completed) {
-					return;
-				}
-
-				for (var i = firstNonMaskPos; i <= lastRequiredNonMaskPos; i++) {
-					if (tests[i] && buffer[i] === getPlaceholder(i)) {
-						return;
+			function onCompleted() {
+				if (settings.completed) {
+					for (var i = firstNonMaskPos; i <= lastRequiredNonMaskPos; i++) {
+						if (tests[i] && buffer[i] === getPlaceholder(i)) {
+							return;
+						}
 					}
+
+					settings.completed.call(input);
 				}
-				settings.completed.call(input);
 			}
 
 			function getPlaceholder(i) {
@@ -191,96 +185,6 @@ $.fn.extend({
 				}
 			}
 
-			function androidInputEvent() {
-				checkVal(true);
-				tryFireCompleted();
-			}
-
-			function blurEvent(e) {
-				isFocus = false;
-
-				checkVal();
-
-				input.trigger('change');
-			}
-
-			function keydownEvent(e) {
-				if (input.prop("readonly")) {
-					return;
-				}
-
-				var keyCode = e.which || e.keyCode,
-					pos,
-					begin,
-					end;
-
-				oldVal = input.val();
-
-				if ([38, 39, 40].indexOf(keyCode) > -1) {
-					setCursorMaskAnd();
-				} else if (isDelteKeys(keyCode)) {
-					pos = input.caret();
-
-					if (typeof pos !== 'undefined') {
-						begin = pos.begin;
-						end = pos.end;
-
-						if (end - begin === 0) {
-							begin = keyCode !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
-							end = keyCode === 46 ? seekNext(end) : end;
-						}
-						clearBuffer(begin, end);
-						shiftL(begin, end - 1);
-
-						e.preventDefault();
-					}
-				} else if (keyCode === 13) { // enter
-					blurEvent.call(this, e);
-				} else if (keyCode === 27) { // escape
-					input.val(focusText);
-					input.caret(0, checkVal());
-					e.preventDefault();
-				}
-			}
-
-			function keypressEvent(e) {
-				if (input.prop("readonly")) {
-					return;
-				}
-
-				var keyCode = e.which || e.keyCode,
-					pos = input.caret(),
-					p,
-					c,
-					next;
-
-				if (e.ctrlKey || e.altKey || e.metaKey || keyCode < 32 || typeof pos === 'undefined') {//Ignore
-					return;
-				} else if (keyCode && keyCode !== 13) {
-					if (pos.end - pos.begin !== 0) {
-						clearBuffer(pos.begin, pos.end);
-						shiftL(pos.begin, pos.end - 1);
-					}
-
-					p = seekNext(pos.begin - 1);
-					if (p < len) {
-						c = String.fromCharCode(keyCode);
-						if (tests[p].test(c)) {
-							shiftR(p);
-
-							buffer[p] = c;
-							// writeBuffer();
-							next = seekNext(p);
-
-							if (pos.begin <= lastRequiredNonMaskPos) {
-								tryFireCompleted();
-							}
-						}
-					}
-					// e.preventDefault();
-				}
-			}
-
 			function clearBuffer(start, end) {
 				var i;
 				for (i = start; i < end && i < len; i++) {
@@ -295,7 +199,7 @@ $.fn.extend({
 			}
 
 			function getPositionMask() {
-				let test = input.val(), lastMatch = -1, i, c, pos;
+				var test = input.val(), lastMatch = -1, i, c, pos;
 
 				for (i = 0, pos = 0; i < len; i++) {
 					if (tests[i]) {
@@ -388,7 +292,8 @@ $.fn.extend({
 
 			function isPhoneInput(elem) {
 				return elem.attr('data-type-phone') !== undefined ||
-					elem.attr('data-mask-phone') !== undefined;
+					elem.attr('data-mask-phone') !== undefined ||
+					elem.attr('type') == 'phone';
 			}
 
 			function getCursorPos(elem) {
@@ -432,37 +337,167 @@ $.fn.extend({
 				}, 110);
 			}
 
+			function unmaskEvent() {
+				input
+					.off(".mask")
+					.removeData($.mask.dataName);
+			}
+
+			function focusEvent() {
+				if (input.prop("readonly")) {
+					return;
+				}
+
+				focusText = input.val();
+
+				var pos = checkVal();
+
+				clearTimeout(caretTimeoutId);
+
+				caretTimeoutId = setTimeout(function () {
+					if (input.get(0) === document.activeElement) {
+						writeBuffer();
+
+						if (pos == mask.replace("?", "").length) {
+							input.caret(0, pos);
+						} else {
+							input.caret(pos);
+						}
+
+						isFocus = true;
+					}
+				}, 100);
+			}
+
+			function mousedownEvent() {
+				if (isPhoneInput(input) && isFocus) {
+					setCursorMaskAnd();
+				}
+			}
+
+			function blurEvent() {
+				isFocus = false;
+
+				checkVal();
+
+				input.trigger('change');
+			}
+
+			function keydownEvent(e) {
+				if (input.prop("readonly")) {
+					return;
+				}
+
+				var keyCode = e.which || e.keyCode,
+					pos,
+					begin,
+					end;
+
+				oldVal = input.val();
+
+				if ([38, 39, 40].indexOf(keyCode) > -1) {
+					setCursorMaskAnd();
+				} else if (isDelteKeys(keyCode)) {
+					pos = input.caret();
+
+					if (typeof pos !== 'undefined') {
+						begin = pos.begin;
+						end = pos.end;
+
+						if (end - begin === 0) {
+							begin = keyCode !== 46 ? seekPrev(begin) : (end = seekNext(begin - 1));
+							end = keyCode === 46 ? seekNext(end) : end;
+						}
+						clearBuffer(begin, end);
+						shiftL(begin, end - 1);
+
+						e.preventDefault();
+					}
+				} else if (keyCode === 13) { // enter
+					blurEvent.call(this, e);
+				} else if (keyCode === 27) { // escape
+					input.val(focusText);
+					input.caret(0, checkVal());
+					e.preventDefault();
+				}
+			}
+
+			function keypressEvent(e) {
+				if (input.prop("readonly")) {
+					return;
+				}
+
+				var keyCode = e.which || e.keyCode,
+					pos = input.caret(),
+					p,
+					c,
+					next;
+
+				if (e.ctrlKey || e.altKey || e.metaKey || keyCode < 32 || typeof pos === 'undefined') {
+					return;
+				} else if (keyCode && keyCode !== 13) {
+					if (pos.end - pos.begin !== 0) {
+						clearBuffer(pos.begin, pos.end);
+						shiftL(pos.begin, pos.end - 1);
+					}
+
+					p = seekNext(pos.begin - 1);
+					if (p < len) {
+						c = String.fromCharCode(keyCode);
+						if (tests[p].test(c)) {
+							shiftR(p);
+
+							buffer[p] = c;
+							// writeBuffer();
+							next = seekNext(p);
+						}
+					}
+					// e.preventDefault();
+				}
+			}
+
+			function inputEvent() {
+				if (input.prop("readonly")) {
+					return;
+				}
+
+				checkVal(true);
+				onCompleted();
+
+				phoneInput.change();
+			}
+
 			// Ввод телефона
-			var fix_phone = {
+			var phoneInput = {
 				// Проверка на цифру
 				isNumber: function (char) {
 					return /\d/.test(char);
 				},
 
 				// Ввод телефона
-				key: function (e) {
+				change: function () {
 					var oldNumber = new String(oldVal.match(/\d+/g)),
 						newNumber = new String(onInputVal.match(/\d+/g)),
 						isDelete = newNumber.length < oldNumber.length,
 						isAdd = newNumber.length > oldNumber.length;
 
 					if (isDelete) {
-						fix_phone.two_click = 0;
+						phoneInput.two_click = 0;
 					}
 
 					if (
-						isPhoneInput($(e.currentTarget)) &&
+						isPhoneInput(input) &&
 						isAdd && isDelete == false && newNumber
 					) {
-						fix_phone.val = $(e.currentTarget).val();
+						phoneInput.val = input.val();
 
 						let char = newNumber[newNumber.length - 1];
 
-						if (fix_phone.isNumber(char)) {
-							if (fix_phone.allowDelete()) {
+						if (phoneInput.isNumber(char)) {
+							if (phoneInput.allowDelete()) {
 								var firstNonMask = input.val().substr(0, firstNonMaskPos);
-								$(e.currentTarget).val(firstNonMask + fix_phone.val + '' + char);
-								fix_phone.two_click = 1;
+								input.val(firstNonMask + phoneInput.val + '' + char);
+								phoneInput.two_click = 1;
 								checkVal();
 							}
 						}
@@ -471,17 +506,17 @@ $.fn.extend({
 					onInputVal = '';
 				},
 
-				// Удаление второй цифры, если больше 11 цифр
+				// Можно ли удалять первую цифру
 				allowDelete: function () {
 					if (getPositionMask() == len) {
-						if (fix_phone.two_click == 1 && fix_phone.val == oldVal) {
-							fix_phone.val = fix_phone.val.slice(firstNonMaskPos + 1);
+						if (phoneInput.two_click == 1 && phoneInput.val == oldVal) {
+							phoneInput.val = phoneInput.val.slice(firstNonMaskPos + 1);
 
 							return true;
 						}
-						fix_phone.two_click = 1;
+						phoneInput.two_click = 1;
 					} else {
-						fix_phone.two_click = 0;
+						phoneInput.two_click = 0;
 					}
 
 					return false;
@@ -495,70 +530,15 @@ $.fn.extend({
 			});
 
 			input
-				.one("unmask", function () {
-					input
-						.off(".mask")
-						.removeData($.mask.dataName);
-				})
-				.on("focus.mask", function () {
-					if (input.prop("readonly")) {
-						return;
-					}
-
-					var pos;
-
-					focusText = input.val();
-
-					pos = checkVal();
-
-					clearTimeout(caretTimeoutId);
-
-					caretTimeoutId = setTimeout(function () {
-						if (input.get(0) !== document.activeElement) {
-							return;
-						}
-
-						writeBuffer();
-
-						if (pos == mask.replace("?", "").length) {
-							input.caret(0, pos);
-						} else {
-							if (input.caret) input.caret(pos);
-						}
-
-						isFocus = true;
-					}, 100);
-				})
-				.on('mousedown', function () {
-					if (isPhoneInput(input) && isFocus) {
-						setCursorMaskAnd();
-					}
-				})
+				.on("unmask", unmaskEvent)
+				.on("focus.mask", focusEvent)
+				.on('mousedown.mask', mousedownEvent)
 				.on("blur.mask", blurEvent)
 				.on("keydown.mask", keydownEvent)
 				.on("keypress.mask", keypressEvent)
-				.on('keyup', fix_phone.key)
-				.on("input.mask paste.mask", function () {
-					if (input.prop("readonly")) {
-						return;
-					}
+				.on("input.mask", inputEvent);
 
-					setTimeout(() => {
-						if (input.caret) {
-							checkVal(true);
-						}
-
-						tryFireCompleted();
-					}, 0);
-				});
-
-			if (chrome && android) {
-				input
-					.off('input.mask')
-					.on('input.mask', androidInputEvent);
-			}
-
-			checkVal(); //Perform initial check for existing values
+			checkVal();
 		});
 	}
 });
