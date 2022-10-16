@@ -491,7 +491,7 @@ $.fn.extend({
 					) {
 						phoneInput.val = input.val();
 
-						let char = newNumber[newNumber.length - 1];
+						var char = newNumber[newNumber.length - 1];
 
 						if (phoneInput.isNumber(char)) {
 							if (phoneInput.allowDelete()) {
