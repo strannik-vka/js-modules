@@ -55,40 +55,42 @@ window.items = {
             var model = items.model[name],
                 elem = items.elem(model);
 
-            items.updates[name] = true;
+            if (model.url) {
+                items.updates[name] = true;
 
-            elem.total.html('0');
-            elem.list.hide().find('[items-html-' + model.name + ']').remove();
-            elem.empty.hide();
-            elem.preloader.show();
+                elem.total.html('0');
+                elem.list.hide().find('[items-html-' + model.name + ']').remove();
+                elem.empty.hide();
+                elem.preloader.show();
 
-            if (items.updateTimeout[name]) clearTimeout(items.updateTimeout[name]);
+                if (items.updateTimeout[name]) clearTimeout(items.updateTimeout[name]);
 
-            items.updateTimeout[name] = setTimeout(() => {
-                items.ajaxProcess[model.name] = false;
+                items.updateTimeout[name] = setTimeout(() => {
+                    items.ajaxProcess[model.name] = false;
 
-                items.load(model, function (response) {
-                    elem.preloader.hide();
+                    items.load(model, function (response) {
+                        elem.preloader.hide();
 
-                    if (items.isNextData(model)) {
-                        elem.showMore.show();
-                    } else {
-                        elem.showMore.hide();
-                    }
+                        if (items.isNextData(model)) {
+                            elem.showMore.show();
+                        } else {
+                            elem.showMore.hide();
+                        }
 
-                    if (items.isLoopReverse(model)) {
-                        items.model[model.name].loop_iteration = response.total;
-                    } else {
-                        items.model[name].loop_iteration = 1;
-                    }
+                        if (items.isLoopReverse(model)) {
+                            items.model[model.name].loop_iteration = response.total;
+                        } else {
+                            items.model[name].loop_iteration = 1;
+                        }
 
-                    items.print(model, response);
+                        items.print(model, response);
 
-                    items.updates[name] = false;
-                }, {
-                    data: data
-                });
-            }, 1000);
+                        items.updates[name] = false;
+                    }, {
+                        data: data
+                    });
+                }, 1000);
+            }
         }
     },
 
