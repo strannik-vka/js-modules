@@ -209,7 +209,7 @@ window.items = {
 
                 var elem = items.elem(model);
 
-                if (model.first_load) {
+                if (model.first_load && model.url) {
                     elem.empty.hide();
                     elem.preloader.show();
 
