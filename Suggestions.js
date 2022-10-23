@@ -7,6 +7,8 @@ export default class Suggestions {
     }
 
     organization(elem, options) {
+        options = typeof options === 'object' && options != null ? options : {};
+
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
@@ -46,6 +48,8 @@ export default class Suggestions {
     }
 
     region(elem, options) {
+        options = typeof options === 'object' && options != null ? options : {};
+
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
@@ -73,6 +77,8 @@ export default class Suggestions {
     }
 
     city(elem, options) {
+        options = typeof options === 'object' && options != null ? options : {};
+
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
