@@ -48,13 +48,7 @@ class AjaxForm {
 
         this.selector = selector;
         this.isEditMode = false;
-
-        if (this.options.modalConfirm) {
-            $(this.options.modalConfirm + ' form').on('submit', (e) => {
-                e.preventDefault();
-                this.submit($(this.selector));
-            });
-        }
+        this.modalConfirmEventsInit = false;
 
         this.events();
     }
@@ -88,6 +82,29 @@ class AjaxForm {
         }
     }
 
+    modalConfirm() {
+        if (this.options.modalConfirm) {
+            return $(this.options.modalConfirm);
+        }
+
+        if ($(this.selector).attr('data-modal-confirm')) {
+            return $($(this.selector).attr('data-modal-confirm'));
+        }
+
+        return $();
+    }
+
+    modalConfirmEvents() {
+        if (this.modalConfirmEventsInit == false) {
+            this.modalConfirmEventsInit = true;
+
+            this.modalConfirm().find('form').on('submit', (e) => {
+                e.preventDefault();
+                this.submit($(this.selector));
+            });
+        }
+    }
+
     events() {
         $(document)
             .on('click', '[data-ajax-form-reset]', (e) => {
@@ -118,14 +135,15 @@ class AjaxForm {
                     }
                 }
 
-                if (this.options.modalConfirm) {
+                if (this.modalConfirm().length) {
                     if (this.options.beforeModalConfirm) {
                         this.options.beforeModalConfirm();
                     }
 
-                    $(this.options.modalConfirm).modal('show');
+                    this.modalConfirm().modal('show');
+                    this.modalConfirmEvents();
                 } else {
-                    this.submit($(e.currentTarget));
+                    this.submit(form);
                 }
             });
     }
@@ -199,7 +217,7 @@ class AjaxForm {
     }
 
     formData(form) {
-        let data = {
+        let options = {
             url: form.attr('action') ? form.attr('action') : location.href,
             type: form.attr('method') ? form.attr('method') : 'post',
             data: new FormData(form[0]),
@@ -208,10 +226,17 @@ class AjaxForm {
         }
 
         if (typeof ajaxFormPreloader !== 'undefined') {
-            data.preloader_html = ajaxFormPreloader;
+            options.preloader_html = ajaxFormPreloader;
         }
 
-        return data;
+        if (this.modalConfirm().length) {
+            let formData = new FormData(this.modalConfirm().find('form')[0]);
+            for (let item of formData.entries()) {
+                options.data.append(item[0], item[1]);
+            }
+        }
+
+        return options;
     }
 
     validChldrens(callback) {
@@ -317,8 +342,8 @@ class AjaxForm {
     }
 
     submit(form) {
-        if (this.options.modalConfirm) {
-            $(this.options.modalConfirm).modal('hide');
+        if (this.modalConfirm().length) {
+            this.modalConfirm().modal('hide');
         }
 
         const submit = () => {

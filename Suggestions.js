@@ -45,7 +45,7 @@ export default class Suggestions {
         }
     }
 
-    region(elem) {
+    region(elem, options) {
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
@@ -62,12 +62,17 @@ export default class Suggestions {
                 },
                 onSuggestionsFetch: (json) => {
                     return this.uniqValues(json, 'region_with_type');
+                },
+                onSelect: (json) => {
+                    if (options.onSelect) {
+                        options.onSelect(json);
+                    }
                 }
             });
         }
     }
 
-    city(elem) {
+    city(elem, options) {
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
@@ -87,6 +92,11 @@ export default class Suggestions {
                 },
                 onSuggestionsFetch: (json) => {
                     return this.uniqValues(json, 'city');
+                },
+                onSelect: (json) => {
+                    if (options.onSelect) {
+                        options.onSelect(json);
+                    }
                 }
             });
         }
