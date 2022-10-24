@@ -50,12 +50,14 @@ export default class Suggestions {
     region(elem, options) {
         options = typeof options === 'object' && options != null ? options : {};
 
+        options.count = options.count ? options.count : 1;
+
         if (elem.length) {
             elem.suggestions({
                 token: this.token,
                 type: "address",
                 hint: false,
-                count: 1,
+                count: options.count,
                 bounds: "region",
                 formatSelected: function (suggestion) {
                     return suggestion.data.region_with_type.replace('г ', '');
