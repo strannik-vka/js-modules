@@ -293,7 +293,8 @@ $.fn.extend({
 			function isPhoneInput(elem) {
 				return elem.attr('data-type-phone') !== undefined ||
 					elem.attr('data-mask-phone') !== undefined ||
-					elem.attr('type') == 'phone';
+					elem.attr('type') == 'phone' ||
+					(elem.attr('name') ? elem.attr('name').indexOf('phone') > -1 : false);
 			}
 
 			function getCursorPos(elem) {
