@@ -65,18 +65,19 @@ class CustomCollapse {
                 $(item).removeClass('closing');
             });
         } else {
-            $(item).addClass('open');
             $(item).css('height', 'auto');
 
             if (this.isSafari) {
                 setTimeout(() => {
                     height = parseFloat($(item).css('height'));
                     $(item).removeAttr('style');
+                    $(item).addClass('open');
                     this.elemAnimate(item, height);
-                }, 10);
+                }, 100);
             } else {
                 height = parseFloat($(item).css('height'));
                 $(item).removeAttr('style');
+                $(item).addClass('open');
                 this.elemAnimate(item, height);
             }
         }
