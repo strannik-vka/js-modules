@@ -32,9 +32,9 @@ class CustomCollapse {
         let item = btn.closest(this.selector);
 
         if (item) {
-            let isShow = $(item).hasClass(this.itemActiveClass);
+            this.isShow = $(item).hasClass(this.itemActiveClass);
 
-            if (isShow) {
+            if (this.isShow) {
                 $(item).removeClass(this.itemActiveClass);
                 $(btn).removeClass(this.btnActiveClass);
             } else {
@@ -43,12 +43,12 @@ class CustomCollapse {
             }
 
             if (this.animate) {
-                this.itemAnimate(item, isShow);
+                this.itemAnimate(item);
             }
         }
     }
 
-    itemAnimate(item, isShow) {
+    itemAnimate(item) {
         let height = null,
             sourceHeight = item.getAttribute('data-source-height');
 
@@ -57,9 +57,13 @@ class CustomCollapse {
             item.setAttribute('data-source-height', sourceHeight);
         }
 
-        if (isShow) {
+        if (this.isShow) {
+            $(item).addClass('closing');
+
             height = sourceHeight;
-            this.elemAnimate(item, height);
+            this.elemAnimate(item, height, () => {
+                $(item).removeClass('closing');
+            });
         } else {
             $(item).addClass('open');
             $(item).css('height', 'auto');
@@ -69,7 +73,7 @@ class CustomCollapse {
                     height = parseFloat($(item).css('height'));
                     $(item).removeAttr('style');
                     this.elemAnimate(item, height);
-                }, 100);
+                }, 10);
             } else {
                 height = parseFloat($(item).css('height'));
                 $(item).removeAttr('style');
@@ -78,10 +82,10 @@ class CustomCollapse {
         }
     }
 
-    elemAnimate(item, height) {
+    elemAnimate(item, height, callback) {
         $(item).animate({
             height: height + 'px'
-        }, this.animate);
+        }, this.animate, callback);
     }
 
 }
