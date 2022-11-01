@@ -69,7 +69,7 @@ class CustomCollapse {
                     height = parseFloat($(item).css('height'));
                     $(item).removeAttr('style');
                     this.elemAnimate(item, height);
-                }, 100);
+                }, 10);
             } else {
                 height = parseFloat($(item).css('height'));
                 $(item).removeAttr('style');
