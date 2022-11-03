@@ -1,0 +1,57 @@
+.selection {
+    position: relative;
+
+    &__select {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+    }
+
+    &__placeholder {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__count {
+        display: none;
+    }
+
+    &__toggle {
+        &::after {
+            content: "▼";
+        }
+    }
+
+    &__options {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 2;
+    }
+
+    &__option {
+        position: relative;
+        cursor: pointer;
+    }
+
+    &.multiple.selected {
+        .selection__count {
+            display: block;
+        }
+    }
+
+    &.active {
+        .selection__toggle {
+            &::after {
+                content: "▲";
+            }
+        }
+
+        .selection__options {
+            display: block;
+        }
+    }
+}
