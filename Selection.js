@@ -20,6 +20,12 @@ class Selection {
             $(select)
                 .hide()
                 .after(this.getTemplate($(select)));
+
+            let selection = $(select).next();
+
+            $(select).find('[selected]').each((index, option) => {
+                this.optionOnClick(selection.find('[data-value="' + $(option).val() + '"]'));
+            });
         });
     }
 
@@ -41,6 +47,8 @@ class Selection {
     selectOnClick(selection_select) {
         let selection = selection_select.parents('.selection'),
             isShow = selection.hasClass('active');
+
+        this.hideAll();
 
         if (isShow) {
             this.hide(selection);
@@ -77,7 +85,7 @@ class Selection {
         let values = [];
 
         selection.find('.active').each((i, option) => {
-            values.push($(option).html());
+            values.push($(option).text());
         });
 
         if (values.length == 0) {
@@ -127,7 +135,13 @@ class Selection {
         selection += '<div class="selection__select">' + selection_select + '</div>';
 
         select.find('option').each((i, item) => {
-            selection_options += '<div data-value="' + $(item).val() + '" class="selection__option">' + $(item).text() + '</div>';
+            let label = $(item).html();
+
+            if ($(item).attr('data-html')) {
+                label = $(item).attr('data-html');
+            }
+
+            selection_options += '<div data-value="' + $(item).val() + '" class="selection__option">' + label + '</div>';
         });
 
         selection += '<div class="selection__options">' + selection_options + '</div>';
