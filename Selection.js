@@ -74,7 +74,7 @@ class Selection {
 
         let count = selection.find('.active').length;
 
-        selection.find('.selection__count').html(count);
+        selection.find('.selection__count').html('(' + count + ')');
 
         if (count) {
             selection.addClass('selected');
