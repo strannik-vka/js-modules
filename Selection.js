@@ -66,17 +66,17 @@ class Selection {
 
         if (isActive) {
             selection_option.removeClass('active');
-            select.find('[value="' + value + '"]').prop('selected', false);
+            select.find('[value="' + value + '"]').prop('selected', false).removeAttr('selected');
         } else {
             if (!isMultiple) {
                 selection.find('.active').each((i, item) => {
                     $(item).removeClass('active');
-                    select.find('[value="' + value + '"]').prop('selected', false);
+                    select.find('[value="' + value + '"]').prop('selected', false).removeAttr('selected');
                 });
             }
 
             selection_option.addClass('active');
-            select.find('[value="' + value + '"]').prop('selected', true);
+            select.find('[value="' + value + '"]').prop('selected', true).attr('selected', 'selected');
         }
 
         let count = selection.find('.active').length;

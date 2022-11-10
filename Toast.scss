@@ -1,0 +1,52 @@
+.toast {
+    position: fixed;
+    z-index: 9999;
+
+    bottom: 1rem;
+    left: 1rem;
+    padding: 1rem;
+
+    background-color: #fff;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+
+    &.onClick {
+        cursor: pointer;
+    }
+
+    .close {
+        cursor: pointer;
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        padding: 0.4rem;
+        font-size: 0;
+        opacity: 0.5;
+
+        svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .title {
+        font-weight: bold;
+        margin-bottom: 0.4rem;
+    }
+
+    .text {
+        margin-bottom: 0.7rem;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+        max-width: 350px;
+    }
+}
