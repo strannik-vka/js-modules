@@ -463,25 +463,11 @@ window.items = {
                     items.update(model.name, data);
                 }
 
-            elem.filter.find('[name]').each((i, input) => {
-                let isChange = false;
-
-                if ($(input).attr('type')) {
-                    if (['radio', 'checkbox', 'range', 'color', 'date', 'datetime-local', 'file', 'hidden', 'month', 'number', 'time', 'week'].indexOf($(input).attr('type')) > -1) {
-                        isChange = true;
-                    }
-                }
-
-                if ($(input)[0].tagName == 'SELECT') {
-                    isChange = true;
-                }
-
-                if (isChange) {
-                    $(input).on('change', onChange);
-                } else {
-                    $(input).on('input', onChange);
-                }
-            });
+            elem.filter.find('[name]')
+                .on('change', onChange)
+                .on('input', (e) => {
+                    $(e.currentTarget).trigger('change');
+                });
         }
     },
 
