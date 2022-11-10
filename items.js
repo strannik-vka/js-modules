@@ -452,9 +452,21 @@ window.items = {
 
                     return data;
                 },
-                onChange = (e) => {
-                    let data = getFilterData($(e.currentTarget).parents('[items-filter-' + model.name + ']')),
+                onChange = (e, type) => {
+                    let input = $(e.currentTarget),
+                        data = getFilterData(input.parents('[items-filter-' + model.name + ']')),
                         urlParams = $.param(data);
+
+                    if (type == 'input') {
+                        input.attr('data-on-input', 'true');
+                    }
+
+                    if (type == 'change') {
+                        if (input.attr('data-on-input')) {
+                            input.removeAttr('data-on-input');
+                            return false;
+                        }
+                    }
 
                     if (model.filterPushState) {
                         history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
@@ -464,10 +476,8 @@ window.items = {
                 }
 
             elem.filter.find('[name]')
-                .on('change', onChange)
-                .on('input', (e) => {
-                    $(e.currentTarget).trigger('change');
-                });
+                .on('change', (e) => { onChange(e, 'change') })
+                .on('input', (e) => { onChange(e, 'input') });
         }
     },
 
