@@ -68,6 +68,13 @@ class Selection {
             selection_option.removeClass('active');
             select.find('[value="' + value + '"]').prop('selected', false);
         } else {
+            if (!isMultiple) {
+                selection.find('.active').each((i, item) => {
+                    $(item).removeClass('active');
+                    select.find('[value="' + value + '"]').prop('selected', false);
+                });
+            }
+
             selection_option.addClass('active');
             select.find('[value="' + value + '"]').prop('selected', true);
         }
