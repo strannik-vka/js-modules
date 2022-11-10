@@ -451,17 +451,36 @@ window.items = {
                     });
 
                     return data;
+                },
+                onChange = (e) => {
+                    let data = getFilterData($(e.currentTarget).parents('[items-filter-' + model.name + ']')),
+                        urlParams = $.param(data);
+
+                    if (model.filterPushState) {
+                        history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
+                    }
+
+                    items.update(model.name, data);
                 }
 
-            elem.filter.find('[name]').on('change input', (e) => {
-                let data = getFilterData($(e.currentTarget).parents('[items-filter-' + model.name + ']')),
-                    urlParams = $.param(data);
+            elem.filter.find('[name]').each((i, input) => {
+                let isChange = false;
 
-                if (model.filterPushState) {
-                    history.pushState({}, '', location.pathname + (urlParams ? '?' + urlParams : ''));
+                if ($(input).attr('type')) {
+                    if (['radio', 'checkbox', 'range', 'color', 'date', 'datetime-local', 'file', 'hidden', 'month', 'number', 'time', 'week'].indexOf($(input).attr('type')) > -1) {
+                        isChange = true;
+                    }
                 }
 
-                items.update(model.name, data);
+                if ($(input)[0].tagName == 'SELECT') {
+                    isChange = true;
+                }
+
+                if (isChange) {
+                    $(input).on('change', onChange);
+                } else {
+                    $(input).on('input', onChange);
+                }
             });
         }
     },
