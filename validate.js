@@ -255,7 +255,7 @@ window.validate = {
                 el = $('[data-tmp-visible]');
             }
 
-            offset = el.offset();
+            let offset = el.offset();
 
             if (scrollTop <= offset.top && (el.height() + offset.top) < (scrollTop + windowHeight)) { } else {
                 result.push(this);
