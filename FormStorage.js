@@ -34,7 +34,7 @@ class FormStorage {
                     form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
                 } else if (input.attr('type') == 'radio') {
                     form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
-                } else {
+                } else if (input.attr('type') != 'file') {
                     input.val(val).trigger('change');
                 }
             }
