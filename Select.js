@@ -17,7 +17,6 @@ class Select {
             .on('input', this.selector.query, this.search)
             .on('click', this.selector.parent + ' label', this.onClickLabel)
             .on('change', this.selector.parent + ' input', this.change)
-            .on('change.select', this.selector.parent + ' input', this.change)
             .on('click', this.selector.title + ', ' + this.selector.query, this.toggleActive)
             .on('click', '[' + this.selector.sync + '] [data-val]', this.sync)
             .on('click', this.closest)
@@ -206,6 +205,12 @@ class Select {
     }
 
     change = (e) => {
+        if ($(e.currentTarget).prop('checked')) {
+            $(e.currentTarget).attr('checked', 'checked');
+        } else {
+            $(e.currentTarget).removeAttr('checked');
+        }
+
         var select = this.select($(e.currentTarget).parents(this.selector.parent)),
             text_arr = [];
 

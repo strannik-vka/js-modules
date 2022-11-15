@@ -12,7 +12,11 @@ window.queue = {
 }
 
 window.delAjaxPreloader = (form) => {
-    let button = form.find('button:eq(-1)');
+    let button = form.find('[type="submit"]:eq(-1)');
+
+    if (button.length == 0) {
+        button = form.find('button:eq(-1)');
+    }
 
     if (button.length && button.attr('text')) {
         button.html(button.attr('text'));
@@ -21,7 +25,11 @@ window.delAjaxPreloader = (form) => {
 }
 
 window.setAjaxPreloader = (form, preloader) => {
-    let button = form.find('button:eq(-1)');
+    let button = form.find('[type="submit"]:eq(-1)');
+
+    if (button.length == 0) {
+        button = form.find('button:eq(-1)');
+    }
 
     if (button.length && preloader) {
         if (!button.attr('text')) {
