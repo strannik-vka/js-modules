@@ -2,7 +2,42 @@ class Debug {
 
     constructor() {
         this.timer = false;
+        this.clicks = [];
+        this.events();
         this.onerror();
+    }
+
+    events() {
+        document.addEventListener('click', (event) => {
+            if (event) {
+                let targetName = null,
+                    attrs = [];
+
+                if (event.target) {
+                    targetName = event.target.tagName;
+
+                    if (event.target.attributes) {
+                        for (let i = 0; i < event.target.attributes.length; i++) {
+                            let attr = event.target.attributes[i];
+
+                            if (attr.nodeName && attr.nodeValue) {
+                                attrs.push(attr.nodeName + '=' + attr.nodeValue);
+                            }
+                        }
+                    }
+                }
+
+                this.clicks.push({
+                    positions: this.getPosition(event),
+                    targetName: targetName,
+                    attrs: attrs
+                });
+
+                if (this.clicks.length > 10) {
+                    this.clicks.shift();
+                }
+            }
+        });
     }
 
     send(text) {
@@ -47,6 +82,7 @@ class Debug {
 
                 text += 'clientWidth: ' + this.getClientWidth() + "\n";
                 text += 'scrollTop: ' + this.getScrollTop() + "\n";
+                text += 'clicks: ' + JSON.stringify(this.clicks) + "\n";
 
                 this.send(text);
             }
@@ -57,18 +93,37 @@ class Debug {
         if (typeof window.pageYOffset != 'undefined') {
             return window.pageYOffset;
         }
-        else {
-            var B = document.body;
-            var D = document.documentElement;
-            D = (D.clientHeight) ? D : B;
-            return D.scrollTop;
-        }
+
+        let doc = document.documentElement;
+
+        doc = doc.clientHeight ? doc : document.body;
+
+        return doc.scrollTop;
     }
 
     getClientWidth() {
         return window.innerWidth
             || document.documentElement.clientWidth
             || document.body.clientWidth;
+    }
+
+    getPosition(e) {
+        let x = 0,
+            y = 0;
+
+        if (!e) {
+            let e = window.event;
+        }
+
+        if (e.pageX || e.pageY) {
+            x = e.pageX;
+            y = e.pageY;
+        } else if (e.clientX || e.clientY) {
+            x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+        }
+
+        return { x: x, y: y }
     }
 
 }
