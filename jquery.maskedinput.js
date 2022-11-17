@@ -477,8 +477,8 @@ $.fn.extend({
 
 				// Ввод телефона
 				change: function () {
-					var oldNumber = new String(oldVal.match(/\d+/g)),
-						newNumber = new String(onInputVal.match(/\d+/g)),
+					var oldNumber = new String(oldVal ? oldVal.match(/\d+/g) : ''),
+						newNumber = new String(onInputVal ? onInputVal.match(/\d+/g) : ''),
 						isDelete = newNumber.length < oldNumber.length,
 						isAdd = newNumber.length > oldNumber.length;
 
