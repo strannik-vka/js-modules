@@ -11,6 +11,14 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &__input {
+            width: 100%;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+            outline: 0;
+        }
     }
 
     &__count {
@@ -29,7 +37,10 @@
         top: 100%;
         left: 0;
         right: 0;
-        z-index: 2;
+        z-index: 9;
+        max-height: 60vh;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     &__option {

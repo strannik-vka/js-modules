@@ -110,6 +110,9 @@ class AjaxForm {
             .on('click', '[data-ajax-form-reset]', (e) => {
                 this.reset($(e.currentTarget).parents('[data-ajax-form]'));
             })
+            .on('change', this.selector + ' [name]', (e) => {
+                this.onChange(e);
+            })
             .on('change', '[data-onchange-submit] [name]', () => {
                 if (this.options.onChangeSubmit) {
                     $(this.selector).trigger('submit');
@@ -146,6 +149,23 @@ class AjaxForm {
                     this.submit(form);
                 }
             });
+    }
+
+    sendGoal(form, name) {
+        if (form.attr('data-goal-id')) {
+            if (typeof ym !== 'undefined') {
+                ym(form.attr('data-goal-id'), 'reachGoal', name);
+            }
+        }
+    }
+
+    onChange(e) {
+        let form = $(e.currentTarget).parents('form');
+
+        if (form.attr('data-goal-start-fill') && !form.attr('data-goal-start-fill-send')) {
+            form.attr('data-goal-start-fill-send', 'true');
+            this.sendGoal(form, form.attr('data-goal-start-fill'));
+        }
     }
 
     editModeOn(form) {
@@ -381,19 +401,26 @@ class AjaxForm {
 
                                 if (response.redirect) {
                                     form.trigger('ajax-response-redirect');
-                                    location.href = response.redirect;
+
+                                    if (form.attr('data-goal-success')) {
+                                        this.sendGoal(form, form.attr('data-goal-success'));
+
+                                        setTimeout(() => {
+                                            location.href = response.redirect;
+                                        }, 1000);
+                                    } else {
+                                        location.href = response.redirect;
+                                    }
                                 } else if (response.success) {
+                                    if (form.attr('data-goal-success')) {
+                                        this.sendGoal(form, form.attr('data-goal-success'));
+                                    }
+
                                     if (response.data) {
                                         window.AjaxFormData = response.data;
                                     }
 
                                     form.trigger('ajax-response-success');
-
-                                    if (form.attr('data-goal-success')) {
-                                        if (typeof ym !== 'undefined') {
-                                            ym(form.attr('data-goal-id'), 'reachGoal', form.attr('data-goal-success'));
-                                        }
-                                    }
 
                                     if (typeof modalNotify !== 'undefined' && typeof response.success === 'string') {
                                         if (!response.text) {
