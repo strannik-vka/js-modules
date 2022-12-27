@@ -71,10 +71,14 @@ window.scroller = {
     },
 
     hash: (url) => {
-        url = url.split('#');
-        url = url[url.length - 1];
-        url = url.split('?');
-        return url[0];
+        let hash = url.split('#');
+
+        hash = hash[hash.length - 1];
+        hash = hash.split('?');
+        hash = url[0]
+        hash = hash.replace(/[^a-zA-Z0-9_-]+/g, '');
+
+        return hash;
     },
 
     elemHash: (elem) => {
