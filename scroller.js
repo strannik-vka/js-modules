@@ -60,7 +60,7 @@ window.scroller = {
     },
 
     onloadScroll: () => {
-        var hash = scroller.hash(location.href), elem = scroller.elem(hash);
+        var hash = scroller.hash(decodeURIComponent(location.href)), elem = scroller.elem(hash);
         if (elem && elem.length) {
             scroller.to(elem);
         }
@@ -75,7 +75,7 @@ window.scroller = {
 
         hash = hash[hash.length - 1];
         hash = hash.split('?');
-        hash = url[0]
+        hash = hash[0];
         hash = hash.replace(/[^a-zA-Z0-9_-]+/g, '');
 
         return hash;
