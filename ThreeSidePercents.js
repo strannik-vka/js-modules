@@ -1,18 +1,27 @@
 class ThreeSidePercents {
-    constructor(x, y, z) {
+    constructor(object) {
         this.max = {};
-        this.setMaxPositions(x, y, z);
+        this.setMaxPositions(object);
     }
 
-    setMaxPositions(x, y, z) {
-        this.max.x = x;
-        this.max.y = y;
-        this.max.z = z;
+    setMaxPositions(object) {
+        this.max.x = object.x;
+        this.max.y = object.y;
+        this.max.z = object.z;
     }
 
     getPercent(num, max) {
-        let coefficient = max / num;
-        return 100 / coefficient;
+        if (max) {
+            if (num > max) {
+                num = num;
+            }
+
+            let coefficient = max / num;
+
+            return 100 / coefficient;
+        }
+
+        return null;
     }
 
     getViewPercent(percent1, percent2, percent3) {
@@ -70,7 +79,7 @@ class ThreeSidePercents {
                 result.activeNumber = side.number;
                 result.activePercent = side.percent;
             }
-        })
+        });
 
         return result;
     }
