@@ -1,5 +1,5 @@
 const setInputVal = (input, isPlus) => {
-    let number = parseFloat(input.val());
+    let number = parseFloat(input.val()), min, max;
 
     if (isPlus === true) {
         number++;
@@ -10,7 +10,7 @@ const setInputVal = (input, isPlus) => {
     }
 
     if (input.attr('min')) {
-        let min = parseFloat(input.attr('min'));
+        min = parseFloat(input.attr('min'));
 
         if (number < min) {
             number = min;
@@ -18,11 +18,15 @@ const setInputVal = (input, isPlus) => {
     }
 
     if (input.attr('max')) {
-        let max = parseFloat(input.attr('max'));
+        max = parseFloat(input.attr('max'));
 
         if (number > max) {
             number = max;
         }
+    }
+
+    if (isNaN(number)) {
+        number = min ? min : 1;
     }
 
     input.val(number).trigger('change');
