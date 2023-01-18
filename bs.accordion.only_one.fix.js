@@ -11,6 +11,7 @@ $(document)
     })
     .on('click', selector + ' [data-ac-toggle]', (e) => {
         if ($(selector + ' .collapse.show').length == 0 && $(selector + ' .collapsing').length == 0) {
+            e.stopPropagation();
             $($(e.currentTarget).attr('data-bs-target')).collapse('toggle');
         }
     });
