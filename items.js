@@ -806,4 +806,7 @@ window.items = {
 
 }
 
-$(items.init);
+$(() => {
+    items.init();
+    items.glueUnionsElements('[data-glue-unions]');
+})
