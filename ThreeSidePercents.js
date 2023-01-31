@@ -29,7 +29,15 @@ class ThreeSidePercents {
             allPercent = percent1 + maxPercent,
             diffPercent = allPercent - 100;
 
-        return Math.round(percent1 - (diffPercent / 2));
+        let result = Math.round(percent1 - (diffPercent / 2));
+
+        if (result > 100) {
+            result = 100;
+        } else if (result < 0) {
+            result = 0;
+        }
+
+        return result;
     }
 
     get(cameraPosition) {
