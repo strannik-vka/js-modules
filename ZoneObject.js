@@ -22,7 +22,7 @@ class ZoneObject {
             this.onInit = false;
         }
 
-        this.onScroll(document);
+        this.setOnScroll(document);
     }
 
     setOnScroll(element) {
