@@ -1,4 +1,5 @@
 class ThreeSidePercents {
+
     constructor(object) {
         this.max = {};
         this.setMaxPositions(object);
@@ -63,20 +64,62 @@ class ThreeSidePercents {
         let result = {
             activeNumber: null,
             activePercent: null,
-            sides: [
-                {
-                    number: percentZ > 0 ? 1 : 3,
-                    percent: viewPercentZ
-                },
-                {
-                    number: percentX > 0 ? 2 : 4,
+            sides: []
+        }
+
+        if (percentZ > 0) {
+            // 1
+            result.sides.push({
+                number: 1,
+                percent: viewPercentZ
+            })
+        }
+
+        if (percentX > 0) {
+            // 2
+            result.sides.push({
+                number: 2,
+                percent: viewPercentX
+            })
+        }
+
+        if (percentZ <= 0) {
+            // 3
+            result.sides.push({
+                number: 3,
+                percent: viewPercentZ
+            })
+        }
+
+        if (percentX <= 0) {
+            // 4
+            if (percentZ > 0) {
+                result.sides.unshift({
+                    number: 4,
                     percent: viewPercentX
-                },
-                {
-                    number: percentY > 0 ? 5 : 6,
-                    percent: viewPercentY
-                }
-            ]
+                })
+            } else {
+                result.sides.push({
+                    number: 4,
+                    percent: viewPercentX
+                })
+            }
+        }
+
+        if (percentY > 0) {
+            // 5
+            result.sides.push({
+                number: 5,
+                percent: viewPercentY
+            })
+        }
+
+        if (percentY <= 0) {
+            // 6
+            result.sides.push({
+                number: 6,
+                percent: viewPercentY
+            })
         }
 
         result.sides.forEach(side => {
@@ -91,6 +134,7 @@ class ThreeSidePercents {
 
         return result;
     }
+
 }
 
 export default ThreeSidePercents;
