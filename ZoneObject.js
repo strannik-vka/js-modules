@@ -22,7 +22,11 @@ class ZoneObject {
             this.onInit = false;
         }
 
-        $(document).on('scroll', () => {
+        this.onScroll(document);
+    }
+
+    setOnScroll(element) {
+        $(element).on('scroll', () => {
             if (this.onStatus) {
                 this.scroll();
             } else if (this.onInit == false) {
