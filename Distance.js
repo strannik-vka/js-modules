@@ -1,8 +1,17 @@
+/*
+    contentPercent - На сколько процентов просмотрен блок
+        вверхняя граница блока касается вверхней границы окна = 0% 
+        нижняя граница блока касается нижней границы окна = 100% 
+*/
+
 class Distance {
 
-    constructor(selector, callback) {
+    constructor(selector, callback, options) {
+        options = options ?? {};
+
         this.selector = selector;
         this.callback = callback;
+        this.contentPercent = options.contentPercent;
 
         this.isOff = false;
 
@@ -39,6 +48,20 @@ class Distance {
                                 up: up,
                                 down: !up
                             };
+
+                        if (this.contentPercent) {
+                            let bottomAndWindow = bottom - $(window).height();
+
+                            if (bottomAndWindow < 0) {
+                                data.contentPercent = 100;
+                            } else if (data.topPercent > 0) {
+                                data.contentPercent = 0;
+                            } else {
+                                let bottomPercentDown = 100 / ($(window).height() / bottomAndWindow);
+
+                                data.contentPercent = 100 / ((bottomPercentDown - data.topPercent) / Math.abs(data.topPercent));
+                            }
+                        }
 
                         if (this.callback) {
                             this.callback(data);
