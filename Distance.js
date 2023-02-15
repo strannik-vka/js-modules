@@ -11,11 +11,35 @@ class Distance {
 
         this.selector = selector;
         this.callback = callback;
-        this.contentPercent = options.contentPercent;
+        this.contentPercentSub = Array.isArray(options.contentPercentSub) ? options.contentPercentSub : [];
+        this.contentPercentSubHeight = this.getContentPercentSubHeight();
 
         this.isOff = false;
 
         this.scroll();
+
+        window.addEventListener('resize', () => {
+            this.getContentPercentSubHeight();
+        }, false);
+    }
+
+    addContentPercentSubHeight(selectors) {
+        this.contentPercentSub = selectors;
+        this.getContentPercentSubHeight();
+    }
+
+    getContentPercentSubHeight() {
+        let subHeight = 0;
+
+        if (this.contentPercentSub.length > 0) {
+            this.contentPercentSub.forEach(element => {
+                subHeight += $(element).height();
+            });
+        }
+
+        this.contentPercentSubHeight = subHeight;
+
+        return subHeight;
     }
 
     off() {
@@ -30,6 +54,10 @@ class Distance {
         this.listenCallback = listenCallback;
     }
 
+    listenContentPercent(listenContentPercentCallback) {
+        this.listenContentPercentCallback = listenContentPercentCallback;
+    }
+
     scroll() {
         if (typeof this.scrollTopLast === 'undefined') {
             this.scrollTopLast = $(window).scrollTop();
@@ -37,38 +65,46 @@ class Distance {
             $(window)
                 .on('scroll', () => {
                     if (this.isOff == false) {
-                        var up = this.scrollTopLast > $(window).scrollTop(),
-                            top = $(this.selector).offset().top - this.scrollTopLast,
+                        let top = $(this.selector).offset().top - this.scrollTopLast,
                             bottom = top + parseFloat($(this.selector).css('height')),
-                            data = {
-                                top: top,
-                                topPercent: 100 / ($(window).height() / top),
-                                bottom: bottom,
-                                bottomPercent: 100 / ($(window).height() / bottom),
-                                up: up,
-                                down: !up
-                            };
+                            topPercent = 100 / ($(window).height() / top);
 
-                        if (this.contentPercent) {
-                            let bottomAndWindow = bottom - $(window).height();
+                        if (this.callback || this.listenCallback) {
+                            let up = this.scrollTopLast > $(window).scrollTop(),
+                                data = {
+                                    top: top,
+                                    topPercent: topPercent,
+                                    bottom: bottom,
+                                    bottomPercent: 100 / ($(window).height() / bottom),
+                                    up: up,
+                                    down: !up
+                                }
 
-                            if (bottomAndWindow < 0) {
-                                data.contentPercent = 100;
-                            } else if (data.topPercent > 0) {
-                                data.contentPercent = 0;
-                            } else {
-                                let bottomPercentDown = 100 / ($(window).height() / bottomAndWindow);
+                            if (this.callback) {
+                                this.callback(data);
+                            }
 
-                                data.contentPercent = 100 / ((bottomPercentDown - data.topPercent) / Math.abs(data.topPercent));
+                            if (this.listenCallback) {
+                                this.listenCallback(data);
                             }
                         }
 
-                        if (this.callback) {
-                            this.callback(data);
-                        }
+                        if (this.listenContentPercentCallback) {
+                            let contentPercent = 0;
 
-                        if (this.listenCallback) {
-                            this.listenCallback(data);
+                            let bottomAndWindow = bottom - $(window).height() - this.contentPercentSubHeight;
+
+                            if (bottomAndWindow < 0) {
+                                contentPercent = 100;
+                            } else if (topPercent > 0) {
+                                contentPercent = 0;
+                            } else {
+                                let bottomPercentDown = 100 / ($(window).height() / bottomAndWindow);
+
+                                contentPercent = 100 / ((bottomPercentDown - topPercent) / Math.abs(topPercent));
+                            }
+
+                            this.listenContentPercentCallback(contentPercent);
                         }
                     }
 
