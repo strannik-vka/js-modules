@@ -1,24 +1,17 @@
 class Cursor {
 
     constructor(obj) {
+        this.id = +new Date();
         this.cursor = $(obj.cursor);
         this.wrapSelector = obj.wrap ? obj.wrap : 'body';
         this.onMousemove = obj.onMousemove;
         this.onClick = obj.onClick;
         this.setParams();
         this.wrapDefaultCursorOff();
-        this.mousemove();
-        this.click();
-        this.resize();
+        this.events();
     }
 
-    resize() {
-        $(window).on('resize', () => {
-            this.setParams();
-        });
-    }
-
-    setParams() {
+    setParams = () => {
         this.bodyWidth2 = $(this.wrapSelector).width() / 2;
         this.cursorWidth = this.cursor.width() / 2;
         this.cursorHeight = this.cursor.height() / 2;
@@ -27,7 +20,21 @@ class Cursor {
     }
 
     wrapDefaultCursorOff() {
-        $('body').append('<style>' + this.wrapSelector + ', ' + this.wrapSelector + ' * {cursor: none} ' + this.wrapSelector + ' a, ' + this.wrapSelector + ' a * {cursor: pointer}</style>');
+        if ($('#wrapDefaultCursorOff_' + this.id).length == 0) {
+            $('body').append('<style id="wrapDefaultCursorOff_' + this.id + '">' + this.wrapSelector + ', ' + this.wrapSelector + ' * {cursor: none} ' + this.wrapSelector + ' a, ' + this.wrapSelector + ' a * {cursor: pointer}</style>');
+        }
+    }
+
+    destroy() {
+        this.cursor.css('display', 'none');
+
+        $('body').off('mousemove', this.mousemoveEvent);
+
+        this.cursor.off('click', this.cursorClickEvent);
+
+        $(window).off('resize', this.setParams);
+
+        $('#wrapDefaultCursorOff_' + this.id).remove();
     }
 
     setCursorPosition() {
@@ -51,32 +58,36 @@ class Cursor {
         this.isLeft = this.left < this.WrapCenter;
     }
 
-    mousemove() {
-        $('body').on('mousemove', (event) => {
-            this.cursor.hide();
+    mousemoveEvent = (event) => {
+        this.cursor.hide();
 
-            this.getParams(event);
-            this.setCursorPosition();
+        this.getParams(event);
+        this.setCursorPosition();
 
-            if (this.onMousemove) {
-                this.onMousemove({
-                    inWrap: this.inWrap,
-                    isLeft: this.isLeft,
-                    hoverElem: this.hoverElem
-                });
-            }
-        });
+        if (this.onMousemove) {
+            this.onMousemove({
+                inWrap: this.inWrap,
+                isLeft: this.isLeft,
+                hoverElem: this.hoverElem
+            });
+        }
     }
 
-    click() {
-        this.cursor.on('click', () => {
-            if (this.onClick) {
-                this.onClick({
-                    isLeft: this.isLeft,
-                    hoverElem: this.hoverElem
-                });
-            }
-        });
+    cursorClickEvent = () => {
+        if (this.onClick) {
+            this.onClick({
+                isLeft: this.isLeft,
+                hoverElem: this.hoverElem
+            });
+        }
+    }
+
+    events() {
+        $('body').on('mousemove', this.mousemoveEvent);
+
+        this.cursor.on('click', this.cursorClickEvent);
+
+        $(window).on('resize', this.setParams);
     }
 
     triggerMousemove() {
