@@ -67,7 +67,13 @@ window.scroller = {
     },
 
     allowed: (elem) => {
-        return ['collapse', 'tab', 'pill'].indexOf(elem.attr('data-toggle')) == -1;
+        let result = ['collapse', 'tab', 'pill'].indexOf(elem.attr('data-toggle')) == -1;
+
+        if (elem.attr('data-scroll-disabled')) {
+            result = false;
+        }
+
+        return result;
     },
 
     hash: (url) => {
