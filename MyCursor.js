@@ -52,18 +52,18 @@ class MyCursor {
     getParams(event) {
         this.hoverElem = $(document.elementFromPoint(event.clientX, event.clientY));
 
-        this.cursorHeight2 = this.cursor.height() / 2;
-        this.cursorTop = this.cursor.offset().top + this.cursorHeight2;
-        this.wrapTop = $(this.wrapSelector).offset().top;
+        this.wrapTop = $(this.wrapSelector)[0].getBoundingClientRect().top;
         this.wrapBottom = this.wrapTop + $(this.wrapSelector).height();
 
-        if ((this.cursorTop >= this.wrapTop && this.cursorTop <= this.wrapBottom) && this.inWrap) {
+        if (event.clientY >= this.wrapTop && event.clientY <= this.wrapBottom) {
             this.inWrap = true;
         } else if (this.hoverElem.closest(this.wrapSelector).length) {
             this.inWrap = true;
         } else {
             this.inWrap = false;
         }
+
+        this.cursorHeight2 = this.cursor.height() / 2;
 
         this.top = event.clientY - this.cursorHeight2;
         this.left = event.clientX - this.cursorWidth2;
@@ -99,6 +99,11 @@ class MyCursor {
         this.cursor.on('click', this.cursorClickEvent);
 
         $(window).on('resize', this.setParams);
+        $(window).on('scroll', () => {
+            if (typeof window.currentMousemove !== 'undefined') {
+                this.mousemoveEvent(window.currentMousemove);
+            }
+        });
     }
 
     triggerMousemove() {
