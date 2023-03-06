@@ -20,6 +20,15 @@ class ZoneObject {
         if (location.hash) {
             this.onStatus = false;
             this.onInit = false;
+
+            $(document).one('scroll-complete', () => {
+                if (this.onInitTimer) {
+                    clearTimeout(this.onInitTimer);
+                }
+
+                this.onStatus = true;
+                this.onInit = true;
+            })
         }
 
         this.setOnScroll(document);

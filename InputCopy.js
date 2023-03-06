@@ -4,6 +4,24 @@ class InputCopy {
         $(document).on('click', selector, this.click);
     }
 
+    tooltipShow = (elem, callback) => {
+        elem.attr({
+            'data-title': 'Скопировано',
+            'data-placement': elem.attr('data-placement') ? elem.attr('data-placement') : 'top',
+            'data-trigger': 'manual'
+        });
+
+        elem.tooltip('show');
+
+        setTimeout(() => {
+            elem.tooltip('hide');
+
+            if (callback) {
+                callback();
+            }
+        }, 3000);
+    }
+
     click = (e) => {
         let elem = $(e.currentTarget),
             inputSelector = elem.attr('data-input-copy'),
@@ -15,7 +33,7 @@ class InputCopy {
             input = elem.next();
         }
 
-        $('body').append('<input id="tmpCopy" type="text" value="' + input.val() + '" />');
+        $('body').append('<textarea id="tmpCopy">' + (input.attr('name') ? input.val() : input.text()) + '</textarea>');
 
         document.getElementById('tmpCopy').select();
         document.execCommand("copy");
@@ -23,17 +41,22 @@ class InputCopy {
         $('#tmpCopy').remove();
 
         if (typeof $.fn.tooltip !== 'undefined') {
-            elem.attr({
-                'data-title': 'Скопировано',
-                'data-placement': elem.attr('data-placement') ? elem.attr('data-placement') : 'top',
-                'data-trigger': 'manual'
-            });
+            if (elem.closest('.dropdown').length) {
+                this.tooltipShow(elem.closest('.dropdown'));
+            } else if (elem.attr('data-toggle') == 'tooltip') {
+                if (elem.closest('#temp_tooltip').length == 0) {
+                    var newElem = $('<span id="temp_tooltip"/>').css("display", "inline-block");
 
-            elem.tooltip('show');
+                    elem.wrap(newElem);
+                    elem.tooltip('hide');
 
-            setTimeout(() => {
-                elem.tooltip('hide');
-            }, 3000);
+                    this.tooltipShow($('#temp_tooltip'), () => {
+                        elem.unwrap();
+                    });
+                }
+            } else {
+                this.tooltipShow(elem);
+            }
         }
     }
 
