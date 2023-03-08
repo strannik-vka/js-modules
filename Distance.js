@@ -58,13 +58,6 @@ class Distance {
         this.listenContentPercentCallback = listenContentPercentCallback;
     }
 
-    viewportToPixels(value) {
-        var parts = value.match(/([0-9\.]+)(vh|vw)/)
-        var q = Number(parts[1])
-        var side = window[['innerHeight', 'innerWidth'][['vh', 'vw'].indexOf(parts[2])]]
-        return side * (q / 100)
-    }
-
     scroll() {
         if (typeof this.scrollTopLast === 'undefined') {
             this.scrollTopLast = $(window).scrollTop();
@@ -72,14 +65,8 @@ class Distance {
             $(window)
                 .on('scroll', () => {
                     if (this.isOff == false) {
-                        let elemHeight = $(this.selector).css('height');
-
-                        if (elemHeight.indexOf('vh') > -1) {
-                            elemHeight = this.viewportToPixels(elemHeight);
-                        }
-
                         let top = $(this.selector).offset().top - this.scrollTopLast,
-                            bottom = top + parseFloat(elemHeight),
+                            bottom = top + parseFloat($(this.selector).css('height')),
                             topPercent = 100 / ($(window).height() / top);
 
                         if (this.callback || this.listenCallback) {
