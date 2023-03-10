@@ -18,9 +18,11 @@ class Distance {
 
         this.scroll();
 
-        window.addEventListener('resize', () => {
-            this.getContentPercentSubHeight();
-        }, false);
+        window.addEventListener('resize', this.onResize, false);
+    }
+
+    onResize = () => {
+        this.getContentPercentSubHeight();
     }
 
     addContentPercentSubHeight(selectors) {
@@ -58,59 +60,65 @@ class Distance {
         this.listenContentPercentCallback = listenContentPercentCallback;
     }
 
+    onScroll = () => {
+        if (this.isOff == false) {
+            let top = $(this.selector).offset().top - this.scrollTopLast,
+                bottom = top + parseFloat($(this.selector).css('height')),
+                topPercent = 100 / ($(window).height() / top);
+
+            if (this.callback || this.listenCallback) {
+                let up = this.scrollTopLast > $(window).scrollTop(),
+                    data = {
+                        top: top,
+                        topPercent: topPercent,
+                        bottom: bottom,
+                        bottomPercent: 100 / ($(window).height() / bottom),
+                        up: up,
+                        down: !up
+                    }
+
+                if (this.callback) {
+                    this.callback(data);
+                }
+
+                if (this.listenCallback) {
+                    this.listenCallback(data);
+                }
+            }
+
+            if (this.listenContentPercentCallback) {
+                let contentPercent = 0;
+
+                let bottomAndWindow = bottom - $(window).height() - this.contentPercentSubHeight;
+
+                if (bottomAndWindow < 0) {
+                    contentPercent = 100;
+                } else if (topPercent > 0) {
+                    contentPercent = 0;
+                } else {
+                    let bottomPercentDown = 100 / ($(window).height() / bottomAndWindow);
+
+                    contentPercent = 100 / ((bottomPercentDown - topPercent) / Math.abs(topPercent));
+                }
+
+                this.listenContentPercentCallback(contentPercent);
+            }
+        }
+
+        this.scrollTopLast = $(window).scrollTop();
+    }
+
     scroll() {
         if (typeof this.scrollTopLast === 'undefined') {
             this.scrollTopLast = $(window).scrollTop();
 
-            $(window)
-                .on('scroll', () => {
-                    if (this.isOff == false) {
-                        let top = $(this.selector).offset().top - this.scrollTopLast,
-                            bottom = top + parseFloat($(this.selector).css('height')),
-                            topPercent = 100 / ($(window).height() / top);
-
-                        if (this.callback || this.listenCallback) {
-                            let up = this.scrollTopLast > $(window).scrollTop(),
-                                data = {
-                                    top: top,
-                                    topPercent: topPercent,
-                                    bottom: bottom,
-                                    bottomPercent: 100 / ($(window).height() / bottom),
-                                    up: up,
-                                    down: !up
-                                }
-
-                            if (this.callback) {
-                                this.callback(data);
-                            }
-
-                            if (this.listenCallback) {
-                                this.listenCallback(data);
-                            }
-                        }
-
-                        if (this.listenContentPercentCallback) {
-                            let contentPercent = 0;
-
-                            let bottomAndWindow = bottom - $(window).height() - this.contentPercentSubHeight;
-
-                            if (bottomAndWindow < 0) {
-                                contentPercent = 100;
-                            } else if (topPercent > 0) {
-                                contentPercent = 0;
-                            } else {
-                                let bottomPercentDown = 100 / ($(window).height() / bottomAndWindow);
-
-                                contentPercent = 100 / ((bottomPercentDown - topPercent) / Math.abs(topPercent));
-                            }
-
-                            this.listenContentPercentCallback(contentPercent);
-                        }
-                    }
-
-                    this.scrollTopLast = $(window).scrollTop();
-                });
+            document.addEventListener('scroll', this.onScroll, false)
         }
+    }
+
+    destroy() {
+        document.removeEventListener('scroll', this.onScroll)
+        document.removeEventListener('resize', this.onResize)
     }
 
 }
