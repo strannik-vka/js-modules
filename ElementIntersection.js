@@ -61,11 +61,17 @@ class ElementIntersection {
 	del(selector) {
 		let element = document.querySelector(selector);
 
-		this.observer.unobserve(element);
+		if (element) {
+			if (this.observer !== null) {
+				this.observer.unobserve(element);
+			}
 
-		element.removeAttribute('data-intersection');
+			element.removeAttribute('data-intersection');
+		}
 
-		delete this.callbacks[selector];
+		if (this.callbacks[selector]) {
+			delete this.callbacks[selector];
+		}
 	}
 
 	destroy() {
