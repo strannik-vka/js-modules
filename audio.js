@@ -2,6 +2,8 @@ import soundWave from './soundWave';
 
 window.audio = {
 
+    initStatus: false,
+
     elem: new Audio(),
 
     data: {},
@@ -19,41 +21,52 @@ window.audio = {
     },
 
     init: function () {
-        window.audio = audio;
+        if (audio.initStatus === false) {
+            audio.initStatus = true;
 
+            window.audio = audio;
+
+            audio.volume();
+            audio.wave();
+
+            audio.elem.addEventListener('ended', audio.next);
+            audio.elem.addEventListener('timeupdate', audio.progress.update);
+
+            var mouseleaveTime = false;
+
+            $(document)
+                .on('mouseenter', '[audio-item]', audio.sliders)
+                .on('mouseenter', '.volume-btn', function () {
+                    if (mouseleaveTime) {
+                        clearTimeout(mouseleaveTime);
+                    }
+                    $(this).find('.volume-wrap').show();
+                })
+                .on('mouseleave', '.volume-btn', function () {
+                    mouseleaveTime = setTimeout(function () {
+                        $('.volume-wrap').hide();
+                    }, 3000);
+                })
+                .on('click', '[audio-play]', function () {
+                    if ($(this).attr('audio-active')) {
+                        $('[audio-active]').removeAttr('audio-active');
+                        audio.pause();
+                    } else {
+                        $('[audio-active]').removeAttr('audio-active');
+                        $(this).attr('audio-active', 'true');
+                        $(this).parents('[audio-item]').attr('audio-active', 'true');
+                        audio.play($(this).attr('audio-play'));
+                    }
+                });
+
+            audio.setFullTime();
+            audio.setWaveLoad();
+        }
+    },
+
+    each: () => {
         audio.volume();
         audio.wave();
-
-        audio.elem.addEventListener('ended', audio.next);
-        audio.elem.addEventListener('timeupdate', audio.progress.update);
-
-        var mouseleaveTime = false;
-
-        $(document)
-            .on('mouseenter', '[audio-item]', audio.sliders)
-            .on('mouseenter', '.volume-btn', function () {
-                if (mouseleaveTime) {
-                    clearTimeout(mouseleaveTime);
-                }
-                $(this).find('.volume-wrap').show();
-            })
-            .on('mouseleave', '.volume-btn', function () {
-                mouseleaveTime = setTimeout(function () {
-                    $('.volume-wrap').hide();
-                }, 3000);
-            })
-            .on('click', '[audio-play]', function () {
-                if ($(this).attr('audio-active')) {
-                    $('[audio-active]').removeAttr('audio-active');
-                    audio.pause();
-                } else {
-                    $('[audio-active]').removeAttr('audio-active');
-                    $(this).attr('audio-active', 'true');
-                    $(this).parents('[audio-item]').attr('audio-active', 'true');
-                    audio.play($(this).attr('audio-play'));
-                }
-            });
-
         audio.setFullTime();
         audio.setWaveLoad();
     },
