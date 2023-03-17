@@ -1,6 +1,9 @@
 class ElementIntersection {
 
-	constructor(selector, runCallback, stopCallback) {
+	constructor(selector, runCallback, stopCallback, options) {
+		options = options ?? {};
+
+		this.rootMargin = options.rootMargin ?? '50% 0px 50% 0px';
 		this.isPlay = location.hash ? false : true;
 		this.callbacks = {}
 		this.observer = null;
@@ -37,7 +40,7 @@ class ElementIntersection {
 					})
 				}
 			}, {
-				rootMargin: '50% 0px 50% 0px',
+				rootMargin: this.rootMargin,
 			})
 		}
 	}
