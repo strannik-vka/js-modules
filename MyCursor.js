@@ -64,8 +64,6 @@ class MyCursor {
             this.inWrap = false;
         }
 
-        console.log(this.inWrap);
-
         this.cursorHeight2 = parseFloat(this.cursor.css('height')) / 2;
 
         this.top = event.clientY - this.cursorHeight2;
