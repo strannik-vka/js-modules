@@ -33,8 +33,10 @@ class ElementIntersection {
 							}
 						} else {
 							if (entryCallbacks.active == true) {
-								entryCallbacks.active = false;
-								entryCallbacks.stop();
+								if (typeof entryCallbacks.stop === 'function') {
+									entryCallbacks.active = false;
+									entryCallbacks.stop();
+								}
 							}
 						}
 					})
@@ -50,7 +52,7 @@ class ElementIntersection {
 
 		this.callbacks[selector] = {
 			run: runCallback,
-			stop: typeof stopCallback === 'function' ? stopCallback : () => { },
+			stop: typeof stopCallback === 'function' ? stopCallback : null,
 			active: false
 		}
 

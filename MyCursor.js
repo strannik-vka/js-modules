@@ -26,13 +26,14 @@ class MyCursor {
     }
 
     destroy() {
-        this.cursor.css('display', 'none');
+        this.cursor.removeClass('cursor-in-wrap');
 
         $('body').off('mousemove', this.mousemoveEvent);
 
         this.cursor.off('click', this.cursorClickEvent);
 
         $(window).off('resize', this.setParams);
+        $(window).off('scroll', this.scrollEvent);
 
         $('#wrapDefaultCursorOff_' + this.id).remove();
     }
@@ -93,17 +94,19 @@ class MyCursor {
         }
     }
 
+    scrollEvent = () => {
+        if (typeof window.currentMousemove !== 'undefined') {
+            this.mousemoveEvent(window.currentMousemove);
+        }
+    }
+
     events() {
-        document.addEventListener('mousemove', this.mousemoveEvent);
+        $('body').on('mousemove', this.mousemoveEvent);
 
         this.cursor.on('click', this.cursorClickEvent);
 
         $(window).on('resize', this.setParams);
-        $(window).on('scroll', () => {
-            if (typeof window.currentMousemove !== 'undefined') {
-                this.mousemoveEvent(window.currentMousemove);
-            }
-        });
+        $(window).on('scroll', this.scrollEvent);
     }
 
     triggerMousemove() {
