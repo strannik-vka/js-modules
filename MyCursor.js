@@ -12,9 +12,9 @@ class MyCursor {
     }
 
     setParams = () => {
-        this.bodyWidth2 = $(this.wrapSelector).width() / 2;
-        this.cursorWidth2 = this.cursor.width() / 2;
-        this.cursorHeight2 = this.cursor.height() / 2;
+        this.bodyWidth2 = parseFloat($(this.wrapSelector).css('width')) / 2;
+        this.cursorWidth2 = parseFloat(this.cursor.css('width')) / 2;
+        this.cursorHeight2 = parseFloat(this.cursor.css('height')) / 2;
         this.WrapOffsetLeft = $(this.wrapSelector).offset().left;
         this.WrapCenter = this.WrapOffsetLeft + this.bodyWidth2;
     }
@@ -54,7 +54,7 @@ class MyCursor {
         this.hoverElem = $(document.elementFromPoint(event.clientX, event.clientY));
 
         this.wrapTop = $(this.wrapSelector)[0].getBoundingClientRect().top;
-        this.wrapBottom = this.wrapTop + $(this.wrapSelector).height();
+        this.wrapBottom = this.wrapTop + parseFloat($(this.wrapSelector).css('height'));
 
         if (event.clientY >= this.wrapTop && event.clientY <= this.wrapBottom) {
             this.inWrap = true;
@@ -64,7 +64,9 @@ class MyCursor {
             this.inWrap = false;
         }
 
-        this.cursorHeight2 = this.cursor.height() / 2;
+        console.log(this.inWrap);
+
+        this.cursorHeight2 = parseFloat(this.cursor.css('height')) / 2;
 
         this.top = event.clientY - this.cursorHeight2;
         this.left = event.clientX - this.cursorWidth2;
