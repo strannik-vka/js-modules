@@ -1,12 +1,10 @@
-import { Matrix3 } from 'three';
-
-const getFaceMatrix = (object) => {
-    let normalMatrix = new Matrix3().getNormalMatrix(object.object.matrixWorld);
+const getFaceMatrix = (object, Matrix3) => {
+    let normalMatrix = Matrix3.getNormalMatrix(object.object.matrixWorld);
     return object.face.normal.clone().applyMatrix3(normalMatrix).normalize();
 }
 
-export default (object) => {
-    let faceMatrix = getFaceMatrix(object),
+export default (object, Matrix3) => {
+    let faceMatrix = getFaceMatrix(object, Matrix3),
         faceMatrixZ = Math.abs(faceMatrix.z),
         faceMatrixX = Math.abs(faceMatrix.x),
         faceMatrixY = Math.abs(faceMatrix.y),
