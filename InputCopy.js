@@ -5,15 +5,18 @@ class InputCopy {
     }
 
     tooltipShow = (elem, callback) => {
-        elem.attr({
-            'data-title': 'Скопировано',
-            'data-placement': elem.attr('data-placement') ? elem.attr('data-placement') : 'top',
-            'data-trigger': 'manual'
+        elem.tooltip({
+            title: 'Скопировано',
+            placement: elem.attr('data-placement') ? elem.attr('data-placement') : 'top',
+            trigger: 'manual'
         });
-
         elem.tooltip('show');
 
         setTimeout(() => {
+            elem.one('hidden.bs.tooltip', function () {
+                elem.tooltip('dispose');
+            })
+
             elem.tooltip('hide');
 
             if (callback) {
@@ -25,7 +28,7 @@ class InputCopy {
     click = (e) => {
         let elem = $(e.currentTarget),
             inputSelector = elem.attr('data-input-copy'),
-            input = $(inputSelector);
+            input = inputSelector ? $(inputSelector) : elem;
 
         if (inputSelector == 'prev') {
             input = elem.prev();
