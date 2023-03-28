@@ -11,17 +11,23 @@ class FixedElement {
         }
     }
 
-    onScroll() {
-        $(window).on('scroll', () => {
-            $.each(this.onScrollSections, (sectionSelector, options) => {
-                let isOverSection = this.isOverSection(sectionSelector),
-                    currentState = this.onScrollSections[sectionSelector];
+    destroy() {
+        $(window).off('scroll', this.scrollEvent);
+    }
 
-                if (currentState.isOverSection != isOverSection) {
-                    this.onScrollSections[sectionSelector].isOverSection = isOverSection;
-                    options.callback(isOverSection);
-                }
-            });
+    onScroll() {
+        $(window).on('scroll', this.scrollEvent);
+    }
+
+    scrollEvent = () => {
+        $.each(this.onScrollSections, (sectionSelector, options) => {
+            let isOverSection = this.isOverSection(sectionSelector),
+                currentState = this.onScrollSections[sectionSelector];
+
+            if (currentState.isOverSection != isOverSection) {
+                this.onScrollSections[sectionSelector].isOverSection = isOverSection;
+                options.callback(isOverSection);
+            }
         });
     }
 
