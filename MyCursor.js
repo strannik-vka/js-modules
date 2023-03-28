@@ -30,7 +30,7 @@ class MyCursor {
 
         $('body').off('mousemove', this.mousemoveEvent);
 
-        this.cursor.off('click', this.cursorClickEvent);
+        this.cursor.off('click', this.cursorClickEvent).removeAttr('style');
 
         $(window).off('resize', this.setParams);
         $(window).off('scroll', this.scrollEvent);
@@ -50,13 +50,18 @@ class MyCursor {
         }
     }
 
-    getParams(event) {
-        this.hoverElem = $(document.elementFromPoint(event.clientX, event.clientY));
+    getParams() {
+        this.hoverElem = $(document.elementFromPoint(this.moveEvent.clientX, this.moveEvent.clientY));
 
         this.wrapTop = $(this.wrapSelector)[0].getBoundingClientRect().top;
         this.wrapBottom = this.wrapTop + parseFloat($(this.wrapSelector).css('height'));
+        this.wrapLeft = $(this.wrapSelector).offset().left;
+        this.wrapRight = this.wrapLeft + parseFloat($(this.wrapSelector).css('width'));
 
-        if (event.clientY >= this.wrapTop && event.clientY <= this.wrapBottom) {
+        if (
+            (this.moveEvent.clientY >= this.wrapTop && this.moveEvent.clientY <= this.wrapBottom) &&
+            (this.moveEvent.clientX >= this.wrapLeft && this.moveEvent.clientX <= this.wrapRight)
+        ) {
             this.inWrap = true;
         } else if (this.hoverElem.closest(this.wrapSelector).length) {
             this.inWrap = true;
@@ -66,21 +71,23 @@ class MyCursor {
 
         this.cursorHeight2 = parseFloat(this.cursor.css('height')) / 2;
 
-        this.top = event.clientY - this.cursorHeight2;
-        this.left = event.clientX - this.cursorWidth2;
+        this.top = this.moveEvent.clientY - this.cursorHeight2;
+        this.left = this.moveEvent.clientX - this.cursorWidth2;
 
         this.isLeft = this.left < this.WrapCenter;
     }
 
     mousemoveEvent = (event) => {
-        this.getParams(event);
+        this.moveEvent = event;
+        this.getParams();
         this.setCursorPosition();
 
         if (this.onMousemove) {
             this.onMousemove({
                 inWrap: this.inWrap,
                 isLeft: this.isLeft,
-                hoverElem: this.hoverElem
+                hoverElem: this.hoverElem,
+                moveEvent: this.moveEvent
             });
         }
     }
@@ -89,7 +96,8 @@ class MyCursor {
         if (this.onClick) {
             this.onClick({
                 isLeft: this.isLeft,
-                hoverElem: this.hoverElem
+                hoverElem: this.hoverElem,
+                moveEvent: this.moveEvent
             });
         }
     }
