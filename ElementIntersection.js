@@ -48,19 +48,21 @@ class ElementIntersection {
 	}
 
 	add(selector, runCallback, stopCallback) {
-		this.createObserver();
-
-		this.callbacks[selector] = {
-			run: runCallback,
-			stop: typeof stopCallback === 'function' ? stopCallback : null,
-			active: false
-		}
-
 		let element = document.querySelector(selector);
 
-		element.setAttribute('data-intersection', selector);
+		if (element) {
+			this.createObserver();
 
-		this.observer.observe(element);
+			this.callbacks[selector] = {
+				run: runCallback,
+				stop: typeof stopCallback === 'function' ? stopCallback : null,
+				active: false
+			}
+
+			element.setAttribute('data-intersection', selector);
+
+			this.observer.observe(element);
+		}
 	}
 
 	del(selector) {
