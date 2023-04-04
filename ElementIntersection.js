@@ -32,11 +32,15 @@ class ElementIntersection {
 								entryCallbacks.run();
 							}
 						} else {
-							if (entryCallbacks.active == true) {
-								if (typeof entryCallbacks.stop === 'function') {
-									entryCallbacks.active = false;
-									entryCallbacks.stop();
+							if (typeof entryCallbacks === 'object' && entryCallbacks != null) {
+								if (entryCallbacks.active == true) {
+									if (typeof entryCallbacks.stop === 'function') {
+										entryCallbacks.active = false;
+										entryCallbacks.stop();
+									}
 								}
+							} else {
+								this.observer.unobserve(entry.target);
 							}
 						}
 					})
