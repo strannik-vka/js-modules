@@ -79,16 +79,19 @@ class MyCursor {
 
     mousemoveEvent = (event) => {
         this.moveEvent = event;
-        this.getParams();
-        this.setCursorPosition();
 
-        if (this.onMousemove) {
-            this.onMousemove({
-                inWrap: this.inWrap,
-                isLeft: this.isLeft,
-                hoverElem: this.hoverElem,
-                moveEvent: this.moveEvent
-            });
+        if ($(this.wrapSelector).length) {
+            this.getParams();
+            this.setCursorPosition();
+
+            if (this.onMousemove) {
+                this.onMousemove({
+                    inWrap: this.inWrap,
+                    isLeft: this.isLeft,
+                    hoverElem: this.hoverElem,
+                    moveEvent: this.moveEvent
+                });
+            }
         }
     }
 
