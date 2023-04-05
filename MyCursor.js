@@ -1,7 +1,7 @@
 class MyCursor {
 
     constructor(obj) {
-        this.id = +new Date();
+        this.id = this.uniqid();
         this.cursor = $(obj.cursor);
         this.wrapSelector = obj.wrap ? obj.wrap : 'body';
         this.onMousemove = obj.onMousemove;
@@ -9,6 +9,11 @@ class MyCursor {
         this.setParams();
         this.wrapDefaultCursorOff();
         this.events();
+    }
+
+    uniqid() {
+        let sec = Date.now() * 1000 + Math.random() * 1000;
+        return sec.toString(16).replace(/\./g, "").padEnd(14, "0");
     }
 
     setParams = () => {
