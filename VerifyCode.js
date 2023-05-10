@@ -9,14 +9,17 @@ class VerifyCode {
     inputChange = (e) => {
         let input = $(e.currentTarget),
             inputVal = $.trim(input.val()),
-            nextInput = this.getNextInput();
+            nextInput = this.getNextInput(),
+            code = this.getCode();
+
+        if (typeof this.onChange === 'function') {
+            this.onChange(code);
+        }
 
         if (inputVal) {
             if (nextInput.length) {
                 nextInput.trigger('focus');
             } else {
-                let code = this.getCode();
-
                 if (code.length == this.inputsCount()) {
                     if (typeof this.onFill === 'function') {
                         this.onFill(code);
