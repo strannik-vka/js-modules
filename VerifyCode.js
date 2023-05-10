@@ -6,6 +6,14 @@ class VerifyCode {
         this.events();
     }
 
+    focus() {
+        $(this.selector + ' input:eq(0)').trigger('focus');
+    }
+
+    clear() {
+        $(this.selector + ' input').val('');
+    }
+
     inputChange = (e) => {
         let input = $(e.currentTarget),
             inputVal = $.trim(input.val()),
