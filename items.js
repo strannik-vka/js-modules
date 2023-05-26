@@ -269,7 +269,7 @@ window.items = {
 
                 var html = $(model.modal.outerHTML);
 
-                html = items.dataInHtml(html, data);
+                html = items.dataInHtml(html, data, model);
 
                 if (typeof model.modal.html === 'function') {
                     html = model.modal.html(html, data);
