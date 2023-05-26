@@ -5,11 +5,6 @@
  * Built on DevBridge Autocomplete for jQuery (https://github.com/devbridge/jQuery-Autocomplete)
  * For details, see https://github.com/hflabs/suggestions-jquery
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
-	typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-	(factory(global.jQuery));
-}(this, (function ($) { 'use strict';
 
 $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
@@ -20,21 +15,21 @@ var lang_util = {
     /**
      * Проверяет, является ли аргумент массивом.
      */
-    isArray: function(array) {
+    isArray: function (array) {
         return Array.isArray(array);
     },
 
     /**
      * Проверяет, является ли аргумент функцией.
      */
-    isFunction: function(it) {
+    isFunction: function (it) {
         return Object.prototype.toString.call(it) === "[object Function]";
     },
 
     /**
      * Проверяет, является ли аргумент пустым объектом ({}).
      */
-    isEmptyObject: function(obj) {
+    isEmptyObject: function (obj) {
         return Object.keys(obj).length === 0 && obj.constructor === Object;
     },
 
@@ -42,7 +37,7 @@ var lang_util = {
      * Проверяет, является ли аргумент «обычным» объектом
      * (не undefiend, не null, не DOM-элемент)
      */
-    isPlainObject: function(obj) {
+    isPlainObject: function (obj) {
         if (
             obj === undefined ||
             typeof obj !== "object" ||
@@ -72,8 +67,8 @@ var collection_util = {
     /**
      * Возвращает массив без пустых элементов
      */
-    compact: function(array) {
-        return array.filter(function(el) {
+    compact: function (array) {
+        return array.filter(function (el) {
             return !!el;
         });
     },
@@ -84,14 +79,14 @@ var collection_util = {
      * @param {Object|Array} obj - массив или объект
      * @param {eachCallback} callback - функция-обработчик
      */
-    each: function(obj, callback) {
+    each: function (obj, callback) {
         if (Array.isArray(obj)) {
-            obj.some(function(el, idx) {
+            obj.some(function (el, idx) {
                 return callback(el, idx) === false;
             });
             return;
         }
-        Object.keys(obj).some(function(key) {
+        Object.keys(obj).some(function (key) {
             var value = obj[key];
             return callback(value, key) === false;
         });
@@ -101,12 +96,12 @@ var collection_util = {
      * Пересечение массивов: ([1,2,3,4], [2,4,5,6]) => [2,4]
      * Исходные массивы не меняются.
      */
-    intersect: function(array1, array2) {
+    intersect: function (array1, array2) {
         var result = [];
         if (!Array.isArray(array1) || !Array.isArray(array2)) {
             return result;
         }
-        return array1.filter(function(el) {
+        return array1.filter(function (el) {
             return array2.indexOf(el) !== -1;
         });
     },
@@ -115,11 +110,11 @@ var collection_util = {
      * Разность массивов: ([1,2,3,4], [2,4,5,6]) => [1,3]
      * Исходные массивы не меняются.
      */
-    minus: function(array1, array2) {
+    minus: function (array1, array2) {
         if (!array2 || array2.length === 0) {
             return array1;
         }
-        return array1.filter(function(el) {
+        return array1.filter(function (el) {
             return array2.indexOf(el) === -1;
         });
     },
@@ -128,7 +123,7 @@ var collection_util = {
      * Обрачивает переданный объект в массив.
      * Если передан массив, возвращает его копию.
      */
-    makeArray: function(arrayLike) {
+    makeArray: function (arrayLike) {
         if (lang_util.isArray(arrayLike)) {
             return Array.prototype.slice.call(arrayLike);
         } else {
@@ -141,12 +136,12 @@ var collection_util = {
      * Если элемент второго массива включает в себя элемент первого,
      * элементы считаются равными.
      */
-    minusWithPartialMatching: function(array1, array2) {
+    minusWithPartialMatching: function (array1, array2) {
         if (!array2 || array2.length === 0) {
             return array1;
         }
-        return array1.filter(function(el) {
-            return !array2.some(function(el2) {
+        return array1.filter(function (el) {
+            return !array2.some(function (el2) {
                 return el2.indexOf(el) === 0;
             });
         });
@@ -157,7 +152,7 @@ var collection_util = {
      * @param obj - массив
      * @param start - индекс, начиная с которого надо скопировать
      */
-    slice: function(obj, start) {
+    slice: function (obj, start) {
         return Array.prototype.slice.call(obj, start);
     }
 };
@@ -171,7 +166,7 @@ var func_util = {
      * @param {Function} handler - функция
      * @param {number} delay - задержка в миллисекундах
      */
-    delay: function(handler, delay) {
+    delay: function (handler, delay) {
         return setTimeout(handler, delay || 0);
     }
 };
@@ -192,7 +187,7 @@ var object_util = {
         }
 
         if (typeof a == "object" && a != null && b != null) {
-            collection_util.each(a, function(value, i) {
+            collection_util.each(a, function (value, i) {
                 return (same = self(value, b[i]));
             });
             return same;
@@ -204,7 +199,7 @@ var object_util = {
     /**
      * Копирует свойства и их значения из исходных объектов в целевой
      */
-    assign: function(target, varArgs) {
+    assign: function (target, varArgs) {
         if (typeof Object.assign === "function") {
             return Object.assign.apply(null, arguments);
         }
@@ -239,7 +234,7 @@ var object_util = {
     /**
      * Клонирует объект глубоким копированием
      */
-    clone: function(obj) {
+    clone: function (obj) {
         return JSON.parse(JSON.stringify(obj));
     },
 
@@ -248,10 +243,10 @@ var object_util = {
      * (без undefined, null и '')
      * @param obj
      */
-    compact: function(obj) {
+    compact: function (obj) {
         var copy = object_util.clone(obj);
 
-        collection_util.each(copy, function(val, key) {
+        collection_util.each(copy, function (val, key) {
             if (val === null || val === undefined || val === "") {
                 delete copy[key];
             }
@@ -266,12 +261,12 @@ var object_util = {
      * @param {Array} fields - список названий полей, которые надо проверить
      * @returns {boolean}
      */
-    fieldsAreNotEmpty: function(obj, fields) {
+    fieldsAreNotEmpty: function (obj, fields) {
         if (!lang_util.isPlainObject(obj)) {
             return false;
         }
         var result = true;
-        collection_util.each(fields, function(field, i) {
+        collection_util.each(fields, function (field, i) {
             result = !!obj[field];
             return result;
         });
@@ -302,10 +297,10 @@ var object_util = {
      * @param {string} indexField - название поля с порядковым номером
      * @return {Object} карта объектов по их идентификаторам
      */
-    indexObjectsById: function(objectsArray, idField, indexField) {
+    indexObjectsById: function (objectsArray, idField, indexField) {
         var result = {};
 
-        collection_util.each(objectsArray, function(obj, idx) {
+        collection_util.each(objectsArray, function (obj, idx) {
             var key = obj[idField];
             var val = {};
 
@@ -361,7 +356,7 @@ var text_util = {
      * Заменяет амперсанд, угловые скобки и другие подобные символы
      * на HTML-коды
      */
-    escapeHtml: function(str) {
+    escapeHtml: function (str) {
         var map = {
             "&": "&amp;",
             "<": "&lt;",
@@ -372,7 +367,7 @@ var text_util = {
         };
 
         if (str) {
-            collection_util.each(map, function(html, ch) {
+            collection_util.each(map, function (html, ch) {
                 str = str.replace(new RegExp(ch, "g"), html);
             });
         }
@@ -383,21 +378,21 @@ var text_util = {
      * Эскейпирует символы RegExp-шаблона обратным слешем
      * (для передачи в конструктор регулярных выражений)
      */
-    escapeRegExChars: function(value) {
+    escapeRegExChars: function (value) {
         return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     },
 
     /**
      * Приводит слово к нижнему регистру и заменяет ё → е
      */
-    formatToken: function(token) {
+    formatToken: function (token) {
         return token && token.toLowerCase().replace(/[ёЁ]/g, "е");
     },
 
     /**
      * Возвращает регулярное выражение для разбивки строки на слова
      */
-    getWordExtractorRegExp: function() {
+    getWordExtractorRegExp: function () {
         return new RegExp(
             "([^" + WORD_DELIMITERS + "]*)([" + WORD_DELIMITERS + "]*)",
             "g"
@@ -407,7 +402,7 @@ var text_util = {
     /**
      * Вырезает из строки стоп-слова
      */
-    normalize: function(str, stopwords) {
+    normalize: function (str, stopwords) {
         return text_util.split(str, stopwords).join(" ");
     },
 
@@ -418,7 +413,7 @@ var text_util = {
      * @param padString  каким символом добивать
      * @returns строка указанной длины
      */
-    padEnd: function(sourceString, targetLength, padString) {
+    padEnd: function (sourceString, targetLength, padString) {
         if (String.prototype.padEnd) {
             return sourceString.padEnd(targetLength, padString);
         }
@@ -440,7 +435,7 @@ var text_util = {
      * отсеивает стоп-слова из списка.
      * Расклеивает буквы и цифры, написанные слитно.
      */
-    split: function(str, stopwords) {
+    split: function (str, stopwords) {
         var cleanStr = str
             .toLowerCase()
             .replace("ё", "е")
@@ -461,9 +456,9 @@ var text_util = {
      * Заменяет слова на составные части.
      * В отличие от withSubTokens, не сохраняет исходные слова.
      */
-    splitTokens: function(tokens) {
+    splitTokens: function (tokens) {
         var result = [];
-        collection_util.each(tokens, function(token, i) {
+        collection_util.each(tokens, function (token, i) {
             var subtokens = token.split(WORD_PARTS_SPLITTER);
             result = result.concat(collection_util.compact(subtokens));
         });
@@ -474,7 +469,7 @@ var text_util = {
      * Проверяет, включает ли строка 1 строку 2.
      * Если строки равны, возвращает false.
      */
-    stringEncloses: function(str1, str2) {
+    stringEncloses: function (str1, str2) {
         return (
             str1.length > str2.length &&
             str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1
@@ -490,7 +485,7 @@ var text_util = {
      * @param {Array} unformattableTokens - «нежелательные» слова
      * @return {Array} Массив атомарных слов
      */
-    tokenize: function(value, unformattableTokens) {
+    tokenize: function (value, unformattableTokens) {
         var tokens = collection_util.compact(
             text_util.formatToken(value).split(WORD_SPLITTER)
         );
@@ -511,9 +506,9 @@ var text_util = {
      * @param {Array} tokens - слова
      * @return {Array} Массив атомарных слов
      */
-    withSubTokens: function(tokens) {
+    withSubTokens: function (tokens) {
         var result = [];
-        collection_util.each(tokens, function(token, i) {
+        collection_util.each(tokens, function (token, i) {
             var subtokens = token.split(WORD_PARTS_SPLITTER);
             result.push(token);
             if (subtokens.length > 1) {
@@ -528,35 +523,35 @@ var text_util = {
  * jQuery API.
  */
 var jqapi = {
-    Deferred: function() {
+    Deferred: function () {
         return $.Deferred();
     },
 
-    ajax: function(settings) {
+    ajax: function (settings) {
         return $.ajax(settings);
     },
 
-    extend: function() {
+    extend: function () {
         return $.extend.apply(null, arguments);
     },
 
-    isJqObject: function(obj) {
+    isJqObject: function (obj) {
         return obj instanceof $;
     },
 
-    param: function(obj) {
+    param: function (obj) {
         return $.param(obj);
     },
 
-    proxy: function(func, context) {
+    proxy: function (func, context) {
         return $.proxy(func, context);
     },
 
-    select: function(selector) {
+    select: function (selector) {
         return $(selector);
     },
 
-    supportsCors: function() {
+    supportsCors: function () {
         return $.support.cors;
     }
 };
@@ -568,14 +563,14 @@ var ajax = {
     /**
      * HTTP-метод, который поддерживает браузер
      */
-    getDefaultType: function() {
+    getDefaultType: function () {
         return jqapi.supportsCors() ? "POST" : "GET";
     },
 
     /**
      * Content-type, который поддерживает браузер
      */
-    getDefaultContentType: function() {
+    getDefaultContentType: function () {
         return jqapi.supportsCors()
             ? "application/json"
             : "application/x-www-form-urlencoded";
@@ -584,7 +579,7 @@ var ajax = {
     /**
      * Меняет HTTPS на протокол страницы, если браузер не поддерживает CORS
      */
-    fixURLProtocol: function(url) {
+    fixURLProtocol: function (url) {
         return jqapi.supportsCors()
             ? url
             : url.replace(/^https?:/, location.protocol);
@@ -593,7 +588,7 @@ var ajax = {
     /**
      * Записывает параметры в GET-строку
      */
-    addUrlParams: function(url, params) {
+    addUrlParams: function (url, params) {
         return url + (/\?/.test(url) ? "&" : "?") + jqapi.param(params);
     },
 
@@ -602,9 +597,9 @@ var ajax = {
      * Либо в JSON-строку (если браузер поддерживает CORS),
      *   либо в GET-строку.
      */
-    serialize: function(data) {
+    serialize: function (data) {
         if (jqapi.supportsCors()) {
-            return JSON.stringify(data, function(key, value) {
+            return JSON.stringify(data, function (key, value) {
                 return value === null ? undefined : value;
             });
         } else {
@@ -618,9 +613,9 @@ var ajax = {
  * Возвращает автоинкрементный идентификатор.
  * @param {string} prefix - префикс для идентификатора
  */
-var generateId = (function() {
+var generateId = (function () {
     var counter = 0;
-    return function(prefix) {
+    return function (prefix) {
         return (prefix || "") + ++counter;
     };
 })();
@@ -716,7 +711,7 @@ var DEFAULT_OPTIONS = {
  * @returns {Function} same parent checker function
  */
 function sameParentChecker(preprocessFn) {
-    return function(suggestions) {
+    return function (suggestions) {
         if (suggestions.length === 0) {
             return false;
         }
@@ -725,7 +720,7 @@ function sameParentChecker(preprocessFn) {
         }
 
         var parentValue = preprocessFn(suggestions[0].value),
-            aliens = suggestions.filter(function(suggestion) {
+            aliens = suggestions.filter(function (suggestion) {
                 return (
                     preprocessFn(suggestion.value).indexOf(parentValue) !== 0
                 );
@@ -739,7 +734,7 @@ function sameParentChecker(preprocessFn) {
  * Default same parent checker. Compares raw values.
  * @type {Function}
  */
-var haveSameParent = sameParentChecker(function(val) {
+var haveSameParent = sameParentChecker(function (val) {
     return val;
 });
 
@@ -752,7 +747,7 @@ var haveSameParent = sameParentChecker(function(val) {
  * или -1, если подходящих нет или несколько.
  */
 function _matchByWords(stopwords, parentCheckerFn) {
-    return function(query, suggestions) {
+    return function (query, suggestions) {
         var queryTokens;
         var matches = [];
 
@@ -761,7 +756,7 @@ function _matchByWords(stopwords, parentCheckerFn) {
                 text_util.split(query, stopwords)
             );
 
-            collection_util.each(suggestions, function(suggestion, i) {
+            collection_util.each(suggestions, function (suggestion, i) {
                 var suggestedValue = suggestion.value;
 
                 if (text_util.stringEncloses(query, suggestedValue)) {
@@ -794,12 +789,12 @@ var matchers = {
     /**
      * Matches query against suggestions, removing all the stopwords.
      */
-    matchByNormalizedQuery: function(stopwords) {
-        return function(query, suggestions) {
+    matchByNormalizedQuery: function (stopwords) {
+        return function (query, suggestions) {
             var normalizedQuery = text_util.normalize(query, stopwords);
             var matches = [];
 
-            collection_util.each(suggestions, function(suggestion, i) {
+            collection_util.each(suggestions, function (suggestion, i) {
                 var suggestedValue = suggestion.value.toLowerCase();
                 // if query encloses suggestion, than it has already been selected
                 // so we should not select it anymore
@@ -823,11 +818,11 @@ var matchers = {
         };
     },
 
-    matchByWords: function(stopwords) {
+    matchByWords: function (stopwords) {
         return _matchByWords(stopwords, haveSameParent);
     },
 
-    matchByWordsAddress: function(stopwords) {
+    matchByWordsAddress: function (stopwords) {
         return _matchByWords(stopwords, haveSameParent);
     },
 
@@ -838,14 +833,14 @@ var matchers = {
      * uses partial matching:
      *   "0445" vs { value: "ALFA-BANK", data: { "bic": "044525593" }} is a match
      */
-    matchByFields: function(fields) {
-        return function(query, suggestions) {
+    matchByFields: function (fields) {
+        return function (query, suggestions) {
             var tokens = text_util.splitTokens(text_util.split(query));
             var suggestionWords = [];
 
             if (suggestions.length === 1) {
                 if (fields) {
-                    collection_util.each(fields, function(stopwords, field) {
+                    collection_util.each(fields, function (stopwords, field) {
                         var fieldValue = object_util.getDeepValue(
                             suggestions[0],
                             field
@@ -1274,11 +1269,11 @@ var ADDRESS_TYPE = {
         from_bound: null,
         to_bound: null
     },
-    getEnrichmentQuery: function(suggestion) {
+    getEnrichmentQuery: function (suggestion) {
         return suggestion.unrestricted_value;
     },
     geoEnabled: true,
-    isDataComplete: function(suggestion) {
+    isDataComplete: function (suggestion) {
         var fields = [this.bounds.to || "flat"],
             data = suggestion.data;
 
@@ -1287,7 +1282,7 @@ var ADDRESS_TYPE = {
             object_util.fieldsAreNotEmpty(data, fields)
         );
     },
-    composeValue: function(data, options) {
+    composeValue: function (data, options) {
         var country = data.country,
             region =
                 data.region_with_type ||
@@ -1374,17 +1369,17 @@ var ADDRESS_TYPE = {
 
         return result;
     },
-    formatResult: (function() {
+    formatResult: (function () {
         var componentsUnderCityDistrict = [],
             _underCityDistrict = false;
 
-        ADDRESS_COMPONENTS.forEach(function(component) {
+        ADDRESS_COMPONENTS.forEach(function (component) {
             if (_underCityDistrict)
                 componentsUnderCityDistrict.push(component.id);
             if (component.id === "city_district") _underCityDistrict = true;
         });
 
-        return function(value, currentValue, suggestion, options) {
+        return function (value, currentValue, suggestion, options) {
             var that = this,
                 district =
                     suggestion.data && suggestion.data.city_district_with_type,
@@ -1443,12 +1438,12 @@ var ADDRESS_TYPE = {
      * Возвращает список слов в запросе,
      * которые не встречаются в подсказке
      */
-    findUnusedTokens: function(tokens, value) {
+    findUnusedTokens: function (tokens, value) {
         var tokenIndex,
             token,
             unused = [];
 
-        unused = tokens.filter(function(token) {
+        unused = tokens.filter(function (token) {
             return value.indexOf(token) === -1;
         });
 
@@ -1459,7 +1454,7 @@ var ADDRESS_TYPE = {
      * Возвращает исторические названия для слов запроса,
      * для которых не найдено совпадения в основном значении подсказки
      */
-    getFormattedHistoryValues: function(unusedTokens, historyValues) {
+    getFormattedHistoryValues: function (unusedTokens, historyValues) {
         var tokenIndex,
             token,
             historyValueIndex,
@@ -1467,8 +1462,8 @@ var ADDRESS_TYPE = {
             values = [],
             formatted = "";
 
-        historyValues.forEach(function(historyValue) {
-            collection_util.each(unusedTokens, function(token) {
+        historyValues.forEach(function (historyValue) {
+            collection_util.each(unusedTokens, function (token) {
                 if (historyValue.toLowerCase().indexOf(token) >= 0) {
                     values.push(historyValue);
                     return false;
@@ -1490,7 +1485,7 @@ var ADDRESS_TYPE = {
      * @param options.hasSameValues
      * @param options.hasBeenEnreached
      */
-    getSuggestionValue: function(instance, options) {
+    getSuggestionValue: function (instance, options) {
         var formattedValue = null;
 
         if (options.hasSameValues) {
@@ -1527,7 +1522,7 @@ var ADDRESS_TYPE = {
     /*
      * Compose suggestion value with respect to constraints
      */
-    getValueWithinConstraints: function(instance, suggestion, options) {
+    getValueWithinConstraints: function (instance, suggestion, options) {
         return this.composeValue(
             instance.getUnrestrictedData(suggestion.data),
             options
@@ -1536,7 +1531,7 @@ var ADDRESS_TYPE = {
     /*
      * Compose suggestion value with respect to bounds
      */
-    getValueWithinBounds: function(instance, suggestion, options) {
+    getValueWithinBounds: function (instance, suggestion, options) {
         // для корректного составления адреса нужен city_district_fias_id
         var data = instance.copyDataComponents(
             suggestion.data,
@@ -1766,7 +1761,7 @@ var FIAS_TYPE = {
         "index"
     ),
     unformattableTokens: ADDRESS_STOPWORDS,
-    isDataComplete: function(suggestion) {
+    isDataComplete: function (suggestion) {
         var fields = [this.bounds.to || "house"],
             data = suggestion.data;
 
@@ -1775,7 +1770,7 @@ var FIAS_TYPE = {
             object_util.fieldsAreNotEmpty(data, fields)
         );
     },
-    composeValue: function(data, options) {
+    composeValue: function (data, options) {
         var country = data.country,
             region =
                 data.region_with_type ||
@@ -1872,8 +1867,8 @@ var FIAS_TYPE = {
 
         return result;
     },
-    formatResult: (function() {
-        return function(value, currentValue, suggestion, options) {
+    formatResult: (function () {
+        return function (value, currentValue, suggestion, options) {
             var that = this;
 
             value = that.highlightMatches(
@@ -1899,10 +1894,10 @@ function valueStartsWith(suggestion, field) {
         fieldValue &&
         new RegExp(
             "^" +
-                text_util.escapeRegExChars(fieldValue) +
-                "([" +
-                WORD_DELIMITERS +
-                "]|$)",
+            text_util.escapeRegExChars(fieldValue) +
+            "([" +
+            WORD_DELIMITERS +
+            "]|$)",
             "i"
         ).test(suggestion.value)
     );
@@ -1918,7 +1913,7 @@ var NAME_TYPE = {
         name: "имя",
         patronymic: "отчество"
     },
-    isDataComplete: function(suggestion) {
+    isDataComplete: function (suggestion) {
         var that = this,
             params = that.options.params,
             data = suggestion.data,
@@ -1928,7 +1923,7 @@ var NAME_TYPE = {
             params = params.call(that.element, suggestion.value);
         }
         if (params && params.parts) {
-            fields = params.parts.map(function(part) {
+            fields = params.parts.map(function (part) {
                 return part.toLowerCase();
             });
         } else {
@@ -1941,7 +1936,7 @@ var NAME_TYPE = {
         }
         return object_util.fieldsAreNotEmpty(data, fields);
     },
-    composeValue: function(data) {
+    composeValue: function (data) {
         return collection_util
             .compact([data.surname, data.name, data.patronymic])
             .join(" ");
@@ -1999,11 +1994,11 @@ var PARTY_TYPE = {
         count: 1,
         locations_boost: null
     },
-    getEnrichmentQuery: function(suggestion) {
+    getEnrichmentQuery: function (suggestion) {
         return suggestion.data.hid;
     },
     geoEnabled: true,
-    formatResult: function(value, currentValue, suggestion, options) {
+    formatResult: function (value, currentValue, suggestion, options) {
         var that = this,
             formattedInn = that.type.formatResultInn.call(
                 that,
@@ -2049,12 +2044,12 @@ var PARTY_TYPE = {
                 address = address.replace(
                     new RegExp(
                         "^([^" +
-                            WORD_DELIMITERS +
-                            "]+[" +
-                            WORD_DELIMITERS +
-                            "]+[^" +
-                            WORD_DELIMITERS +
-                            "]+).*"
+                        WORD_DELIMITERS +
+                        "]+[" +
+                        WORD_DELIMITERS +
+                        "]+[^" +
+                        WORD_DELIMITERS +
+                        "]+).*"
                     ),
                     "$1"
                 );
@@ -2085,7 +2080,7 @@ var PARTY_TYPE = {
         }
         return value;
     },
-    formatResultInn: function(suggestion, currentValue) {
+    formatResultInn: function (suggestion, currentValue) {
         var that = this,
             inn = suggestion.data && suggestion.data.inn,
             innPartsLength =
@@ -2098,7 +2093,7 @@ var PARTY_TYPE = {
             formattedInn = that.highlightMatches(inn, currentValue, suggestion);
             if (innPartsLength) {
                 formattedInn = formattedInn.split("");
-                innParts = innPartsLength.map(function(partLength) {
+                innParts = innPartsLength.map(function (partLength) {
                     var formattedPart = "",
                         ch;
 
@@ -2112,8 +2107,8 @@ var PARTY_TYPE = {
                 formattedInn =
                     innParts.join(
                         '<span class="' +
-                            that.classes.subtext_delimiter +
-                            '"></span>'
+                        that.classes.subtext_delimiter +
+                        '"></span>'
                     ) + formattedInn.join("");
             }
 
@@ -2126,7 +2121,7 @@ var EMAIL_TYPE = {
     urlSuffix: "email",
     noSuggestionsHint: false,
     matchers: [matchers.matchByNormalizedQuery()],
-    isQueryRequestable: function(query) {
+    isQueryRequestable: function (query) {
         return this.options.suggest_local || query.indexOf("@") >= 0;
     }
 };
@@ -2146,7 +2141,7 @@ var BANK_TYPE = {
     ],
     dataComponents: ADDRESS_COMPONENTS,
     geoEnabled: true,
-    formatResult: function(value, currentValue, suggestion, options) {
+    formatResult: function (value, currentValue, suggestion, options) {
         var that = this,
             formattedBIC = that.highlightMatches(
                 object_util.getDeepValue(suggestion.data, "bic"),
@@ -2167,12 +2162,12 @@ var BANK_TYPE = {
                 address = address.replace(
                     new RegExp(
                         "^([^" +
-                            WORD_DELIMITERS +
-                            "]+[" +
-                            WORD_DELIMITERS +
-                            "]+[^" +
-                            WORD_DELIMITERS +
-                            "]+).*"
+                        WORD_DELIMITERS +
+                        "]+[" +
+                        WORD_DELIMITERS +
+                        "]+[^" +
+                        WORD_DELIMITERS +
+                        "]+).*"
                     ),
                     "$1"
                 );
@@ -2203,7 +2198,7 @@ var BANK_TYPE = {
         }
         return value;
     },
-    formatSelected: function(suggestion) {
+    formatSelected: function (suggestion) {
         return (
             object_util.getDeepValue(suggestion, "data.name.payment") || null
         );
@@ -2250,7 +2245,7 @@ var types = {
     BANK: BANK_TYPE
 };
 
-types.get = function(type) {
+types.get = function (type) {
     if (types.hasOwnProperty(type)) {
         return types[type];
     } else {
@@ -2265,12 +2260,12 @@ jqapi.extend(DEFAULT_OPTIONS, {
 var notificator = {
     chains: {},
 
-    on: function(name, method) {
+    on: function (name, method) {
         this.get(name).push(method);
         return this;
     },
 
-    get: function(name) {
+    get: function (name) {
         var chains = this.chains;
         return chains[name] || (chains[name] = []);
     }
@@ -2369,7 +2364,7 @@ function Suggestions(el, options) {
 Suggestions.prototype = {
     // Creation and destruction
 
-    initialize: function() {
+    initialize: function () {
         var that = this;
         that.uniqueId = utils.uniqueId("i");
         that.createWrapper();
@@ -2383,34 +2378,34 @@ Suggestions.prototype = {
     /**
      * Initialize when element is firstly interacted
      */
-    deferInitialization: function() {
+    deferInitialization: function () {
         var that = this,
             events = "mouseover focus keydown",
             timer,
-            callback = function() {
+            callback = function () {
                 that.initializer.resolve();
                 that.enable();
             };
 
-        that.initializer.always(function() {
+        that.initializer.always(function () {
             that.el.off(events, callback);
             clearInterval(timer);
         });
 
         that.disabled = true;
         that.el.on(events, callback);
-        timer = setInterval(function() {
+        timer = setInterval(function () {
             if (that.el.is(":visible")) {
                 callback();
             }
         }, that.options.initializeInterval);
     },
 
-    isInitialized: function() {
+    isInitialized: function () {
         return this.initializer.state() === "resolved";
     },
 
-    dispose: function() {
+    dispose: function () {
         var that = this;
         that.initializer.reject();
         that.notify("dispose");
@@ -2420,16 +2415,16 @@ Suggestions.prototype = {
         that.el.trigger("suggestions-dispose");
     },
 
-    notify: function(chainName) {
+    notify: function (chainName) {
         var that = this,
             args = utils.slice(arguments, 1);
 
-        return $.map(notificator.get(chainName), function(method) {
+        return $.map(notificator.get(chainName), function (method) {
             return method.apply(that, args);
         });
     },
 
-    createWrapper: function() {
+    createWrapper: function () {
         var that = this;
 
         that.$wrapper = $('<div class="suggestions-wrapper"/>');
@@ -2441,7 +2436,7 @@ Suggestions.prototype = {
         );
     },
 
-    removeWrapper: function() {
+    removeWrapper: function () {
         var that = this;
 
         if (that.$wrapper) {
@@ -2454,7 +2449,7 @@ Suggestions.prototype = {
      * when suggestion is clicked (blur leads to suggestions hide, so we need to prevent it).
      * See https://github.com/jquery/jquery-ui/blob/master/ui/autocomplete.js for details
      */
-    onMousedown: function(e) {
+    onMousedown: function (e) {
         var that = this;
 
         // prevent moving focus out of the text field
@@ -2463,7 +2458,7 @@ Suggestions.prototype = {
         // IE doesn't prevent moving focus even with e.preventDefault()
         // so we set a flag to know when we should ignore the blur event
         that.cancelBlur = true;
-        utils.delay(function() {
+        utils.delay(function () {
             delete that.cancelBlur;
         });
 
@@ -2472,8 +2467,8 @@ Suggestions.prototype = {
         // so we have to track the next mousedown and close the menu if
         // the user clicks somewhere outside of the autocomplete
         if ($(e.target).closest(".ui-menu-item").length == 0) {
-            utils.delay(function() {
-                $(document).one("mousedown", function(e) {
+            utils.delay(function () {
+                $(document).one("mousedown", function (e) {
                     var $elements = that.el
                         .add(that.$wrapper)
                         .add(that.options.$helpers);
@@ -2482,7 +2477,7 @@ Suggestions.prototype = {
                         $elements = $elements.add(that.$container);
                     }
 
-                    $elements = $elements.filter(function() {
+                    $elements = $elements.filter(function () {
                         return this === e.target || $.contains(this, e.target);
                     });
 
@@ -2494,16 +2489,16 @@ Suggestions.prototype = {
         }
     },
 
-    bindWindowEvents: function() {
+    bindWindowEvents: function () {
         var handler = $.proxy(this.inferIsMobile, this);
         this.$viewport.on("resize" + EVENT_NS + this.uniqueId, handler);
     },
 
-    unbindWindowEvents: function() {
+    unbindWindowEvents: function () {
         this.$viewport.off("resize" + EVENT_NS + this.uniqueId);
     },
 
-    scrollToTop: function() {
+    scrollToTop: function () {
         var that = this,
             scrollTarget = that.options.scrollOnFocus;
 
@@ -2522,7 +2517,7 @@ Suggestions.prototype = {
 
     // Configuration methods
 
-    setOptions: function(suppliedOptions) {
+    setOptions: function (suppliedOptions) {
         var that = this;
 
         $.extend(that.options, suppliedOptions);
@@ -2534,16 +2529,16 @@ Suggestions.prototype = {
             {
                 requestMode: requestModes
             },
-            function(option, available) {
+            function (option, available) {
                 that[option] = available[that.options[option]];
                 if (!that[option]) {
                     that.disable();
                     throw "`" +
-                        option +
-                        "` option is incorrect! Must be one of: " +
-                        $.map(available, function(value, name) {
-                            return '"' + name + '"';
-                        }).join(", ");
+                    option +
+                    "` option is incorrect! Must be one of: " +
+                    $.map(available, function (value, name) {
+                        return '"' + name + '"';
+                    }).join(", ");
                 }
             }
         );
@@ -2559,17 +2554,17 @@ Suggestions.prototype = {
 
     // Common public methods
 
-    inferIsMobile: function() {
+    inferIsMobile: function () {
         this.isMobile = this.$viewport.width() <= this.options.mobileWidth;
     },
 
-    clearCache: function() {
+    clearCache: function () {
         this.cachedResponse = {};
         this.enrichmentCache = {};
         this.badQueries = [];
     },
 
-    clear: function() {
+    clear: function () {
         var that = this,
             currentSelection = that.selection;
 
@@ -2586,7 +2581,7 @@ Suggestions.prototype = {
         }
     },
 
-    disable: function() {
+    disable: function () {
         var that = this;
 
         that.disabled = true;
@@ -2596,15 +2591,15 @@ Suggestions.prototype = {
         }
     },
 
-    enable: function() {
+    enable: function () {
         this.disabled = false;
     },
 
-    isUnavailable: function() {
+    isUnavailable: function () {
         return this.disabled;
     },
 
-    update: function() {
+    update: function () {
         var that = this,
             query = that.el.val();
 
@@ -2618,7 +2613,7 @@ Suggestions.prototype = {
         }
     },
 
-    setSuggestion: function(suggestion) {
+    setSuggestion: function (suggestion) {
         var that = this,
             data,
             value;
@@ -2666,20 +2661,20 @@ Suggestions.prototype = {
      * Fetch full object for current INPUT's value
      * if no suitable object found, clean input element
      */
-    fixData: function() {
+    fixData: function () {
         var that = this,
             fullQuery = that.extendedCurrentValue(),
             currentValue = that.el.val(),
             resolver = $.Deferred();
 
         resolver
-            .done(function(suggestion) {
+            .done(function (suggestion) {
                 that.selectSuggestion(suggestion, 0, currentValue, {
                     hasBeenEnriched: true
                 });
                 that.el.trigger("suggestions-fixdata", suggestion);
             })
-            .fail(function() {
+            .fail(function () {
                 that.selection = null;
                 that.el.trigger("suggestions-fixdata");
             });
@@ -2691,7 +2686,7 @@ Suggestions.prototype = {
                 from_bound: null,
                 to_bound: null
             })
-                .done(function(suggestions) {
+                .done(function (suggestions) {
                     // data fetched
                     var suggestion = suggestions[0];
                     if (suggestion) {
@@ -2700,7 +2695,7 @@ Suggestions.prototype = {
                         resolver.reject();
                     }
                 })
-                .fail(function() {
+                .fail(function () {
                     // no data fetched
                     resolver.reject();
                 });
@@ -2715,7 +2710,7 @@ Suggestions.prototype = {
      * Looks up parent instances
      * @returns {String} current value prepended by parents' values
      */
-    extendedCurrentValue: function() {
+    extendedCurrentValue: function () {
         var that = this,
             parentInstance = that.getParentInstance(),
             parentValue =
@@ -2725,7 +2720,7 @@ Suggestions.prototype = {
         return utils.compact([parentValue, currentValue]).join(" ");
     },
 
-    getAjaxParams: function(method, custom) {
+    getAjaxParams: function (method, custom) {
         var that = this,
             token = $.trim(that.options.token),
             partner = $.trim(that.options.partner),
@@ -2790,7 +2785,7 @@ Suggestions.prototype = {
         return $.extend(params, custom);
     },
 
-    isQueryRequestable: function(query) {
+    isQueryRequestable: function (query) {
         var that = this,
             result;
 
@@ -2803,7 +2798,7 @@ Suggestions.prototype = {
         return result;
     },
 
-    constructRequestParams: function(query, customParams) {
+    constructRequestParams: function (query, customParams) {
         var that = this,
             options = that.options,
             params = $.isFunction(options.params)
@@ -2813,7 +2808,7 @@ Suggestions.prototype = {
         if (that.type.constructRequestParams) {
             $.extend(params, that.type.constructRequestParams.call(that));
         }
-        $.each(that.notify("requestParams"), function(i, hookParams) {
+        $.each(that.notify("requestParams"), function (i, hookParams) {
             $.extend(params, hookParams);
         });
         params[options.paramName] = query;
@@ -2827,12 +2822,12 @@ Suggestions.prototype = {
         return $.extend(params, customParams);
     },
 
-    updateSuggestions: function(query) {
+    updateSuggestions: function (query) {
         var that = this;
 
         that.fetchPhase = that
             .getSuggestions(query)
-            .done(function(suggestions) {
+            .done(function (suggestions) {
                 that.assignSuggestions(suggestions, query);
             });
     },
@@ -2846,7 +2841,7 @@ Suggestions.prototype = {
      * @param {Boolean} [requestOptions.useEnrichmentCache]
      * @return {$.Deferred} waiter which is to be resolved with suggestions as argument
      */
-    getSuggestions: function(query, customParams, requestOptions) {
+    getSuggestions: function (query, customParams, requestOptions) {
         var response,
             that = this,
             options = that.options,
@@ -2874,7 +2869,7 @@ Suggestions.prototype = {
                     resolver.reject();
                 } else {
                     that.doGetSuggestions(params, method)
-                        .done(function(response) {
+                        .done(function (response) {
                             // if response is correct and current value has not been changed
                             if (
                                 that.processResponse(response) &&
@@ -2911,7 +2906,7 @@ Suggestions.prototype = {
                                 );
                             }
                         })
-                        .fail(function(jqXHR, textStatus, errorThrown) {
+                        .fail(function (jqXHR, textStatus, errorThrown) {
                             resolver.reject();
                             if (!noCallbacks && textStatus !== "abort") {
                                 options.onSearchError.call(
@@ -2934,7 +2929,7 @@ Suggestions.prototype = {
      * @param {Object} params request params
      * @returns {$.Deferred} response promise
      */
-    doGetSuggestions: function(params, method) {
+    doGetSuggestions: function (params, method) {
         var that = this,
             request = $.ajax(
                 that.getAjaxParams(method, { data: utils.serialize(params) })
@@ -2944,7 +2939,7 @@ Suggestions.prototype = {
         that.currentRequest = request;
         that.notify("request");
 
-        request.always(function() {
+        request.always(function () {
             that.currentRequest = null;
             that.notify("request");
         });
@@ -2952,19 +2947,19 @@ Suggestions.prototype = {
         return request;
     },
 
-    isBadQuery: function(q) {
+    isBadQuery: function (q) {
         if (!this.options.preventBadQueries) {
             return false;
         }
 
         var result = false;
-        $.each(this.badQueries, function(i, query) {
+        $.each(this.badQueries, function (i, query) {
             return !(result = q.indexOf(query) === 0);
         });
         return result;
     },
 
-    abortRequest: function() {
+    abortRequest: function () {
         var that = this;
 
         if (that.currentRequest) {
@@ -2976,7 +2971,7 @@ Suggestions.prototype = {
      * Checks response format and data
      * @return {Boolean} response contains acceptable data
      */
-    processResponse: function(response) {
+    processResponse: function (response) {
         var that = this,
             suggestions;
 
@@ -3000,9 +2995,9 @@ Suggestions.prototype = {
         return true;
     },
 
-    verifySuggestionsFormat: function(suggestions) {
+    verifySuggestionsFormat: function (suggestions) {
         if (typeof suggestions[0] === "string") {
-            $.each(suggestions, function(i, value) {
+            $.each(suggestions, function (i, value) {
                 suggestions[i] = { value: value, data: null };
             });
         }
@@ -3017,7 +3012,7 @@ Suggestions.prototype = {
      * @param {boolean} selectionOptions.hasSameValues
      * @return {string}
      */
-    getSuggestionValue: function(suggestion, selectionOptions) {
+    getSuggestionValue: function (suggestion, selectionOptions) {
         var that = this,
             formatSelected =
                 that.options.formatSelected || that.type.formatSelected,
@@ -3050,10 +3045,10 @@ Suggestions.prototype = {
         return formattedValue;
     },
 
-    hasSameValues: function(suggestion) {
+    hasSameValues: function (suggestion) {
         var hasSame = false;
 
-        $.each(this.suggestions, function(i, anotherSuggestion) {
+        $.each(this.suggestions, function (i, anotherSuggestion) {
             if (
                 anotherSuggestion.value === suggestion.value &&
                 anotherSuggestion !== suggestion
@@ -3066,13 +3061,13 @@ Suggestions.prototype = {
         return hasSame;
     },
 
-    assignSuggestions: function(suggestions, query) {
+    assignSuggestions: function (suggestions, query) {
         var that = this;
         that.suggestions = suggestions;
         that.notify("assignSuggestions", query);
     },
 
-    shouldRestrictValues: function() {
+    shouldRestrictValues: function () {
         var that = this;
         // treat suggestions value as restricted only if there is one constraint
         // and restrict_value is true
@@ -3086,12 +3081,12 @@ Suggestions.prototype = {
     /**
      * Fills suggestion.unrestricted_value property
      */
-    setUnrestrictedValues: function(suggestions) {
+    setUnrestrictedValues: function (suggestions) {
         var that = this,
             shouldRestrict = that.shouldRestrictValues(),
             label = that.getFirstConstraintLabel();
 
-        $.each(suggestions, function(i, suggestion) {
+        $.each(suggestions, function (i, suggestion) {
             if (!suggestion.unrestricted_value) {
                 suggestion.unrestricted_value = shouldRestrict
                     ? label + ", " + suggestion.value
@@ -3100,11 +3095,11 @@ Suggestions.prototype = {
         });
     },
 
-    areSuggestionsSame: function(a, b) {
+    areSuggestionsSame: function (a, b) {
         return a && b && a.value === b.value && utils.areSame(a.data, b.data);
     },
 
-    getNoSuggestionsHint: function() {
+    getNoSuggestionsHint: function () {
         var that = this;
         if (that.options.noSuggestionsHint === false) {
             return false;
@@ -3118,7 +3113,7 @@ Suggestions.prototype = {
  */
 
 var methods = {
-    setupElement: function() {
+    setupElement: function () {
         // Remove autocomplete attribute to prevent native suggestions:
         this.el
             // if it stops working, see https://stackoverflow.com/q/15738259
@@ -3131,7 +3126,7 @@ var methods = {
             .css("box-sizing", "border-box");
     },
 
-    bindElementEvents: function() {
+    bindElementEvents: function () {
         var that = this;
 
         that.el.on("keydown" + EVENT_NS, $.proxy(that.onElementKeyDown, that));
@@ -3149,11 +3144,11 @@ var methods = {
         that.el.on("focus" + EVENT_NS, $.proxy(that.onElementFocus, that));
     },
 
-    unbindElementEvents: function() {
+    unbindElementEvents: function () {
         this.el.off(EVENT_NS);
     },
 
-    onElementBlur: function() {
+    onElementBlur: function () {
         var that = this;
 
         // suggestion was clicked, blur should be ignored
@@ -3165,7 +3160,7 @@ var methods = {
 
         if (that.options.triggerSelectOnBlur) {
             if (!that.isUnavailable()) {
-                that.selectCurrentValue({ noSpace: true }).always(function() {
+                that.selectCurrentValue({ noSpace: true }).always(function () {
                     // For NAMEs selecting keeps suggestions list visible, so hide it
                     that.hide();
                 });
@@ -3179,7 +3174,7 @@ var methods = {
         }
     },
 
-    onElementFocus: function() {
+    onElementFocus: function () {
         var that = this;
 
         if (!that.cancelFocus) {
@@ -3189,7 +3184,7 @@ var methods = {
         that.cancelFocus = false;
     },
 
-    onElementKeyDown: function(e) {
+    onElementKeyDown: function (e) {
         var that = this;
 
         if (that.isUnavailable()) {
@@ -3237,7 +3232,7 @@ var methods = {
                     that.selectCurrentValue({
                         continueSelecting: true,
                         dontEnrich: true
-                    }).fail(function() {
+                    }).fail(function () {
                         // If all data fetched but nothing selected
                         that.currentValue += " ";
                         that.el.val(that.currentValue);
@@ -3260,7 +3255,7 @@ var methods = {
         e.preventDefault();
     },
 
-    onElementKeyUp: function(e) {
+    onElementKeyUp: function (e) {
         var that = this;
 
         if (that.isUnavailable()) {
@@ -3283,7 +3278,7 @@ var methods = {
         }
     },
 
-    proceedChangedValue: function() {
+    proceedChangedValue: function () {
         var that = this;
 
         // Cancel fetching, because it became obsolete
@@ -3293,7 +3288,7 @@ var methods = {
 
         if (that.options.deferRequestBy > 0) {
             // Defer lookup in case when value changes very quickly:
-            that.onChangeTimeout = utils.delay(function() {
+            that.onChangeTimeout = utils.delay(function () {
                 that.inputPhase.resolve();
             }, that.options.deferRequestBy);
         } else {
@@ -3301,7 +3296,7 @@ var methods = {
         }
     },
 
-    onValueChange: function() {
+    onValueChange: function () {
         var that = this,
             currentSelection;
 
@@ -3317,7 +3312,7 @@ var methods = {
         that.notify("valueChange");
     },
 
-    completeOnFocus: function() {
+    completeOnFocus: function () {
         var that = this;
 
         if (that.isUnavailable()) {
@@ -3333,18 +3328,18 @@ var methods = {
         }
     },
 
-    isElementFocused: function() {
+    isElementFocused: function () {
         return document.activeElement === this.element;
     },
 
-    isElementDisabled: function() {
+    isElementDisabled: function () {
         return Boolean(
             this.element.getAttribute("disabled") ||
-                this.element.getAttribute("readonly")
+            this.element.getAttribute("readonly")
         );
     },
 
-    isCursorAtEnd: function() {
+    isCursorAtEnd: function () {
         var that = this,
             valLength = that.el.val().length,
             selectionStart,
@@ -3356,7 +3351,7 @@ var methods = {
             if (typeof selectionStart === "number") {
                 return selectionStart === valLength;
             }
-        } catch (ex) {}
+        } catch (ex) { }
 
         if (document.selection) {
             range = document.selection.createRange();
@@ -3366,7 +3361,7 @@ var methods = {
         return true;
     },
 
-    setCursorAtEnd: function() {
+    setCursorAtEnd: function () {
         var element = this.element;
 
         // `selectionStart` and `selectionEnd` are not supported by some input types
@@ -3394,7 +3389,7 @@ notificator
 var statusRequests = {};
 
 function resetTokens() {
-    utils.each(statusRequests, function(req) {
+    utils.each(statusRequests, function (req) {
         req.abort();
     });
     statusRequests = {};
@@ -3403,7 +3398,7 @@ function resetTokens() {
 resetTokens();
 
 var methods$1 = {
-    checkStatus: function() {
+    checkStatus: function () {
         var that = this,
             token = (that.options.token && that.options.token.trim()) || "",
             requestKey = that.options.type + token,
@@ -3416,7 +3411,7 @@ var methods$1 = {
         }
 
         request
-            .done(function(status, textStatus, request) {
+            .done(function (status, textStatus, request) {
                 if (status.search) {
                     var plan = request.getResponseHeader("X-Plan");
                     status.plan = plan;
@@ -3425,7 +3420,7 @@ var methods$1 = {
                     triggerError("Service Unavailable");
                 }
             })
-            .fail(function() {
+            .fail(function () {
                 triggerError(request.statusText);
             });
 
@@ -3461,7 +3456,7 @@ function resetLocation() {
 }
 
 var methods$2 = {
-    checkLocation: function() {
+    checkLocation: function () {
         var that = this,
             providedLocation = that.options.geoLocation;
 
@@ -3480,7 +3475,7 @@ var methods$2 = {
             }
 
             locationRequest
-                .done(function(resp) {
+                .done(function (resp) {
                     var locationData =
                         resp && resp.location && resp.location.data;
                     if (locationData && locationData.kladr_id) {
@@ -3491,7 +3486,7 @@ var methods$2 = {
                         that.geoLocation.reject();
                     }
                 })
-                .fail(function() {
+                .fail(function () {
                     that.geoLocation.reject();
                 });
         }
@@ -3501,11 +3496,11 @@ var methods$2 = {
      * Public method to get `geoLocation` promise
      * @returns {$.Deferred}
      */
-    getGeoLocation: function() {
+    getGeoLocation: function () {
         return this.geoLocation;
     },
 
-    constructParams: function() {
+    constructParams: function () {
         var that = this,
             params = {};
 
@@ -3514,7 +3509,7 @@ var methods$2 = {
             $.isFunction(that.geoLocation.promise) &&
             that.geoLocation.state() == "resolved"
         ) {
-            that.geoLocation.done(function(locationData) {
+            that.geoLocation.done(function (locationData) {
                 params["locations_boost"] = $.makeArray(locationData);
             });
         }
@@ -3543,7 +3538,7 @@ if (utils.getDefaultType() != "GET") {
 }
 
 var methods$3 = {
-    enrichSuggestion: function(suggestion, selectionOptions) {
+    enrichSuggestion: function (suggestion, selectionOptions) {
         var that = this,
             resolver = $.Deferred();
 
@@ -3577,10 +3572,10 @@ var methods$3 = {
         // prevent request abortion during onBlur
         that.enrichPhase = that
             .getSuggestions(query, customParams, requestOptions)
-            .always(function() {
+            .always(function () {
                 that.enableDropdown();
             })
-            .done(function(suggestions) {
+            .done(function (suggestions) {
                 var enrichedSuggestion = suggestions && suggestions[0];
 
                 resolver.resolve(
@@ -3588,7 +3583,7 @@ var methods$3 = {
                     !!enrichedSuggestion
                 );
             })
-            .fail(function() {
+            .fail(function () {
                 resolver.resolve(suggestion);
             });
 
@@ -3600,12 +3595,12 @@ var methods$3 = {
      * @param response
      * @param query
      */
-    enrichResponse: function(response, query) {
+    enrichResponse: function (response, query) {
         var that = this,
             enrichedSuggestion = that.enrichmentCache[query];
 
         if (enrichedSuggestion) {
-            $.each(response.suggestions, function(i, suggestion) {
+            $.each(response.suggestions, function (i, suggestion) {
                 if (suggestion.value === query) {
                     response.suggestions[i] = enrichedSuggestion;
                     return false;
@@ -3622,7 +3617,7 @@ $.extend(Suggestions.prototype, methods$3);
  */
 
 function highlightMatches(chunks) {
-    return $.map(chunks, function(chunk) {
+    return $.map(chunks, function (chunk) {
         var text = utils.escapeHtml(chunk.text);
 
         if (text && chunk.matched) {
@@ -3639,7 +3634,7 @@ function nowrapLinkedParts(formattedStr, nowrapClass) {
         return formattedStr;
     }
     // disable word-wrap inside delimited parts
-    return $.map(delimitedParts, function(part) {
+    return $.map(delimitedParts, function (part) {
         return '<span class="' + nowrapClass + '">' + part + "</span>";
     }).join(", ");
 }
@@ -3647,7 +3642,7 @@ function nowrapLinkedParts(formattedStr, nowrapClass) {
 function hasAnotherSuggestion(suggestions, suggestion) {
     var result = false;
 
-    $.each(suggestions, function(i, s) {
+    $.each(suggestions, function (i, s) {
         result = s.value == suggestion.value && s != suggestion;
         if (result) {
             return false;
@@ -3663,7 +3658,7 @@ var optionsUsed = {
 };
 
 var methods$4 = {
-    createContainer: function() {
+    createContainer: function () {
         var that = this,
             suggestionSelector = "." + that.classes.suggestion,
             options = that.options,
@@ -3682,17 +3677,17 @@ var methods$4 = {
         );
     },
 
-    showContainer: function() {
+    showContainer: function () {
         this.$container.appendTo(
             this.options.floating ? this.$body : this.$wrapper
         );
     },
 
-    getContainer: function() {
+    getContainer: function () {
         return this.$container.get(0);
     },
 
-    removeContainer: function() {
+    removeContainer: function () {
         var that = this;
 
         if (that.options.floating) {
@@ -3700,7 +3695,7 @@ var methods$4 = {
         }
     },
 
-    setContainerOptions: function() {
+    setContainerOptions: function () {
         var that = this,
             mousedownEvent = "mousedown" + EVENT_NS;
 
@@ -3713,7 +3708,7 @@ var methods$4 = {
     /**
      * Listen for click event on suggestions list:
      */
-    onSuggestionClick: function(e) {
+    onSuggestionClick: function (e) {
         var that = this,
             $el = $(e.target),
             index;
@@ -3734,20 +3729,20 @@ var methods$4 = {
 
     // Dropdown UI methods
 
-    getSuggestionsItems: function() {
+    getSuggestionsItems: function () {
         return this.$container.children("." + this.classes.suggestion);
     },
 
-    toggleDropdownEnabling: function(enable) {
+    toggleDropdownEnabling: function (enable) {
         this.dropdownDisabled = !enable;
         this.$container.attr("disabled", !enable);
     },
 
-    disableDropdown: function() {
+    disableDropdown: function () {
         this.toggleDropdownEnabling(false);
     },
 
-    enableDropdown: function() {
+    enableDropdown: function () {
         this.toggleDropdownEnabling(true);
     },
 
@@ -3755,7 +3750,7 @@ var methods$4 = {
      * Shows if there are any suggestions besides currently selected
      * @returns {boolean}
      */
-    hasSuggestionsToChoose: function() {
+    hasSuggestionsToChoose: function () {
         var that = this;
 
         return (
@@ -3763,11 +3758,11 @@ var methods$4 = {
             (that.suggestions.length === 1 &&
                 (!that.selection ||
                     $.trim(that.suggestions[0].value) !==
-                        $.trim(that.selection.value)))
+                    $.trim(that.selection.value)))
         );
     },
 
-    suggest: function() {
+    suggest: function () {
         var that = this,
             options = that.options,
             formatResult,
@@ -3787,10 +3782,10 @@ var methods$4 = {
                 if (noSuggestionsHint) {
                     html.push(
                         '<div class="' +
-                            that.classes.hint +
-                            '">' +
-                            noSuggestionsHint +
-                            "</div>"
+                        that.classes.hint +
+                        '">' +
+                        noSuggestionsHint +
+                        "</div>"
                     );
                 } else {
                     that.hide();
@@ -3802,15 +3797,15 @@ var methods$4 = {
             if (options.hint && that.suggestions.length) {
                 html.push(
                     '<div class="' +
-                        that.classes.hint +
-                        '">' +
-                        options.hint +
-                        "</div>"
+                    that.classes.hint +
+                    '">' +
+                    options.hint +
+                    "</div>"
                 );
             }
             that.selectedIndex = -1;
             // Build suggestions inner HTML:
-            that.suggestions.forEach(function(suggestion, i) {
+            that.suggestions.forEach(function (suggestion, i) {
                 if (suggestion == that.selection) {
                     that.selectedIndex = i;
                 }
@@ -3841,13 +3836,13 @@ var methods$4 = {
         that.visible = true;
     },
 
-    buildSuggestionHtml: function(suggestion, ordinal, html) {
+    buildSuggestionHtml: function (suggestion, ordinal, html) {
         html.push(
             '<div class="' +
-                this.classes.suggestion +
-                '" data-index="' +
-                ordinal +
-                '">'
+            this.classes.suggestion +
+            '" data-index="' +
+            ordinal +
+            '">'
         );
 
         var formatResult =
@@ -3870,16 +3865,16 @@ var methods$4 = {
         if (labels) {
             html.push(
                 '<span class="' +
-                    this.classes.subtext_label +
-                    '">' +
-                    utils.escapeHtml(labels) +
-                    "</span>"
+                this.classes.subtext_label +
+                '">' +
+                utils.escapeHtml(labels) +
+                "</span>"
             );
         }
         html.push("</div>");
     },
 
-    wrapFormattedValue: function(value, suggestion) {
+    wrapFormattedValue: function (value, suggestion) {
         var that = this,
             status = utils.getDeepValue(suggestion.data, "state.status");
 
@@ -3894,7 +3889,7 @@ var methods$4 = {
         );
     },
 
-    formatResult: function(value, currentValue, suggestion, options) {
+    formatResult: function (value, currentValue, suggestion, options) {
         var that = this;
 
         value = that.highlightMatches(value, currentValue, suggestion, options);
@@ -3912,7 +3907,7 @@ var methods$4 = {
      *          `maxLength` - if set, `value` is limited by this length
      * @returns {String} HTML to be inserted in the list
      */
-    highlightMatches: function(value, currentValue, suggestion, options) {
+    highlightMatches: function (value, currentValue, suggestion, options) {
         var that = this,
             chunks = [],
             unformattableTokens = options && options.unformattableTokens,
@@ -3931,19 +3926,19 @@ var methods$4 = {
 
         tokens = text_util.tokenize(currentValue, unformattableTokens);
 
-        tokenMatchers = $.map(tokens, function(token) {
+        tokenMatchers = $.map(tokens, function (token) {
             return new RegExp(
                 "^((.*)([" +
-                    WORD_PARTS_DELIMITERS +
-                    "]+))?" +
-                    "(" +
-                    utils.escapeRegExChars(token) +
-                    ")" +
-                    "([^" +
-                    WORD_PARTS_DELIMITERS +
-                    "]*[" +
-                    WORD_PARTS_DELIMITERS +
-                    "]*)",
+                WORD_PARTS_DELIMITERS +
+                "]+))?" +
+                "(" +
+                utils.escapeRegExChars(token) +
+                ")" +
+                "([^" +
+                WORD_PARTS_DELIMITERS +
+                "]*[" +
+                WORD_PARTS_DELIMITERS +
+                "]*)",
                 "i"
             );
         });
@@ -3975,7 +3970,7 @@ var methods$4 = {
                 ($.inArray(chunk.formatted, unformattableTokens) === -1 ||
                     chunk.hasUpperCase)
             ) {
-                $.each(tokenMatchers, function(j, matcher) {
+                $.each(tokenMatchers, function (j, matcher) {
                     var tokenMatch = matcher.exec(chunk.formatted),
                         length,
                         nextIndex = i + 1;
@@ -4059,7 +4054,7 @@ var methods$4 = {
         return nowrapLinkedParts(formattedStr, that.classes.nowrap);
     },
 
-    makeSuggestionLabel: function(suggestions, suggestion) {
+    makeSuggestionLabel: function (suggestions, suggestion) {
         var that = this,
             fieldNames = that.type.fieldNames,
             nameData = {},
@@ -4073,7 +4068,7 @@ var methods$4 = {
             hasAnotherSuggestion(suggestions, suggestion) &&
             suggestion.data
         ) {
-            $.each(fieldNames, function(field) {
+            $.each(fieldNames, function (field) {
                 var value = suggestion.data[field];
                 if (value) {
                     nameData[field] = utils.formatToken(value);
@@ -4087,7 +4082,7 @@ var methods$4 = {
                     )) &&
                     (word = match[1])
                 ) {
-                    $.each(nameData, function(i, value) {
+                    $.each(nameData, function (i, value) {
                         if (value == word) {
                             labels.push(fieldNames[i]);
                             delete nameData[i];
@@ -4103,14 +4098,14 @@ var methods$4 = {
         }
     },
 
-    hide: function() {
+    hide: function () {
         var that = this;
         that.visible = false;
         that.selectedIndex = -1;
         that.$container.hide().empty();
     },
 
-    activate: function(index) {
+    activate: function (index) {
         var that = this,
             $activeItem,
             selected = that.classes.selected,
@@ -4136,7 +4131,7 @@ var methods$4 = {
         return null;
     },
 
-    deactivate: function(restoreValue) {
+    deactivate: function (restoreValue) {
         var that = this;
 
         if (!that.dropdownDisabled) {
@@ -4148,7 +4143,7 @@ var methods$4 = {
         }
     },
 
-    moveUp: function() {
+    moveUp: function () {
         var that = this;
 
         if (that.dropdownDisabled) {
@@ -4169,7 +4164,7 @@ var methods$4 = {
         that.adjustScroll(that.selectedIndex - 1);
     },
 
-    moveDown: function() {
+    moveDown: function () {
         var that = this;
 
         if (that.dropdownDisabled) {
@@ -4183,7 +4178,7 @@ var methods$4 = {
         that.adjustScroll(that.selectedIndex + 1);
     },
 
-    adjustScroll: function(index) {
+    adjustScroll: function (index) {
         var that = this,
             $activeItem = that.activate(index),
             itemTop,
@@ -4253,7 +4248,7 @@ function belongsToArea(suggestion, instance) {
         result = parentSuggestion && parentSuggestion.data && instance.bounds;
 
     if (result) {
-        collection_util.each(instance.bounds.all, function(bound, i) {
+        collection_util.each(instance.bounds.all, function (bound, i) {
             return (result =
                 parentSuggestion.data[bound] === suggestion.data[bound]);
         });
@@ -4292,7 +4287,7 @@ function getSignificantKladrId(kladr_id) {
  * @param {Suggestions} instance
  * @constructor
  */
-var ConstraintLocation = function(data, instance) {
+var ConstraintLocation = function (data, instance) {
     var that = this,
         fieldNames,
         fiasFieldNames,
@@ -4303,7 +4298,7 @@ var ConstraintLocation = function(data, instance) {
     that.specificity = -1;
 
     if (lang_util.isPlainObject(data) && instance.type.dataComponents) {
-        collection_util.each(instance.type.dataComponents, function(
+        collection_util.each(instance.type.dataComponents, function (
             component,
             i
         ) {
@@ -4319,7 +4314,7 @@ var ConstraintLocation = function(data, instance) {
     fieldNames = Object.keys(that.fields);
     fiasFieldNames = collection_util.intersect(fieldNames, fiasParamNames);
     if (fiasFieldNames.length) {
-        collection_util.each(fiasFieldNames, function(fieldName, index) {
+        collection_util.each(fiasFieldNames, function (fieldName, index) {
             fiasFields[fieldName] = that.fields[fieldName];
         });
         that.fields = fiasFields;
@@ -4332,17 +4327,17 @@ var ConstraintLocation = function(data, instance) {
 };
 
 jqapi.extend(ConstraintLocation.prototype, {
-    getLabel: function() {
+    getLabel: function () {
         return this.instance.type.composeValue(this.fields, {
             saveCityDistrict: true
         });
     },
 
-    getFields: function() {
+    getFields: function () {
         return this.fields;
     },
 
-    isValid: function() {
+    isValid: function () {
         return !lang_util.isEmptyObject(this.fields);
     },
 
@@ -4352,11 +4347,11 @@ jqapi.extend(ConstraintLocation.prototype, {
      * @param kladr_id
      * @returns {number}
      */
-    getKladrSpecificity: function(kladr_id) {
+    getKladrSpecificity: function (kladr_id) {
         var specificity = -1;
         var kladrLength = kladr_id.length;
 
-        collection_util.each(this.instance.type.dataComponents, function(
+        collection_util.each(this.instance.type.dataComponents, function (
             component,
             i
         ) {
@@ -4384,10 +4379,10 @@ jqapi.extend(ConstraintLocation.prototype, {
      * @param fiasFieldNames
      * @returns {number}
      */
-    getFiasSpecificity: function(fiasFieldNames) {
+    getFiasSpecificity: function (fiasFieldNames) {
         var specificity = -1;
 
-        collection_util.each(this.instance.type.dataComponents, function(
+        collection_util.each(this.instance.type.dataComponents, function (
             component,
             i
         ) {
@@ -4403,7 +4398,7 @@ jqapi.extend(ConstraintLocation.prototype, {
         return specificity;
     },
 
-    containsData: function(data) {
+    containsData: function (data) {
         var result = true;
 
         if (this.fields.kladr_id) {
@@ -4412,7 +4407,7 @@ jqapi.extend(ConstraintLocation.prototype, {
                 data.kladr_id.indexOf(this.significantKladr) === 0
             );
         } else {
-            collection_util.each(this.fields, function(value, fieldName) {
+            collection_util.each(this.fields, function (value, fieldName) {
                 return (result =
                     !!data[fieldName] &&
                     data[fieldName].toLowerCase() === value.toLowerCase());
@@ -4433,7 +4428,7 @@ Suggestions.ConstraintLocation = ConstraintLocation;
  * @param {Suggestions} [instance]
  * @constructor
  */
-var Constraint = function(data, instance) {
+var Constraint = function (data, instance) {
     this.id = generateId("c");
     this.deletable = !!data.deletable;
     this.instance = instance;
@@ -4441,18 +4436,18 @@ var Constraint = function(data, instance) {
     var locationsArray = collection_util.makeArray(
         data && (data.locations || data.restrictions)
     );
-    this.locations = locationsArray.map(function(data) {
+    this.locations = locationsArray.map(function (data) {
         return new ConstraintLocation(data, instance);
     });
 
-    this.locations = this.locations.filter(function(location) {
+    this.locations = this.locations.filter(function (location) {
         return location.isValid();
     });
 
     this.label = data.label;
     if (this.label == null && instance.type.composeValue) {
         this.label = this.locations
-            .map(function(location) {
+            .map(function (location) {
                 return location.getLabel();
             })
             .join(", ");
@@ -4460,22 +4455,22 @@ var Constraint = function(data, instance) {
 };
 
 jqapi.extend(Constraint.prototype, {
-    isValid: function() {
+    isValid: function () {
         return this.locations.length > 0;
     },
-    getFields: function() {
-        return this.locations.map(function(location) {
+    getFields: function () {
+        return this.locations.map(function (location) {
             return location.getFields();
         });
     }
 });
 
 var methods$5 = {
-    createConstraints: function() {
+    createConstraints: function () {
         var that = this;
         that.constraints = {};
     },
-    setupConstraints: function() {
+    setupConstraints: function () {
         var that = this,
             constraints = that.options.constraints,
             $parent;
@@ -4499,29 +4494,29 @@ var methods$5 = {
                 }
             }
         } else {
-            collection_util.each(that.constraints, function(_, id) {
+            collection_util.each(that.constraints, function (_, id) {
                 that.removeConstraint(id);
             });
             collection_util.each(
                 collection_util.makeArray(constraints),
-                function(constraint, i) {
+                function (constraint, i) {
                     that.addConstraint(constraint);
                 }
             );
         }
     },
 
-    filteredLocation: function(data) {
+    filteredLocation: function (data) {
         var locationComponents = [],
             location = {};
 
-        collection_util.each(this.type.dataComponents, function() {
+        collection_util.each(this.type.dataComponents, function () {
             if (this.forLocations) locationComponents.push(this.id);
         });
 
         if (lang_util.isPlainObject(data)) {
             // Copy to location only allowed fields
-            collection_util.each(data, function(value, key) {
+            collection_util.each(data, function (value, key) {
                 if (value && locationComponents.indexOf(key) >= 0) {
                     location[key] = value;
                 }
@@ -4535,7 +4530,7 @@ var methods$5 = {
         }
     },
 
-    addConstraint: function(constraint) {
+    addConstraint: function (constraint) {
         var that = this;
 
         constraint = new Constraint(constraint, that);
@@ -4545,12 +4540,12 @@ var methods$5 = {
         }
     },
 
-    removeConstraint: function(id) {
+    removeConstraint: function (id) {
         var that = this;
         delete that.constraints[id];
     },
 
-    constructConstraintsParams: function() {
+    constructConstraintsParams: function () {
         var that = this,
             locations = [],
             constraints = that.constraints,
@@ -4586,7 +4581,7 @@ var methods$5 = {
             }
         } else {
             if (constraints) {
-                collection_util.each(constraints, function(constraint, id) {
+                collection_util.each(constraints, function (constraint, id) {
                     locations = locations.concat(constraint.getFields());
                 });
 
@@ -4604,7 +4599,7 @@ var methods$5 = {
      * Returns label of the first constraint (if any), empty string otherwise
      * @returns {String}
      */
-    getFirstConstraintLabel: function() {
+    getFirstConstraintLabel: function () {
         var that = this,
             constraints_id =
                 lang_util.isPlainObject(that.constraints) &&
@@ -4613,7 +4608,7 @@ var methods$5 = {
         return constraints_id ? that.constraints[constraints_id].label : "";
     },
 
-    bindToParent: function() {
+    bindToParent: function () {
         var that = this;
 
         that.constraints
@@ -4631,7 +4626,7 @@ var methods$5 = {
             );
     },
 
-    unbindFromParent: function() {
+    unbindFromParent: function () {
         var that = this,
             $parent = that.constraints;
 
@@ -4640,24 +4635,24 @@ var methods$5 = {
         }
     },
 
-    onParentSelectionChanged: function(e, suggestion, valueChanged) {
+    onParentSelectionChanged: function (e, suggestion, valueChanged) {
         // Don't clear if parent has been just enriched
         if (e.type !== "suggestions-select" || valueChanged) {
             this.clear();
         }
     },
 
-    onParentDispose: function(e) {
+    onParentDispose: function (e) {
         this.unbindFromParent();
     },
 
-    getParentInstance: function() {
+    getParentInstance: function () {
         return (
             jqapi.isJqObject(this.constraints) && this.constraints.suggestions()
         );
     },
 
-    shareWithParent: function(suggestion) {
+    shareWithParent: function (suggestion) {
         // that is the parent control's instance
         var that = this.getParentInstance();
 
@@ -4676,15 +4671,15 @@ var methods$5 = {
     /**
      * Pick only fields that absent in restriction
      */
-    getUnrestrictedData: function(data) {
+    getUnrestrictedData: function (data) {
         var that = this,
             restrictedKeys = [],
             unrestrictedData = {},
             maxSpecificity = -1;
 
         // Find most specific location that could restrict current data
-        collection_util.each(that.constraints, function(constraint, id) {
-            collection_util.each(constraint.locations, function(location, i) {
+        collection_util.each(that.constraints, function (constraint, id) {
+            collection_util.each(constraint.locations, function (location, i) {
                 if (
                     location.containsData(data) &&
                     location.specificity > maxSpecificity
@@ -4709,13 +4704,13 @@ var methods$5 = {
             // Collect all fieldnames from all restricted components
             collection_util.each(
                 that.type.dataComponents.slice(0, maxSpecificity + 1),
-                function(component, i) {
+                function (component, i) {
                     restrictedKeys.push.apply(restrictedKeys, component.fields);
                 }
             );
 
             // Copy skipping restricted fields
-            collection_util.each(data, function(value, key) {
+            collection_util.each(data, function (value, key) {
                 if (restrictedKeys.indexOf(key) === -1) {
                     unrestrictedData[key] = value;
                 }
@@ -4746,7 +4741,7 @@ if (ajax.getDefaultType() != "GET") {
  */
 
 var methods$6 = {
-    proceedQuery: function(query) {
+    proceedQuery: function (query) {
         var that = this;
 
         if (query.length >= that.options.minChars) {
@@ -4761,7 +4756,7 @@ var methods$6 = {
      * @param selectionOptions
      * @returns {$.Deferred} promise, resolved with index of selected suggestion or rejected if nothing matched
      */
-    selectCurrentValue: function(selectionOptions) {
+    selectCurrentValue: function (selectionOptions) {
         var that = this,
             result = jqapi.Deferred();
 
@@ -4769,7 +4764,7 @@ var methods$6 = {
         that.inputPhase.resolve();
 
         that.fetchPhase
-            .done(function() {
+            .done(function () {
                 var index;
 
                 // When suggestion has already been selected and not modified
@@ -4787,7 +4782,7 @@ var methods$6 = {
                     }
                 }
             })
-            .fail(function() {
+            .fail(function () {
                 result.reject();
             });
 
@@ -4797,7 +4792,7 @@ var methods$6 = {
     /**
      * Selects first when user interaction is not supposed
      */
-    selectFoundSuggestion: function() {
+    selectFoundSuggestion: function () {
         var that = this;
 
         if (!that.requestMode.userSelect) {
@@ -4809,7 +4804,7 @@ var methods$6 = {
      * Selects current or first matched suggestion
      * @returns {number} index of found suggestion
      */
-    findSuggestionIndex: function() {
+    findSuggestionIndex: function () {
         var that = this,
             index = that.selectedIndex,
             value;
@@ -4818,7 +4813,7 @@ var methods$6 = {
             // matchers always operate with trimmed strings
             value = that.el.val().trim();
             if (value) {
-                that.type.matchers.some(function(matcher) {
+                that.type.matchers.some(function (matcher) {
                     index = matcher(value, that.suggestions);
                     return index !== -1;
                 });
@@ -4835,7 +4830,7 @@ var methods$6 = {
      * @param {boolean} [selectionOptions.continueSelecting]  prevents hiding after selection
      * @param {boolean} [selectionOptions.noSpace]  prevents adding space at the end of current value
      */
-    select: function(index, selectionOptions) {
+    select: function (index, selectionOptions) {
         var that = this,
             suggestion = that.suggestions[index],
             continueSelecting =
@@ -4857,7 +4852,7 @@ var methods$6 = {
 
         hasSameValues = that.hasSameValues(suggestion);
 
-        that.enrichSuggestion(suggestion, selectionOptions).done(function(
+        that.enrichSuggestion(suggestion, selectionOptions).done(function (
             enrichedSuggestion,
             hasBeenEnriched
         ) {
@@ -4888,7 +4883,7 @@ var methods$6 = {
      * @param {boolean} selectionOptions.hasBeenEnriched
      * @param {boolean} selectionOptions.hasSameValues
      */
-    selectSuggestion: function(suggestion, index, lastValue, selectionOptions) {
+    selectSuggestion: function (suggestion, index, lastValue, selectionOptions) {
         var that = this,
             continueSelecting = selectionOptions.continueSelecting,
             assumeDataComplete =
@@ -4949,7 +4944,7 @@ var methods$6 = {
         that.shareWithParent(suggestion);
     },
 
-    onSelectComplete: function(continueSelecting) {
+    onSelectComplete: function (continueSelecting) {
         var that = this;
 
         if (continueSelecting) {
@@ -4960,7 +4955,7 @@ var methods$6 = {
         }
     },
 
-    triggerOnSelectNothing: function() {
+    triggerOnSelectNothing: function () {
         var that = this;
 
         if (!that.triggering["SelectNothing"]) {
@@ -4968,7 +4963,7 @@ var methods$6 = {
         }
     },
 
-    trigger: function(event) {
+    trigger: function (event) {
         var that = this,
             args = utils.slice(arguments, 1),
             callback = that.options["on" + event];
@@ -4999,14 +4994,14 @@ var optionsUsed$2 = {
 };
 
 var methods$7 = {
-    setupBounds: function() {
+    setupBounds: function () {
         this.bounds = {
             from: null,
             to: null
         };
     },
 
-    setBoundsOptions: function() {
+    setBoundsOptions: function () {
         var that = this,
             boundsAvailable = [],
             newBounds = $.trim(that.options.bounds).split("-"),
@@ -5018,7 +5013,7 @@ var methods$7 = {
             indexTo;
 
         if (that.type.dataComponents) {
-            $.each(that.type.dataComponents, function() {
+            $.each(that.type.dataComponents, function () {
                 if (this.forBounds) {
                     boundsAvailable.push(this.id);
                 }
@@ -5036,7 +5031,7 @@ var methods$7 = {
 
         if (boundFrom || boundTo) {
             boundIsOwn = !boundFrom;
-            $.each(boundsAvailable, function(i, bound) {
+            $.each(boundsAvailable, function (i, bound) {
                 if (bound == boundFrom) {
                     boundIsOwn = true;
                 }
@@ -5056,7 +5051,7 @@ var methods$7 = {
         that.bounds.own = boundsOwn;
     },
 
-    constructBoundsParams: function() {
+    constructBoundsParams: function () {
         var that = this,
             params = {};
 
@@ -5075,7 +5070,7 @@ var methods$7 = {
      * Ничего не возвращает, меняет в самом suggestion
      * @param suggestion
      */
-    checkValueBounds: function(suggestion) {
+    checkValueBounds: function (suggestion) {
         var that = this,
             valueData;
 
@@ -5093,13 +5088,13 @@ var methods$7 = {
         }
     },
 
-    copyDataComponents: function(data, components) {
+    copyDataComponents: function (data, components) {
         var result = {},
             dataComponentsById = this.type.dataComponentsById;
 
         if (dataComponentsById) {
-            $.each(components, function(i, component) {
-                $.each(dataComponentsById[component].fields, function(
+            $.each(components, function (i, component) {
+                $.each(dataComponentsById[component].fields, function (
                     i,
                     field
                 ) {
@@ -5113,11 +5108,11 @@ var methods$7 = {
         return result;
     },
 
-    getBoundedKladrId: function(kladr_id, boundsRange) {
+    getBoundedKladrId: function (kladr_id, boundsRange) {
         var boundTo = boundsRange[boundsRange.length - 1],
             kladrFormat;
 
-        $.each(this.type.dataComponents, function(i, component) {
+        $.each(this.type.dataComponents, function (i, component) {
             if (component.id === boundTo) {
                 kladrFormat = component.kladrFormat;
                 return false;
@@ -5147,7 +5142,7 @@ var dom = {
     /**
      * Выбрать первый элемент с указанным классом.
      */
-    selectByClass: function(classname, parent) {
+    selectByClass: function (classname, parent) {
         var selector = "." + classname;
         if (parent) {
             return parent.querySelector(selector);
@@ -5159,7 +5154,7 @@ var dom = {
     /**
      * Добавить элементу класс.
      */
-    addClass: function(element, className) {
+    addClass: function (element, className) {
         var list = element.className.split(" ");
         if (list.indexOf(className) === -1) {
             list.push(className);
@@ -5170,7 +5165,7 @@ var dom = {
     /**
      * Добавить элементу стиль.
      */
-    setStyle: function(element, name, value) {
+    setStyle: function (element, name, value) {
         element.style[name] = value;
     },
 
@@ -5181,7 +5176,7 @@ var dom = {
      * @param {string} namespace - пространство имён события
      * @param {Function} callback - функция-обработчик события
      */
-    listenTo: function(element, eventName, namespace, callback) {
+    listenTo: function (element, eventName, namespace, callback) {
         element.addEventListener(eventName, callback, false);
         if (namespace) {
             if (!eventsByNamespace[namespace]) {
@@ -5198,10 +5193,10 @@ var dom = {
     /**
      * Отписаться от всех событий с указанным пространством имён.
      */
-    stopListeningNamespace: function(namespace) {
+    stopListeningNamespace: function (namespace) {
         var events = eventsByNamespace[namespace];
         if (events) {
-            events.forEach(function(event) {
+            events.forEach(function (event) {
                 event.element.removeEventListener(
                     event.eventName,
                     event.callback,
@@ -5229,7 +5224,7 @@ function Promo(plugin) {
     this.element = dom.selectByClass(CLASSES.promo, container);
 }
 
-Promo.prototype.show = function() {
+Promo.prototype.show = function () {
     if (this.plan !== FREE_PLAN) {
         return;
     }
@@ -5240,11 +5235,11 @@ Promo.prototype.show = function() {
     this.setHtml();
 };
 
-Promo.prototype.setStyles = function() {
+Promo.prototype.setStyles = function () {
     this.element.style.display = "block";
 };
 
-Promo.prototype.setHtml = function() {
+Promo.prototype.setHtml = function () {
     this.element.innerHTML =
         '<a target="_blank" tabindex="-1" href="' +
         LINK +
@@ -5268,14 +5263,14 @@ Suggestions.version = "20.3.0";
 window.$.Suggestions = Suggestions;
 
 // Create chainable jQuery plugin:
-window.$.fn.suggestions = function(options, args) {
+window.$.fn.suggestions = function (options, args) {
     // If function invoked without argument return
     // instance of the first matched element:
     if (arguments.length === 0) {
         return this.first().data(DATA_ATTR_KEY);
     }
 
-    return this.each(function() {
+    return this.each(function () {
         var inputElement = $(this),
             instance = inputElement.data(DATA_ATTR_KEY);
 
@@ -5293,5 +5288,3 @@ window.$.fn.suggestions = function(options, args) {
         }
     });
 };
-
-})));

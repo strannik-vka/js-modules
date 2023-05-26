@@ -1,4 +1,4 @@
-require('./jquery.suggestions');
+import './jquery.suggestions';
 
 export default class Suggestions {
 
