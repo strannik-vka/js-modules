@@ -55,14 +55,30 @@ class VerifyCode {
 
     events() {
         $(this.selector + ' input')
+            .on('paste', this.inputPaste)
             .on('input', this.inputChange)
             .on('keydown', this.inputKeyDown)
     }
 
     destroy() {
         $(this.selector + ' input')
+            .off('paste', this.inputPaste)
             .off('input', this.inputChange)
             .off('keydown', this.inputKeyDown)
+    }
+
+    inputPaste = (e) => {
+        e.preventDefault();
+
+        let code = new String(e.originalEvent.clipboardData.getData('text'));
+
+        if (code.length == 4) {
+            $(this.selector + ' input').each((i, item) => {
+                $(item).val(code[i]);
+            });
+
+            $(this.selector + ' input:eq(-1)').trigger('focus').trigger('input');
+        }
     }
 
     inputsCount() {
