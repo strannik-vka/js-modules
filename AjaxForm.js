@@ -234,6 +234,9 @@ class AjaxForm {
 
         form.find('[data-ajax-form-show]').hide();
         form.find('[data-ajax-form-hide]').show();
+
+        form.find('progress').val('0').hide();
+        form.find('.progress').hide().find('.progress-bar').css('width', '0');
     }
 
     formData(form) {
@@ -380,7 +383,35 @@ class AjaxForm {
                         delAjaxPreloader(form);
                         this.scrollToError();
                     } else {
-                        var formData = this.formData(form);
+                        let formData = this.formData(form),
+                            isProgressElem = form.find('progress').length || form.find('.progress').length > 0;
+
+                        if (isProgressElem) {
+                            formData.xhr = () => {
+                                let xhr = new window.XMLHttpRequest();
+
+                                xhr.upload.addEventListener('progress', function (evt) {
+                                    if (evt.lengthComputable) {
+                                        let percentComplete = evt.loaded / evt.total,
+                                            progress = Math.round(percentComplete * 100);
+
+                                        if (form.find('progress').length > 0) {
+                                            form.find('progress').val(progress).show();
+                                        }
+
+                                        if (form.find('.progress').length > 0) {
+                                            form.find('.progress').show();
+                                            form.find('.progress-bar')
+                                                .html(progress)
+                                                .css('width', progress + '%')
+                                                .attr('aria-valuenow', progress);
+                                        }
+                                    }
+                                }, false);
+
+                                return xhr;
+                            }
+                        }
 
                         ajax(formData, response => {
                             if (this.options.afterSubmit) {
