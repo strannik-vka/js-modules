@@ -4,7 +4,8 @@ var share = {
         facebook: 'https://www.facebook.com/sharer/sharer.php?u=URL',
         twitter: 'https://twitter.com/share?url=URL&text=TITLE',
         linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=URL',
-        vk: 'http://vk.com/share.php?url=URL&title=TITLE'
+        vk: 'https://vk.com/share.php?url=URL&title=TITLE',
+        tg: 'https://telegram.me/share/url?url=URL&text=TITLE'
     },
 
     social: function (name, url, title) {
