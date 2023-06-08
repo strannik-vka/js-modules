@@ -3,11 +3,24 @@ class InputsNavigate {
     constructor() {
         $(document)
             .on('click', '[data-inputs-prev], [data-inputs-next]', (e) => {
-                this.currentElems(e);
-                this.buttonClick();
+                let button = $(e.currentTarget);
+
+                if (typeof this.onClick === 'function') {
+                    let action = button.attr('data-inputs-next') != undefined ? 'next' : 'prev';
+
+                    this.onClick(action, (resume) => {
+                        if (resume) {
+                            this.currentElems(button);
+                            this.buttonClick();
+                        }
+                    });
+                } else {
+                    this.currentElems(button);
+                    this.buttonClick();
+                }
             })
             .on('input', '[data-inputs-navigate] [data-inputs-input]:eq(-1) input', (e) => {
-                this.currentElems(e);
+                this.currentElems($(e.currentTarget));
                 this.changeEndInput(e);
             });
 
@@ -26,8 +39,8 @@ class InputsNavigate {
         }
     }
 
-    currentElems(e) {
-        this.button = $(e.currentTarget);
+    currentElems(button) {
+        this.button = button;
         this.parent = this.button.parents('[data-inputs-navigate]');
         this.currentInput = this.parent.find('[data-inputs-input].active');
         this.showInput = this.button.attr('data-inputs-next') != undefined ?
