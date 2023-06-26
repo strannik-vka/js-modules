@@ -44,24 +44,26 @@ class SectionsProgress {
             dotElemEnd = $(this.options.dotsSelector + ':eq(' + (index + 1) + ')'),
             distance = 0;
 
-        if (this.options.orientation == 'vertical') {
-            distance = dotElemEnd.offset().top - dotElemStart.offset().top;
+        if (dotElemEnd.length) {
+            if (this.options.orientation == 'vertical') {
+                distance = dotElemEnd.offset().top - dotElemStart.offset().top;
 
-            if (index == 0) {
-                let startDistance = dotElemStart.offset().top - this.lineParent.offset().top;
+                if (index == 0) {
+                    let startDistance = dotElemStart.offset().top - this.lineParent.offset().top;
 
-                if (startDistance) {
-                    distance += startDistance;
+                    if (startDistance) {
+                        distance += startDistance;
+                    }
                 }
-            }
-        } else {
-            distance = dotElemEnd.offset().left - dotElemStart.offset().left;
+            } else {
+                distance = dotElemEnd.offset().left - dotElemStart.offset().left;
 
-            if (index == 0) {
-                let startDistance = dotElemStart.offset().left - this.lineParent.offset().left;
+                if (index == 0) {
+                    let startDistance = dotElemStart.offset().left - this.lineParent.offset().left;
 
-                if (startDistance) {
-                    distance += startDistance;
+                    if (startDistance) {
+                        distance += startDistance;
+                    }
                 }
             }
         }
@@ -86,7 +88,7 @@ class SectionsProgress {
 
             lineAll += dotLine;
 
-            if (sectionPercent == 100) {
+            if (sectionPercent >= 99) {
                 $(this.options.dotsSelector + ':eq(' + (index + 1) + ')').addClass('active');
 
                 this.activeIndex = index;
