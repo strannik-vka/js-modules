@@ -1,6 +1,11 @@
 class ElementIntersection {
 
 	constructor(selector, runCallback, stopCallback, options) {
+		if (typeof stopCallback === 'object' && stopCallback != null) {
+			options = stopCallback;
+			stopCallback = null;
+		}
+
 		options = options ?? {};
 
 		this.rootMargin = options.rootMargin ?? '50% 0px 50% 0px';
