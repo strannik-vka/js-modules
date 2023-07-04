@@ -232,6 +232,7 @@ class AjaxForm {
                 element.removeClass('animate-finish-show animate-finish-hide');
 
                 if (show) {
+                    element.show();
                     element.addClass('animate-process-show');
                 } else {
                     element.addClass('animate-process-hide');
@@ -244,6 +245,7 @@ class AjaxForm {
                         element.addClass('animate-finish-show');
                     } else {
                         element.addClass('animate-finish-hide');
+                        element.hide();
                     }
                 }, duration)
             } else {
