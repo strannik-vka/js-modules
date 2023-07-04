@@ -222,18 +222,62 @@ class AjaxForm {
         this.htmlReset(form);
     }
 
+    elementsShowHide(form, reset) {
+        let key = form.attr('data-ajax-form');
+
+        const toggle = (element, show) => {
+            let duration = parseFloat(element.attr('data-animate-duration'));
+
+            if (duration) {
+                element.removeClass('animate-finish-show animate-finish-hide');
+
+                if (show) {
+                    element.addClass('animate-process-show');
+                } else {
+                    element.addClass('animate-process-hide');
+                }
+
+                setTimeout(() => {
+                    element.removeClass('animate-process-show animate-process-hide');
+
+                    if (show) {
+                        element.addClass('animate-finish-show');
+                    } else {
+                        element.addClass('animate-finish-hide');
+                    }
+                }, duration)
+            } else {
+                if (show) {
+                    element.show();
+                } else {
+                    element.hide();
+                }
+            }
+        }
+
+        if (key) {
+            $('[data-ajax-form-show="' + key + '"]').each((i, item) => {
+                toggle($(item), !reset);
+            })
+
+            $('[data-ajax-form-hide="' + key + '"]').each((i, item) => {
+                toggle($(item), reset);
+            })
+        }
+
+        form.find('[data-ajax-form-show]').each((i, item) => {
+            toggle($(item), !reset);
+        })
+
+        form.find('[data-ajax-form-hide]').each((i, item) => {
+            toggle($(item), reset);
+        })
+    }
+
     htmlReset(form) {
         form.removeClass('success');
 
-        var key = form.attr('data-ajax-form');
-
-        if (key) {
-            $('[data-ajax-form-show="' + key + '"]').hide();
-            $('[data-ajax-form-hide="' + key + '"]').show();
-        }
-
-        form.find('[data-ajax-form-show]').hide();
-        form.find('[data-ajax-form-hide]').show();
+        this.elementsShowHide(form, true);
 
         form.find('progress').val('0').hide();
         form.find('.progress').hide().find('.progress-bar').css('width', '0');
@@ -475,15 +519,7 @@ class AjaxForm {
                                         this.reset(form);
                                     }
 
-                                    var key = form.attr('data-ajax-form');
-
-                                    if (key) {
-                                        $('[data-ajax-form-show="' + key + '"]').show();
-                                        $('[data-ajax-form-hide="' + key + '"]').hide();
-                                    }
-
-                                    form.find('[data-ajax-form-show]').show();
-                                    form.find('[data-ajax-form-hide]').hide();
+                                    this.elementsShowHide(form);
 
                                     if (form.attr('data-edit-mode') == 'true' || this.options.editMode) {
                                         if (this.isEditMode == true) {
