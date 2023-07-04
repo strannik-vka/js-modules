@@ -231,19 +231,21 @@ class AjaxForm {
             if (duration) {
                 element.removeClass('animate-finish-show animate-finish-hide');
 
-                if (show) {
-                    element.show();
-                    element.addClass('animate-process-show');
-                } else {
+                if (!show) {
                     element.addClass('animate-process-hide');
                 }
 
                 setTimeout(() => {
-                    element.removeClass('animate-process-show animate-process-hide');
-
                     if (show) {
-                        element.addClass('animate-finish-show');
+                        element.show();
+                        element.addClass('animate-process-show');
+
+                        setTimeout(() => {
+                            element.removeClass('animate-process-show');
+                            element.addClass('animate-finish-show');
+                        }, duration)
                     } else {
+                        element.removeClass('animate-process-hide');
                         element.addClass('animate-finish-hide');
                         element.hide();
                     }
