@@ -273,8 +273,21 @@ window.validate = {
         validate.initOn = true;
 
         $(document)
+            .on('change', '[name][type="radio"], [name][type="checkbox"]', function () {
+                let name = $(this).attr('name');
+
+                if ($('[name="' + name + '"].is-invalid').length) {
+                    validate.error_remove($('[name="' + name + '"].is-invalid'));
+                }
+            })
             .on('keyup change', '.is-invalid, .is-invalid *, .selectized', function () {
-                validate.error_remove($(this));
+                let type = $(this).attr('type');
+
+                if (type) {
+                    if (['radio', 'checkbox'].indexOf(type) == -1) {
+                        validate.error_remove($(this));
+                    }
+                }
             });
     },
 

@@ -24,18 +24,28 @@ class FormStorage {
             form = $('#' + formId).length ? $('#' + formId) : $('[data-form-storage="' + formId + '"]');
 
         $.each(inputs, (name, val) => {
-            var input = form.find('[name="' + name + '"]');
+            if (Array.isArray(val)) {
+                val.forEach(value => {
+                    var input = form.find('[name="' + name + '"][value="' + value + '"]');
 
-            if (input.length) {
-                if (input[0].tagName == 'select') {
-                    input.find('option').prop('selected', false);
-                    input.find('option[value="' + val + '"]').prop('selected', true);
-                } else if (input.attr('type') == 'checkbox') {
-                    form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
-                } else if (input.attr('type') == 'radio') {
-                    form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
-                } else if (input.attr('type') != 'file') {
-                    input.val(val).trigger('change');
+                    if (input.length) {
+                        input.prop('checked', true).trigger('change');
+                    }
+                })
+            } else {
+                var input = form.find('[name="' + name + '"]');
+
+                if (input.length) {
+                    if (input[0].tagName == 'select') {
+                        input.find('option').prop('selected', false);
+                        input.find('option[value="' + val + '"]').prop('selected', true);
+                    } else if (input.attr('type') == 'checkbox') {
+                        form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
+                    } else if (input.attr('type') == 'radio') {
+                        form.find('[name="' + name + '"][value="' + val + '"]').prop('checked', true).trigger('change');
+                    } else if (input.attr('type') != 'file') {
+                        input.val(val).trigger('change');
+                    }
                 }
             }
         });
@@ -59,16 +69,28 @@ class FormStorage {
         let name = $(e.currentTarget).attr('name'),
             val = $(e.currentTarget).val();
 
-        if ($(e.currentTarget).attr('type') == 'checkbox') {
-            if ($(e.currentTarget).prop('checked')) {
-                inputs[name] = val;
+        if (name.indexOf(']') > -1) {
+            if (!Array.isArray(inputs[name])) {
+                inputs[name] = [];
+            }
+
+            if (inputs[name].indexOf(val) > -1) {
+                inputs[name].splice(inputs[name].indexOf(val), 1);
             } else {
-                if (typeof inputs[name] !== 'undefined') {
-                    delete inputs[name];
-                }
+                inputs[name].push(val);
             }
         } else {
-            inputs[name] = val;
+            if ($(e.currentTarget).attr('type') == 'checkbox') {
+                if ($(e.currentTarget).prop('checked')) {
+                    inputs[name] = val;
+                } else {
+                    if (typeof inputs[name] !== 'undefined') {
+                        delete inputs[name];
+                    }
+                }
+            } else {
+                inputs[name] = val;
+            }
         }
 
         localStorage.setItem('form_' + formId, JSON.stringify(inputs));
