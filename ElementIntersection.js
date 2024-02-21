@@ -29,19 +29,19 @@ class ElementIntersection {
 			this.observer = new IntersectionObserver((entries) => {
 				if (this.isPlay == true) {
 					entries.forEach(entry => {
-						let entryCallbacks = this.callbacks[entry.target.getAttribute('data-intersection')];
+						const name = entry.target.getAttribute('data-intersection');
 
 						if (entry.isIntersecting) {
-							if (entryCallbacks.active == false) {
-								entryCallbacks.active = true;
-								entryCallbacks.run();
+							if (this.callbacks[name].active == false) {
+								this.callbacks[name].active = true;
+								this.callbacks[name].run();
 							}
 						} else {
-							if (typeof entryCallbacks === 'object' && entryCallbacks != null) {
-								if (entryCallbacks.active == true) {
-									if (typeof entryCallbacks.stop === 'function') {
-										entryCallbacks.active = false;
-										entryCallbacks.stop();
+							if (typeof this.callbacks[name] === 'object' && this.callbacks[name] != null) {
+								if (this.callbacks[name].active == true) {
+									if (typeof this.callbacks[name].stop === 'function') {
+										this.callbacks[name].active = false;
+										this.callbacks[name].stop();
 									}
 								}
 							} else {
