@@ -6,6 +6,8 @@ window.scroller = {
     init: () => {
         if (location.hash) {
             scroller.onloadScroll();
+        } else {
+            $(window).trigger('scroller.animate.end');
         }
 
         $(document)
@@ -62,7 +64,9 @@ window.scroller = {
     onloadScroll: () => {
         var hash = scroller.hash(decodeURIComponent(location.href)), elem = scroller.elem(hash);
         if (elem && elem.length) {
-            scroller.to(elem);
+            scroller.to(elem, () => {
+                $(window).trigger('scroller.animate.end');
+            });
         }
     },
 
