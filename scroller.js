@@ -5,9 +5,19 @@ window.scroller = {
 
     init: () => {
         if (location.hash) {
-            scroller.onloadScroll();
+            scroller.onloadScroll((animate) => {
+                if (animate) {
+                    $(window).trigger('scroller.animate.end');
+                } else {
+                    setTimeout(() => {
+                        $(window).trigger('scroller.animate.end');
+                    }, scroller.duration);
+                }
+            });
         } else {
-            $(window).trigger('scroller.animate.end');
+            setTimeout(() => {
+                $(window).trigger('scroller.animate.end');
+            }, scroller.duration);
         }
 
         $(document)
@@ -61,12 +71,16 @@ window.scroller = {
         }
     },
 
-    onloadScroll: () => {
-        var hash = scroller.hash(decodeURIComponent(location.href)), elem = scroller.elem(hash);
+    onloadScroll: (callback) => {
+        var hash = scroller.hash(decodeURIComponent(location.href)),
+            elem = scroller.elem(hash);
+
         if (elem && elem.length) {
-            scroller.to(elem, () => {
-                $(window).trigger('scroller.animate.end');
-            });
+            scroller.to(elem, callback);
+        } else {
+            if (callback) {
+                callback(false);
+            }
         }
     },
 
@@ -189,7 +203,9 @@ window.scroller = {
                 ZoneObject.on();
             }
 
-            if (callback) callback();
+            if (callback) {
+                callback(true);
+            }
         }, scroller.duration * 1.5);
     },
 
@@ -212,6 +228,10 @@ window.scroller = {
             setTimeout(() => {
                 scroller.animate(elem, top, callback);
             }, elem.attr('data-timeout') ? parseFloat(elem.attr('data-timeout')) : 0);
+        } else {
+            if (callback) {
+                callback(false);
+            }
         }
     },
 
