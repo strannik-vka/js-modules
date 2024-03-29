@@ -404,6 +404,18 @@ class AjaxForm {
         }
     }
 
+    redirect(url) {
+        const form = $(this.selector);
+
+        if (form.attr('data-redirect-target') == '_blank') {
+            $('#tmp_url').remove();
+            $('body').append('<a id="tmp_url" style="display: none;" target="_blank" href="' + url + '"></a>');
+            $('#tmp_url')[0].click();
+        } else {
+            location.href = url;
+        }
+    }
+
     resetChildrens(response) {
         if (this.options.childForms.length && (response.redirect || response.success)) {
             this.options.childForms.forEach(form => {
@@ -485,10 +497,10 @@ class AjaxForm {
                                         this.sendGoal(form, form.attr('data-goal-success'));
 
                                         setTimeout(() => {
-                                            location.href = response.redirect;
+                                            this.redirect(response.redirect);
                                         }, 1000);
                                     } else {
-                                        location.href = response.redirect;
+                                        this.redirect(response.redirect);
                                     }
                                 } else if (response.success) {
                                     if (form.attr('data-goal-success')) {
@@ -514,7 +526,7 @@ class AjaxForm {
                                     }
 
                                     if (form.attr('data-ajax-form-redirect')) {
-                                        location.href = form.attr('data-ajax-form-redirect');
+                                        this.redirect(form.attr('data-ajax-form-redirect'));
                                     }
 
                                     form.addClass('success');
