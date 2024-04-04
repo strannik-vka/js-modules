@@ -51,6 +51,8 @@ class AjaxForm {
         this.modalConfirmEventsInit = false;
 
         this.events();
+
+        $('body').append('<a id="ajax_form_tmp_url" style="display: none;" target="_blank"></a>');
     }
 
     getActionId() {
@@ -408,9 +410,8 @@ class AjaxForm {
         const form = $(this.selector);
 
         if (form.attr('data-redirect-target') == '_blank') {
-            $('#tmp_url').remove();
-            $('body').append('<a id="tmp_url" style="display: none;" target="_blank" href="' + url + '"></a>');
-            $('#tmp_url')[0].click();
+            $('#ajax_form_tmp_url').attr('href', url);
+            $('#ajax_form_tmp_url')[0].click();
         } else {
             location.href = url;
         }
