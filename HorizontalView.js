@@ -1,10 +1,13 @@
 class HorizontalView {
 
     constructor(obj) {
+        this.obj = obj;
         this.section = obj.section ? obj.section : obj.content;
-        this.height = obj.height ? obj.height : null;
+        this.height = typeof obj.height === 'number' ? obj.height : null;
         this.content = $(obj.content);
-        this.width = obj.width ? obj.width : (parseFloat(this.content.css('width')) - $(window).width());
+        this.width = typeof obj.width === 'number' ? obj.width : (
+            parseFloat(this.content.css('width')) - $(window).width()
+        );
         this.onScrollPercent = obj.onScrollPercent;
         this.transform = typeof obj.transform !== 'undefined' ? obj.transform : true;
 
@@ -15,14 +18,20 @@ class HorizontalView {
     }
 
     onResize = () => {
-        this.width = obj.width ? obj.width : (parseFloat(this.content.css('width')) - $(window).width());
+        this.width = typeof this.obj.width === 'number' ? this.obj.width : (
+            parseFloat(this.content.css('width')) - $(window).width()
+        );
     }
 
     onScroll = () => {
-        var top = this.sectionWrap.offset().top - $(window).scrollTop();
+        var elementTop = this.sectionWrap.offset().top, // расстояние от элемента до начала document
+            scrollTop = $(window).scrollTop(), // сколько просколили
+            translateX = elementTop - scrollTop; // смещение по translateX
+
+        console.log(elementTop, scrollTop, translateX);
 
         if (this.transform) {
-            this.content.css('transform', 'translateX(' + top + 'px)');
+            this.content.css('transform', 'translateX(' + translateX + 'px)');
         }
 
         if (this.onScrollPercent) {
@@ -46,7 +55,7 @@ class HorizontalView {
 
             this.sectionWrap = $('[data-horizontal-section="' + this.section + '"]');
 
-            let height = this.height ? this.height : parseFloat(this.sectionWrap.css('height'));
+            let height = this.height ? this.height : parseFloat(this.sectionWrap.css('width'));
 
             this.sectionWrap.css({
                 'position': 'relative',

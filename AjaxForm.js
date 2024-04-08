@@ -491,6 +491,10 @@ class AjaxForm {
                                 form.removeAttr('data-ajax-process');
                                 delAjaxPreloader(form);
 
+                                if (response?.data) {
+                                    window.AjaxFormData = response.data;
+                                }
+
                                 if (response.redirect) {
                                     form.trigger('ajax-response-redirect');
 
@@ -506,10 +510,6 @@ class AjaxForm {
                                 } else if (response.success) {
                                     if (form.attr('data-goal-success')) {
                                         this.sendGoal(form, form.attr('data-goal-success'));
-                                    }
-
-                                    if (response.data) {
-                                        window.AjaxFormData = response.data;
                                     }
 
                                     form.trigger('ajax-response-success');
