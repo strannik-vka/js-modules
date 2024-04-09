@@ -55,6 +55,26 @@ class AjaxForm {
         $('body').append('<a id="ajax_form_tmp_url" style="display: none;" target="_blank"></a>');
     }
 
+    sendAfterRedirect(form) {
+        if (form.attr('data-send-after-redirect')) {
+            location.href = form.attr('data-send-after-redirect');
+        }
+    }
+
+    submitEvent(form) {
+        const submitEventUrl = form.attr('data-submit-event');
+
+        if (submitEventUrl) {
+            $.ajax({
+                url: submitEventUrl,
+                type: 'post',
+                data: new FormData(form[0]),
+                processData: false,
+                contentType: false
+            })
+        }
+    }
+
     getActionId() {
         let action = $(this.selector).attr('action');
 
@@ -437,6 +457,8 @@ class AjaxForm {
 
             form.attr('data-ajax-process', true);
 
+            this.submitEvent(form);
+
             this.validChldrens(result => {
                 if (result === true) {
                     if (this.isErrors(form)) {
@@ -488,6 +510,8 @@ class AjaxForm {
                             }
 
                             this.submitChildrens(response, () => {
+                                this.sendAfterRedirect(form);
+
                                 form.removeAttr('data-ajax-process');
                                 delAjaxPreloader(form);
 
