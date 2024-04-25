@@ -360,7 +360,9 @@ window.items = {
                     .on('click', model.modal.selector, (e) => {
                         let itemId = $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').length ? $(e.currentTarget).closest('[items-html-' + model.modal.name + ']').attr('items-html-' + model.modal.name) : $(e.currentTarget).closest('[items-html-' + model.name + ']').length ? $(e.currentTarget).closest('[items-html-' + model.name + ']').attr('items-html-' + model.name) : null;
 
-                        items.modal.open(model, itemId);
+                        if (!$(e.currentTarget).attr('href') || $(e.currentTarget).attr('href') == 'javascript://') {
+                            items.modal.open(model, itemId);
+                        }
                     })
                     .on('hide.bs.modal', '[entry-modal]', () => {
                         items.modal.close();
