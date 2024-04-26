@@ -44,22 +44,24 @@ class InputCopy {
         $('#tmpCopy').remove();
 
         if (typeof $.fn.tooltip !== 'undefined') {
-            if (elem.closest('.dropdown').length) {
-                this.tooltipShow(elem.closest('.dropdown'));
-            } else if (elem.attr('data-toggle') == 'tooltip') {
-                if (elem.closest('#temp_tooltip').length == 0) {
-                    var newElem = $('<span id="temp_tooltip"/>').css("display", "inline-block");
+            try {
+                if (elem.closest('.dropdown').length) {
+                    this.tooltipShow(elem.closest('.dropdown'));
+                } else if (elem.attr('data-toggle') == 'tooltip') {
+                    if (elem.closest('#temp_tooltip').length == 0) {
+                        var newElem = $('<span id="temp_tooltip"/>').css("display", "inline-block");
 
-                    elem.wrap(newElem);
-                    elem.tooltip('hide');
+                        elem.wrap(newElem);
+                        elem.tooltip('hide');
 
-                    this.tooltipShow($('#temp_tooltip'), () => {
-                        elem.unwrap();
-                    });
+                        this.tooltipShow($('#temp_tooltip'), () => {
+                            elem.unwrap();
+                        });
+                    }
+                } else {
+                    this.tooltipShow(elem);
                 }
-            } else {
-                this.tooltipShow(elem);
-            }
+            } catch (e) { }
         }
     }
 
