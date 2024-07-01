@@ -642,7 +642,7 @@ window.items = {
         return html;
     },
 
-    isset: function (html, data) {
+    isset: function (html, data, isHide) {
         if (data && typeof data === 'object') {
             html.find('[isset]').each(function () {
                 var value = items.getDataValue($(this).attr('isset'), data);
@@ -650,7 +650,11 @@ window.items = {
                 if (value) {
                     $(this).show();
                 } else {
-                    $(this).remove();
+                    if (isHide) {
+                        $(this).hide();
+                    } else {
+                        $(this).remove();
+                    }
                 }
             });
         }
