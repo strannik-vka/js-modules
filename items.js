@@ -441,15 +441,17 @@ window.items = {
                     let formArray = form.serializeArray();
 
                     formArray.forEach(item => {
-                        if (item.value) {
-                            if (typeof data[item.name] !== 'undefined') {
-                                if (!Array.isArray(data[item.name])) {
-                                    data[item.name] = [data[item.name]];
-                                }
+                        if (item.name !== '_token') {
+                            if (item.value) {
+                                if (typeof data[item.name] !== 'undefined') {
+                                    if (!Array.isArray(data[item.name])) {
+                                        data[item.name] = [data[item.name]];
+                                    }
 
-                                data[item.name].push(item.value);
-                            } else {
-                                data[item.name] = item.value;
+                                    data[item.name].push(item.value);
+                                } else {
+                                    data[item.name] = item.value;
+                                }
                             }
                         }
                     });
