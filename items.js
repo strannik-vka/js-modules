@@ -594,12 +594,12 @@ window.items = {
         for (var i = 0; i < parts.length; i++) {
             data = data[parts[i]];
 
-            if (!data) {
+            if (!data && typeof data !== 'number') {
                 break;
             }
         }
 
-        return data ? data : null;
+        return data || typeof data === 'number' ? data : null;
     },
 
     dataInHtml: function (html, data, model) {
@@ -625,7 +625,7 @@ window.items = {
             html.find('[html]').each(function () {
                 var value = items.getDataValue($(this).attr('html'), data);
 
-                if (value) {
+                if (value || typeof value === 'number') {
                     if (typeof model !== 'undefined') {
                         if (model.glueUnions) {
                             value = items.glueUnions(value);
