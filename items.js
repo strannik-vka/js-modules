@@ -353,6 +353,32 @@ window.items = {
         }
     },
 
+    getFilterData: (form, firstData) => {
+        let data = typeof firstData === 'object' && firstData !== null ? Object.assign({}, firstData) : {};
+
+        if (form.length) {
+            let formArray = form.serializeArray();
+
+            formArray.forEach(item => {
+                if (item.name !== '_token') {
+                    if (item.value) {
+                        if (typeof data[item.name] !== 'undefined') {
+                            if (!Array.isArray(data[item.name])) {
+                                data[item.name] = [data[item.name]];
+                            }
+
+                            data[item.name].push(item.value);
+                        } else {
+                            data[item.name] = item.value;
+                        }
+                    }
+                }
+            });
+        }
+
+        return data;
+    },
+
     events: {
         modal: function (model) {
             if (model.modal != null) {
@@ -435,32 +461,9 @@ window.items = {
         },
         filter: (model) => {
             let elem = items.elem(model),
-                getFilterData = (form) => {
-                    let data = {};
-
-                    let formArray = form.serializeArray();
-
-                    formArray.forEach(item => {
-                        if (item.name !== '_token') {
-                            if (item.value) {
-                                if (typeof data[item.name] !== 'undefined') {
-                                    if (!Array.isArray(data[item.name])) {
-                                        data[item.name] = [data[item.name]];
-                                    }
-
-                                    data[item.name].push(item.value);
-                                } else {
-                                    data[item.name] = item.value;
-                                }
-                            }
-                        }
-                    });
-
-                    return data;
-                },
                 onChange = (e, type) => {
                     let input = $(e.currentTarget),
-                        data = getFilterData(input.parents('[items-filter-' + model.name + ']')),
+                        data = items.getFilterData(input.parents('[items-filter-' + model.name + ']')),
                         urlParams = $.param(data);
 
                     if (type == 'input') {
@@ -536,6 +539,8 @@ window.items = {
             if (options.page) {
                 data.page = options.page;
             }
+
+            data = items.getFilterData($('[items-filter-' + model.name + ']:eq(0)'), data);
 
             if (model.url.indexOf('ajax=true') == -1) {
                 if (model.url.indexOf('?') > -1) {
