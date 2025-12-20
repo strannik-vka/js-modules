@@ -257,14 +257,16 @@ window.items = {
 
     modal: {
         close: () => {
-            history.pushState(null, null, location.pathname);
+            history.pushState(null, null, items.model.lastUrl);
         },
         open: (model, entry_id) => {
+            items.model.lastUrl = location.href;
+
             model.modal.data(entry_id, function (data) {
                 if (data.id && model.modal.pushState) {
                     history.pushState(null, null, location.pathname + '?' + model.name + '=' + data.id);
                 } else {
-                    history.pushState(null, null, location.pathname);
+                    history.pushState(null, null, items.model.lastUrl);
                 }
 
                 var html = $(model.modal.outerHTML);
@@ -530,6 +532,8 @@ window.items = {
 
             if (typeof options.data === 'object' && options.data != null) {
                 data = options.data;
+            } else {
+                data = items.getFilterData($('[items-filter-' + model.name + ']:eq(0)'), data);
             }
 
             if (typeof data.paginate === 'undefined' && elem.list.attr('items-paginate')) {
@@ -539,8 +543,6 @@ window.items = {
             if (options.page) {
                 data.page = options.page;
             }
-
-            data = items.getFilterData($('[items-filter-' + model.name + ']:eq(0)'), data);
 
             if (model.url.indexOf('ajax=true') == -1) {
                 if (model.url.indexOf('?') > -1) {

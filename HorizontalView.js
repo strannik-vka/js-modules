@@ -28,14 +28,12 @@ class HorizontalView {
             scrollTop = $(window).scrollTop(), // сколько просколили
             translateX = elementTop - scrollTop; // смещение по translateX
 
-        console.log(elementTop, scrollTop, translateX);
-
         if (this.transform) {
             this.content.css('transform', 'translateX(' + translateX + 'px)');
         }
 
         if (this.onScrollPercent) {
-            this.onScrollPercent(100 / (this.width / -(top)));
+            this.onScrollPercent(100 / (this.width / -(translateX)));
         }
     }
 

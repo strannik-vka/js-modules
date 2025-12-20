@@ -571,11 +571,19 @@ class AjaxForm {
                                     if (response && typeof response.data !== 'undefined') {
                                         this.itemsHtmlUpdate(response.data);
                                     }
+                                } else if (response.error) {
+                                    window.AjaxFormError = response.error;
+
+                                    form.trigger('ajax-response-error');
                                 } else {
                                     this.htmlReset(form);
                                 }
 
                                 this.resetChildrens(response);
+
+                                if (typeof window.grecaptcha !== 'undefined') {
+                                    window.grecaptcha.reset();
+                                }
 
                                 form.trigger('ajax-response');
                             });
